@@ -1,0 +1,11 @@
+# Set the default behaviour, in case people don't have core.autocrlf set.
+* text=auto
+
+# Force CRLF line endings on checkout for text files, this is especially important for all Windows batch files.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.tcl text eol=crlf
+*.ps1 text eol=crlf
+
+# Force bin files to be treated as binary.
+*.bin binary

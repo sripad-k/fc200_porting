@@ -1,0 +1,27 @@
+diff --git a/psu_cortexr5_0/standalone_domain/bsp/psu_cortexr5_0/libsrc/standalone_v7_3/src/xil_printf.c b/psu_cortexr5_0/standalone_domain/bsp/psu_cortexr5_0/libsrc/standalone_v7_3/src/xil_printf.c
+index 1dfd1b9..8b215ae 100644
+--- a/psu_cortexr5_0/standalone_domain/bsp/psu_cortexr5_0/libsrc/standalone_v7_3/src/xil_printf.c
++++ b/psu_cortexr5_0/standalone_domain/bsp/psu_cortexr5_0/libsrc/standalone_v7_3/src/xil_printf.c
+@@ -264,6 +264,7 @@ void xil_printf( const char8 *ctrl1, ...)
+         if (*ctrl != '%') {
+ #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM)
+             outbyte(*ctrl);
++            if (*ctrl == 0x0A) outbyte((char8)0x0D);
+ #endif
+ 			ctrl += 1;
+             continue;
+diff --git a/zynqmp_fsbl/xfsbl_hw.h b/zynqmp_fsbl/xfsbl_hw.h
+index 0b0e257..1b720ab 100644
+--- a/zynqmp_fsbl/xfsbl_hw.h
++++ b/zynqmp_fsbl/xfsbl_hw.h
+@@ -904,8 +904,8 @@ extern "C" {
+ #ifdef ARMR5
+ #define XFSBL_PS_DDR_INIT_START_ADDRESS	XFSBL_PS_DDR_START_ADDRESS_R5
+ #if defined(XPAR_PSU_R5_DDR_1_S_AXI_BASEADDR)
+-#define XFSBL_PS_HI_DDR_START_ADDRESS	XPAR_PSU_R5_DDR_1_S_AXI_BASEADDR
+-#define XFSBL_PS_HI_DDR_END_ADDRESS XPAR_PSU_R5_DDR_1_S_AXI_HIGHADDR
++//#define XFSBL_PS_HI_DDR_START_ADDRESS	XPAR_PSU_R5_DDR_1_S_AXI_BASEADDR
++//#define XFSBL_PS_HI_DDR_END_ADDRESS XPAR_PSU_R5_DDR_1_S_AXI_HIGHADDR
+ #endif
+ #else
+ #define XFSBL_PS_DDR_INIT_START_ADDRESS	XFSBL_PS_DDR_START_ADDRESS

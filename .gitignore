@@ -1,0 +1,32 @@
+# Metadata folder
+.metadata/
+
+# Object files
+*.o
+
+# Dependency files
+*.d
+
+# Assembly files
+*.a
+
+# elf files
+*.elf
+
+# binary files
+*.bin
+
+# Log files
+*.log
+
+# Log folder
+*.log/
+
+# Log folder
+* logs
+
+# TCL script files
+*.tcl
+
+# Analytics files
+.analytics

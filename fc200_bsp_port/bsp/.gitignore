@@ -1,0 +1,21 @@
+# ignore static analysis intermediate files
+*.dump
+*.a1
+*.ctu-info
+*.s1
+*_chk.csv
+*_met.csv
+*_sa.rtf
+cppcheck-addon-ctu-file-list
+lastResults.xml
+statistics.txt
+files.txt
+gitstatus.txt
+*.c.err
+*.s.err
+*.clang
+**/doxy
+*_func.rtf
+*.gcno
+*.gcda
+*.bak
