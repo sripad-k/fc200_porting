@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <sdkproject:SdkProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sdkproject="http://www.xilinx.com/sdkproject" name="fc200_bsp_port" location="C:/Users/SripadKulkarni/workspace/fc200_porting/fc200_bsp_port" platform="C:/Users/SripadKulkarni/workspace/fc200_porting/136T-2200-113050-001-F11-02/export/136T-2200-113050-001-F11-02/136T-2200-113050-001-F11-02.xpfm" platformUID="xilinx:::0.0(custom)" systemProject="fc200_bsp_port_system" sysConfig="136T-2200-113050-001-F11-02" runtime="C/C++" cpu="standalone_domain" cpuInstance="psu_cortexr5_0" os="standalone" mssSignature="609d51dbfae8b6b187e55cac0323f5bb">
-  <configuration name="Debug" id="xilinx.gnu.arm.r5.exe.debug.508441651" dirty="true">
+  <configuration name="Debug" id="xilinx.gnu.arm.r5.exe.debug.508441651">
     <configBuildOptions xsi:type="sdkproject:SdkOptions"/>
     <lastBuildOptions xsi:type="sdkproject:SdkOptions"/>
   </configuration>

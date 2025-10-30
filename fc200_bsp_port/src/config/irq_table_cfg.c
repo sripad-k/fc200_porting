@@ -117,7 +117,7 @@ const d_INT_IrqVectorTable_t IrqVectorTable[MAXIMUM_IRQ] =
      {NULL, 0},                          /* 65 - */
      {NULL, 0},                          /* 66 - */
      {NULL, 0},                          /* 67 - */
-     {sys_tickHandler, 0},                   		 /* 68 - XPS_TTC0_0_INT_ID */
+     {sys_tickHandler, 0},               /* 68 - XPS_TTC0_0_INT_ID */
      {NULL, 0},                          /* 69 - XPS_TTC0_1_INT_ID */
      {NULL, 0},                          /* 70 - XPS_TTC0_2_INT_ID */
      {NULL, 0},                          /* 71 - XPS_TTC1_0_INT_ID */
@@ -177,7 +177,7 @@ const d_INT_IrqVectorTable_t IrqVectorTable[MAXIMUM_IRQ] =
      {NULL, 0},                          /* 120 - XPS_XMPU_LPD_INT_ID */
      {d_INT_SplitHandler, 2},            /* 121 - XPS_FPGA0_INT_ID */
      {NULL, 0},//{Discrete_Pl_Handler, 0},           /* 122 - XPS_FPGA1_INT_ID */
-     {d_UART_PlInterruptHandler, 0},     /* 123 - XPS_FPGA2_INT_ID */
+     {NULL, 0},                          /* 123 - XPS_FPGA2_INT_ID */
      {d_INT_SplitHandler, 3},            /* 124 - XPS_FPGA3_INT_ID */
      {d_SPI_PL_InterruptHandler, 1},     /* 125 - XPS_FPGA4_INT_ID */
      {d_SPI_PL_InterruptHandler, 0},     /* 126 - XPS_FPGA5_INT_ID */

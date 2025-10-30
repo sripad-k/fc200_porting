@@ -15,9 +15,11 @@
 #include "xscugic.h"
 #include "kernel/general/d_gen_register.h"
 #include "kernel/date_time/d_date_time.h"
+#include "uart_interface.h"
 
 static bool TaskEventFlag = false;
 static uint32_t ElapsedTicksinMillisec = 0;
+static const d_Timer_t LOOP_TIMER = d_TIMER_TTC0_0;
 
 /**
  * @brief System boot initialization function
@@ -39,15 +41,16 @@ static uint32_t ElapsedTicksinMillisec = 0;
  */
 void sys_boot(void)
 {
+
+	const Char_t error_msg[80]      = "\n\r !!!! FC-200 Initialization Failed !!!! \n\r";
+	const Char_t success_msg[80]    = "\n\r **** FC-200 Initialization Successful ****\n\r";
+	const Char_t init_start_msg[80] = "\n\r **** FC-200 Initialization Started **** \n\r";
+
 	d_Status_t fcuInit;
 	bool iocAOnline;
 	bool iocBOnline;
-	const Char_t error_msg[80] = "\n\r FC-200 Initialization Failed \n\r";
-	const Char_t success_msg[80] = "\n\r FC-200 Initialization Successful \n\r";
 
-	/* SW Timer used to trigger main loop. */
-	(void)d_TIMER_Configure(d_TIMER_TTC0_0, d_FALSE, 0);
-	(void)d_TIMER_Options(d_TIMER_TTC0_0, d_TRUE);
+	uart_write(UART_DEBUG_CONSOLE, (uint8_t*)init_start_msg, sizeof(init_start_msg));
 
 	/* Free running Utility Timer */
 	/* Timer frequency = 100 MHz / 64 = 1.5625 MHz */
@@ -57,6 +60,7 @@ void sys_boot(void)
 	/* Wrap time = 4,294,967,296 × 0.64 µs = 2,748,364.8 ms = 2,748.3648 s = approx 45 minutes */
 	d_TIMER_Initialise();
 	fcuInit = d_FCU_Initialise();
+
 	iocAOnline = d_FCU_IocOnline(d_FCU_IOC_A);
 	iocBOnline = d_FCU_IocOnline(d_FCU_IOC_B);
 
@@ -74,7 +78,7 @@ void sys_boot(void)
 		d_INT_IrqDeviceInitialise();
 
 	}
-	
+
 	return;
 }
 
@@ -99,13 +103,24 @@ void sys_boot(void)
 void sys_set_tick_period(uint64_t timer_tick_period)
 {
 	
-	(void)d_TIMER_Interval(d_TIMER_TTC0_0, timer_tick_period - 1);
-	(void)d_TIMER_Start(d_TIMER_TTC0_0);
-	(void)d_TIMER_InterruptEnable(d_TIMER_TTC0_0, d_TIMER_INTERRUPT_INTERVAL);
+	/* SW Timer used to trigger main loop. */
+	(void)d_TIMER_Configure(LOOP_TIMER, d_FALSE, 0);
+	(void)d_TIMER_Options(LOOP_TIMER, d_TRUE);
+	(void)d_TIMER_Interval(LOOP_TIMER, timer_tick_period - 1);
+	(void)d_TIMER_Start(LOOP_TIMER);
+	(void)d_TIMER_InterruptEnable(LOOP_TIMER, d_TIMER_INTERRUPT_INTERVAL);
+
+	/* Initialize IRQ */
+	d_INT_IrqDeviceInitialise();
+
 	d_INT_IrqSetPriorityTriggerType(XPS_TTC0_0_INT_ID, 224, d_INT_RISING_EDGE);
+	d_INT_IrqSetPriorityTriggerType(XPAR_FABRIC_SYNCHRONISER_IRQ_INTR, 232, d_INT_RISING_EDGE);
 
 	/* Enable all interrupt once timer initialization is done*/
 	d_INT_Enable();
+
+	/* Enable interrupt */
+    d_INT_IrqEnable(XPS_TTC0_0_INT_ID);
 
 	return;
 

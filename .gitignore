@@ -35,4 +35,4 @@
 *.txt
 
 # export folder
-.export/
+export/
