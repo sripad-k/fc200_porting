@@ -29,6 +29,7 @@
 #include "sru/spi_pl/d_spi_pl.h"
 #include "soc/discrete/d_discrete.h"
 #include "driver/gnss/d_gnss_ublox.h"
+#include "bsp_srv/interface/sys_srv_interface.h"
 
 /* Include here any header files containing interrupt handler function definitions */
 //#include "TestDiscretePl.h"
@@ -116,7 +117,7 @@ const d_INT_IrqVectorTable_t IrqVectorTable[MAXIMUM_IRQ] =
      {NULL, 0},                          /* 65 - */
      {NULL, 0},                          /* 66 - */
      {NULL, 0},                          /* 67 - */
-     {NULL, 0},                   /* 68 - XPS_TTC0_0_INT_ID */
+     {sys_tickHandler, 0},                   		 /* 68 - XPS_TTC0_0_INT_ID */
      {NULL, 0},                          /* 69 - XPS_TTC0_1_INT_ID */
      {NULL, 0},                          /* 70 - XPS_TTC0_2_INT_ID */
      {NULL, 0},                          /* 71 - XPS_TTC1_0_INT_ID */

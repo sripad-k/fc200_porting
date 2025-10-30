@@ -1,3 +1,5 @@
+#ifndef TYPES_H
+#define TYPES_H
 // #include "stdint.h"
 //#include "stdbool.h"
 #include "soc/defines/d_common_types.h"
@@ -12,6 +14,24 @@ typedef Int32_t     int32_t;
 typedef Uint32_t    uint32_t;
 typedef Int64_t     int64_t;
 typedef Uint64_t    uint64_t;
+
+// Set the guards that _stdint.h checks for
+// This prevents _stdint.h from redefining these types
+#define _INT8_T_DECLARED
+#define _UINT8_T_DECLARED
+#define __int8_t_defined 1
+
+#define _INT16_T_DECLARED
+#define _UINT16_T_DECLARED
+#define __int16_t_defined 1
+
+#define _INT32_T_DECLARED
+#define _UINT32_T_DECLARED
+#define __int32_t_defined 1
+
+#define _INT64_T_DECLARED
+#define _UINT64_T_DECLARED
+#define __int64_t_defined 1
 
 typedef Bool_t bool;           // typedef the type
 #define false d_FALSE          // alias the literal
@@ -36,3 +56,5 @@ typedef Bool_t bool;           // typedef the type
 #define INT64_MAX   9223372036854775807LL
 #define INT64_MIN   (-9223372036854775807LL - 1)
 #define UINT64_MAX  18446744073709551615ULL
+
+#endif
