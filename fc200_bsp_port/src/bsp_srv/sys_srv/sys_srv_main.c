@@ -6,7 +6,7 @@
  ****************************************************/
 
 #include "sys_srv_main.h"
-#include "bsp_srv/interface/uart_interface.h"
+#include "uart_interface.h"
 #include "sru/fcu/d_fcu.h"
 #include "soc/timer/d_timer.h"
 #include "soc/timer/d_timer_counter.h"
@@ -103,6 +103,9 @@ void sys_set_tick_period(uint64_t timer_tick_period)
 	(void)d_TIMER_Start(d_TIMER_TTC0_0);
 	(void)d_TIMER_InterruptEnable(d_TIMER_TTC0_0, d_TIMER_INTERRUPT_INTERVAL);
 	d_INT_IrqSetPriorityTriggerType(XPS_TTC0_0_INT_ID, 224, d_INT_RISING_EDGE);
+
+	/* Enable all interrupt once timer initialization is done*/
+	d_INT_Enable();
 
 	return;
 

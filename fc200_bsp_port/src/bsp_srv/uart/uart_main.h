@@ -9,6 +9,6 @@
 #define H_UART_MAIN
 
 
-#include "bsp_srv/interface/uart_interface.h"
+#include "uart_interface.h"
 
 #endif /*!defined(H_UART_MAIN)*/

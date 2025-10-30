@@ -9,7 +9,7 @@
 #define H_SYS_SRV_MAIN
 
 
-#include "bsp_srv/interface/sys_srv_interface.h"
+#include "sys_srv_interface.h"
 
 
 #endif /*!defined(H_SYS_SRV_MAIN)*/

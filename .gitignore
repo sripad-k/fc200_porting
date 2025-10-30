@@ -30,3 +30,9 @@
 
 # Analytics files
 .analytics
+
+# Text files
+*.txt
+
+# export folder
+.export/

@@ -1,7 +1,0 @@
-/*136T-2200-113050-001-F11-02*/
-the_ROM_image:
-{
-  [bootloader, destination_cpu=a53-0]<136T-2200-113050-001-F11-02/boot/fsbl.elf>
-  [destination_device=pl] <bitstream>
-  [destination_cpu=r5-0] <elf,psu_cortexr5_0>
-}
