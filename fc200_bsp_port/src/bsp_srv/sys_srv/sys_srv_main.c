@@ -159,7 +159,7 @@ void sys_sleep(void)
 	while (!TaskEventFlag)
 	{
 		/* Do nothing for this time */
-		DO_NOTHING();
+		;
 	}
 	/* Calculate elapsed time in milliseconds */
 	ElapsedTicksinMillisec = d_TIMER_ElapsedMilliseconds(startTime, NULL);

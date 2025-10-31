@@ -152,4 +152,7 @@ d_Status_t d_CAN_RegisterRead(const Uint32_t channel, const Uint32_t regOffset, 
 /* Write a CAN register */
 d_Status_t d_CAN_RegisterWrite(const Uint32_t channel, const Uint32_t regOffset, const Uint32_t value);
 
+/* Program CAN Filtering on a single ID or a range of IDs */
+d_Status_t d_CAN_ProgramCanIdFilter(const Uint32_t channel, Bool_t isSingleIdFilter, const d_CAN_Message_t *const pCanId, const d_CAN_Message_t *const pCanIdRangeEnd);
+
 #endif /* CAN_H */

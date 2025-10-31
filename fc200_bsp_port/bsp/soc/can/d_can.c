@@ -38,6 +38,9 @@
 #include "d_can_cfg.h"
 #include "d_can_hw.h"
 
+#define MAX_CAN_FILTER_PAIRS (4)
+#define SINGLE_ID_AFMR_MASK (0xFFFFFFFFu)
+
 /***** Macros ***********************************************************/
 
 /* Read a CAN register */
@@ -54,6 +57,34 @@ typedef struct
 {
   Bool_t initialised;
 } ChannelStatus_t;
+
+typedef struct
+{
+  Bool_t filterUsed;
+  const Uint32_t AfmrRegOffset;
+  const Uint32_t AfirRegOffset;
+  Uint32_t AfmrMask;
+  Uint32_t AfirMask;
+} AcceptanceFilter_t;
+
+/* Define the CAN filters available */
+AcceptanceFilter_t CanFilters[d_CAN_MAX_INTERFACES][MAX_CAN_FILTER_PAIRS] =
+{
+  {
+    {d_FALSE, d_CAN_REGISTER_AFMR1_OFFSET, d_CAN_REGISTER_AFIR1_OFFSET, 0u, 0u},
+    {d_FALSE, d_CAN_REGISTER_AFMR2_OFFSET, d_CAN_REGISTER_AFIR2_OFFSET, 0u, 0u},
+    {d_FALSE, d_CAN_REGISTER_AFMR3_OFFSET, d_CAN_REGISTER_AFIR3_OFFSET, 0u, 0u},
+    {d_FALSE, d_CAN_REGISTER_AFMR4_OFFSET, d_CAN_REGISTER_AFIR4_OFFSET, 0u, 0u}
+  },
+
+  {
+    {d_FALSE, d_CAN_REGISTER_AFMR1_OFFSET, d_CAN_REGISTER_AFIR1_OFFSET, 0u, 0u},
+    {d_FALSE, d_CAN_REGISTER_AFMR2_OFFSET, d_CAN_REGISTER_AFIR2_OFFSET, 0u, 0u},
+    {d_FALSE, d_CAN_REGISTER_AFMR3_OFFSET, d_CAN_REGISTER_AFIR3_OFFSET, 0u, 0u},
+    {d_FALSE, d_CAN_REGISTER_AFMR4_OFFSET, d_CAN_REGISTER_AFIR4_OFFSET, 0u, 0u}
+  },
+};
+
 
 /***** Constants ********************************************************/
 
@@ -752,6 +783,129 @@ const Uint32_t value              /**< [in] Value to write */
   d_GEN_RegisterWrite(d_CAN_Config[channel].baseAddress + regOffset, value);
 
   return d_STATUS_SUCCESS;
+}
+
+/*********************************************************************/ /**
+   <!-- d_CAN_ProgramCanIdFilter -->
+
+   Program a single ID or range ID acceptance filter.
+ *************************************************************************/
+d_Status_t d_CAN_ProgramCanIdFilter
+(
+    const Uint32_t channel,                       /**< [in] CAN channel number */
+    Bool_t isSingleIdFilter,                      /**< [in] d_TRUE for single ID filter, d_FALSE for range filter */
+    const d_CAN_Message_t *const pCanId,          /**< [in] Pointer to CAN ID for single ID filter or start of range filter */
+    const d_CAN_Message_t *const pCanIdRangeEnd   /**< [in] Pointer to CAN ID for end of range filter */
+)
+{
+  d_Status_t status = d_STATUS_SUCCESS;
+  Uint8_t filterIndex = MAX_CAN_FILTER_PAIRS; // Invalid index
+  Uint32_t reg_value = 0u;
+  Uint32_t Afr = 0u;
+  Uint32_t can_id_start = 0u;
+  Uint32_t can_id_end = 0u;
+  Uint8_t AccFilterID = 0;
+
+  /* Check for available filter */
+  while ((AccFilterID < MAX_CAN_FILTER_PAIRS) && (CanFilters[channel][AccFilterID].filterUsed != d_FALSE))
+  {
+    AccFilterID++;
+  }
+
+  filterIndex = AccFilterID;
+
+  /* All filters on this channel are exhausted */
+  if (filterIndex == MAX_CAN_FILTER_PAIRS)
+  {
+    /* Log no available filter error */
+    d_ERROR_Logger(d_STATUS_LIMIT_EXCEEDED, d_ERROR_CRITICALITY_UNKNOWN, filterIndex, channel, 0, 0);
+    return d_STATUS_LIMIT_EXCEEDED;
+  }
+
+  /* Compute the mask (AFMR) and the filter id (AFIR) values */
+  if (isSingleIdFilter == d_TRUE)
+  {
+    /* Configure the Mask and Filter for the Single ID to ensure strictly only the specific RX CAN ID is stored in RXFIFO */
+    CanFilters[channel][filterIndex].AfmrMask = SINGLE_ID_AFMR_MASK;
+
+    if( pCanId == NULL )
+    {
+      d_ERROR_Logger(d_STATUS_INVALID_PARAMETER, d_ERROR_CRITICALITY_CRITICAL_SHUTDOWN, 2, 0, 0, 0);
+      return d_STATUS_INVALID_PARAMETER;
+    }
+
+    /* Compute the complete Arbitration Field of the CAN ID to be filtered */
+    CanFilters[channel][filterIndex].AfirMask = d_CAN_CreateIdValue(pCanId->id, pCanId->substituteRemoteTxRequest,
+                                       pCanId->extended, pCanId->exId, pCanId->remoteTxRequest);
+  }
+  else
+  {
+
+    if( (pCanId == NULL) || (pCanIdRangeEnd == NULL) )
+    {
+      d_ERROR_Logger(d_STATUS_INVALID_PARAMETER, d_ERROR_CRITICALITY_CRITICAL_SHUTDOWN, 2, 0, 0, 0);
+      return d_STATUS_INVALID_PARAMETER;
+    }
+
+    /* Compute the complete Arbitration Field of the Starting CAN ID */
+    can_id_start = d_CAN_CreateIdValue(pCanId->id, pCanId->substituteRemoteTxRequest,
+                                       pCanId->extended, pCanId->exId, pCanId->remoteTxRequest);
+
+    /* Compute the complete Arbitration Field of the CAN ID in the end of this range */
+    can_id_end = d_CAN_CreateIdValue(pCanIdRangeEnd->id, pCanIdRangeEnd->substituteRemoteTxRequest,
+                                       pCanIdRangeEnd->extended, pCanIdRangeEnd->exId, pCanIdRangeEnd->remoteTxRequest);
+
+    /* Configure the Mask and Filter for the Range of IDs to ensure only the CAN IDs in this range are stored in RXFIFO */
+    CanFilters[channel][filterIndex].AfmrMask = ~(can_id_start ^ can_id_end);
+    CanFilters[channel][filterIndex].AfirMask = (can_id_start & can_id_end);
+  }
+
+  /* Read the can.AFR register to restore the previous state later */
+  d_CAN_RegisterRead(channel, d_CAN_REGISTER_AFR_OFFSET, &Afr);
+
+  /* Disable acceptance filters. Write a 0 to the can.AFR register.*/
+  d_CAN_RegisterWrite(channel, d_CAN_REGISTER_AFR_OFFSET, 0);
+
+
+  do
+  {
+    /* Wait for the filter to not be busy. Poll the can.SR[ACFBSY] bit for a 0.*/
+    status = d_CAN_RegisterRead(channel, d_CAN_REGISTER_SR_OFFSET, &reg_value);
+
+    /* TBD: Must be guarded by a timeout */
+  } while (((reg_value & d_CAN_SR_ACFBSY_MASK) != 0u) && (status == d_STATUS_SUCCESS));
+
+  /* if can.SR[ACFBSY] bit = 0 */
+  if (status == d_STATUS_SUCCESS)
+  {
+    /* Write a filter mask and ID. Write to a pair of AFMR and AFIR registers */
+    d_Status_t afmr_write_status =
+    d_CAN_RegisterWrite(channel, CanFilters[channel][filterIndex].AfmrRegOffset, CanFilters[channel][filterIndex].AfmrMask);
+    d_Status_t afir_write_status =
+    d_CAN_RegisterWrite(channel, CanFilters[channel][filterIndex].AfirRegOffset, CanFilters[channel][filterIndex].AfirMask);
+
+    /* Check if both writes were successful */
+    if( afmr_write_status != d_STATUS_SUCCESS || afir_write_status != d_STATUS_SUCCESS )
+    {
+      status = d_STATUS_FAILURE;
+    }
+    else
+    {
+      /* Restore UAF with previously retrieved setting along with the current change */
+      Afr |= (1u << filterIndex);
+      /* Restore the can.AFR register to the previous state */
+      status = d_CAN_RegisterWrite(channel, d_CAN_REGISTER_AFR_OFFSET, Afr);
+      /* Mark this filter as used */
+      CanFilters[channel][filterIndex].filterUsed = d_TRUE;
+    }
+  }
+  else
+  {
+    /* return status error */
+    status = d_STATUS_FAILURE;
+  }
+
+  return status;
 }
 
 /*********************************************************************//**
