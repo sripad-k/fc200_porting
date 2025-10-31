@@ -10,6 +10,8 @@
 #include "soc/can/d_can.h"
 #include "sru/can_holt/d_can_holt.h"     /* Discrete driver */
 #include "sru/can_holt/d_can_holt_cfg.h" /* Discrete driver config */
+#include "xcanps.h"
+#include "soc/interrupt_manager/d_int_irq_handler.h"
 
 // Masks for extracting ID components
 #define CAN_BASE_ID_MASK (0x7FFU)       // 11 bits: 0b11111111111
@@ -63,6 +65,8 @@ can_status_t can_init(can_channel_t can_ch)
                 if (d_CAN_ModeSet(can_ch, d_CAN_MODE_NORMAL) == d_STATUS_SUCCESS)
                 {
                     CanInitialized[can_ch] = true;
+//                    d_CAN_InterruptEnable(can_ch, XCANPS_IXR_RXFWMFLL_MASK);
+//                    d_INT_IrqEnable(d_CAN_Config[can_ch].interruptNumber);
                 }
             }
             else
@@ -196,6 +200,39 @@ can_status_t can_read(can_channel_t can_ch, can_msg_t *ptr_can_msg)
     if (can_ch >= CAN_CHANNEL_MAX || ptr_can_msg == NULL)
     {
         status = CAN_ERROR;
+    }
+    else
+    {
+        if (can_ch <= CAN_CHANNEL_2)
+        {
+            /* Receive the CAN message from MPSoC PS CAN Controller */
+            drv_status = d_CAN_ReceiveMessage(can_ch, &rxMessage);
+        }
+        else
+        {
+            /* Receive the CAN message from CAN HOLT Devices after remapping the channel number */
+            drv_status = d_CAN_HOLT_ReceiveMessage(can_ch - CAN_CHANNEL_3, (d_CAN_HOLT_Message_t *)&rxMessage);
+        }
+
+        if (drv_status == d_STATUS_SUCCESS)
+        {
+            /* Prepare the received CAN message */
+            ptr_can_msg->is_extended_id = (rxMessage.extended == d_TRUE) ? true : false;
+            ptr_can_msg->can_msg_id = ((rxMessage.id & CAN_BASE_ID_MASK) << CAN_EXTENDED_BIT_LEN) |
+                                      (rxMessage.exId & CAN_EXTENDED_ID_MASK);
+            ptr_can_msg->is_remote_frame = (rxMessage.remoteTxRequest == d_TRUE) ? true : false;
+            ptr_can_msg->dlc = rxMessage.dataLength;
+
+            /* Copy the data bytes */
+            for (uint8_t byte_id = 0; byte_id < rxMessage.dataLength; byte_id++)
+            {
+                ptr_can_msg->data[byte_id] = rxMessage.data[byte_id];
+            }
+        }
+        else
+        {
+            status = CAN_ERROR;
+        }
     }
 
     return status;

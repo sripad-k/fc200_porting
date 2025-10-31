@@ -50,6 +50,8 @@ can_msg_t tx5Message = {
   .is_remote_frame = false
 };
 
+can_msg_t rxMessage[10];
+
 Int32_t main()
 {
 
@@ -74,20 +76,35 @@ Int32_t main()
     sys_set_tick_period(1000000); // Set tick period to 1000 timer units (1 ms)
     while(1)
     {
-        // Main loop
-    	if(count == 0)
-    	{
+    	// Main loop
+//    	if(count == 0)
+//    	{
     		can_write(CAN_CHANNEL_1, &tx1Message);
     		can_write(CAN_CHANNEL_2, &tx2Message);
     		can_write(CAN_CHANNEL_3, &tx3Message);
     		can_write(CAN_CHANNEL_4, &tx4Message);
     		can_write(CAN_CHANNEL_5, &tx5Message);
+
+//    	}
+
+		/* Reset all RX messages */
+		for( uint8_t i = 0; i < 10; i++ )
+		{
+			rxMessage[i] = (can_msg_t){0};
+		}
+
+    	//      if(count == 5)
+    	//      {
+    	for( uint8_t i = 0; i < 10; i++ )
+    	{
+    		can_read( CAN_CHANNEL_1, &rxMessage[i] );
     	}
+    	//      }
 
     	count = (count + 1) % 10;
-//        uart_write(UART_DEBUG_CONSOLE, (uint8_t*)loop_msg, sizeof(loop_msg));
-        sys_sleep();
-//    	d_TIMER_DelayMilliseconds(10);
+    	//        uart_write(UART_DEBUG_CONSOLE, (uint8_t*)loop_msg, sizeof(loop_msg));
+    	sys_sleep();
+    	//    	d_TIMER_DelayMilliseconds(10);
 
 
     }
