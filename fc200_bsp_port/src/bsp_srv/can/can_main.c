@@ -238,7 +238,10 @@ can_status_t can_read(can_channel_t can_ch, can_msg_t *ptr_can_msg)
     return status;
 }
 
-// can_status_t can_set_filter(can_channel_t can_ch, bool is_single_id_filter, const uint32_t *const start_id, const uint32_t *const end_id)
-//{
-//     return CAN_OK;
-// }
+/* IMPORTANT: CAN Filter Cannot be set once initialized to normal mode - 
+   Filter settings must be performed in the init and before mode is set to normal*/
+   can_status_t can_set_filter(can_channel_t can_ch, bool is_single_id_filter, 
+	                        const uint32_t *const start_id, const uint32_t *const end_id)
+{
+    return CAN_OK;
+}
