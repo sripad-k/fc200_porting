@@ -21,6 +21,7 @@ typedef enum
 
 
 void udp_setup_server(void);
+void udp_sync_periodic(void);
 void udp_send_gcs(const uint8_t *buffer, uint32_t len);
 void udp_send_rpi(const uint8_t *buffer, uint32_t len);
 void udp_send_pil(const uint8_t *buffer, uint32_t len);

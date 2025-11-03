@@ -6,11 +6,12 @@
  ****************************************************/
 
 #include "udp_main.h"
+#include "uart_interface.h"
 #include "sru/flash_mac/d_flash_mac.h"
 #include "sru/qspiFlash/d_qspiFlash.h"
 #include "sru/ethernet/d_eth_interface.h"
 #include "xparameters.h"
-#include "uart_interface.h"
+#include "sru/fcu/d_fcu.h"
 
 /* IPV4 address type */
 typedef uint32_t Ipv4Addr_t;
@@ -69,6 +70,13 @@ void udp_setup_server(void)
     eth_initialise();
 }
 
+
+void udp_sync_periodic (void)
+{
+	d_ETH_TickFast();
+}
+
+
 void udp_send_gcs(const uint8_t *buffer, uint32_t len)
 {
 }
@@ -116,7 +124,7 @@ static d_Status_t eth_initialise(void)
     uint32_t mySlotNum = d_FCU_SlotNumber();
     const char ioc_a_success[80] = "\n\rITB Interface setup (via IOC A) done.\n\r";
     const char ioc_b_success[80] = "\n\rITB Interface setup (via IOC B) done.\n\r";
-    const char fcu_internal_success[80] = "\n\rFCU to FCU Internal Interface setup done.\n\r";
+//    const char fcu_internal_success[80] = "\n\rFCU to FCU Internal Interface setup done.\n\r";
     const char primary_internal_success[80] = "\n\rFCU to FCU Primary Internal Interface setup done.\n\r";
     const char backup_internal_success[80] = "\n\rFCU to FCU Backup Internal Interface setup done.\n\r";
 

@@ -21,39 +21,6 @@ can_msg_t tx1Message = {
   .is_remote_frame = false
 };
 
-can_msg_t tx2Message = {
-  .can_msg_id = 0xA400082,
-  .data = {0xFC, 0xC2, 0xDF, 0xCC, 0xCA, 0xFE, 0xBA, 0xBE},
-  .dlc = 8,
-  .is_extended_id = true,
-  .is_remote_frame = false
-};
-
-
-can_msg_t tx3Message = {
-  .can_msg_id = 0xA400083,
-  .data = {0xFC, 0xC3, 0xDF, 0xCC, 0xCA, 0xFE, 0xBA, 0xBE},
-  .dlc = 8,
-  .is_extended_id = true,
-  .is_remote_frame = false
-};
-
-can_msg_t tx4Message = {
-  .can_msg_id = 0xA400084,
-  .data = {0xFC, 0xC4, 0xDF, 0xCC, 0xCA, 0xFE, 0xBA, 0xBE},
-  .dlc = 8,
-  .is_extended_id = true,
-  .is_remote_frame = false
-};
-
-can_msg_t tx5Message = {
-  .can_msg_id = 0xA400085,
-  .data = {0xFC, 0xC5, 0xDF, 0xCC, 0xCA, 0xFE, 0xBA, 0xBE},
-  .dlc = 8,
-  .is_extended_id = true,
-  .is_remote_frame = false
-};
-
 can_msg_t rxMessage[10];
 
 Int32_t main()
@@ -64,15 +31,8 @@ Int32_t main()
 	/* FC-200 initialization */
     sys_boot();
     can_init(CAN_CHANNEL_1);
-//    can_init(CAN_CHANNEL_2);
-//    can_init(CAN_CHANNEL_3);
-//    can_init(CAN_CHANNEL_4);
-//    can_init(CAN_CHANNEL_5);
     /* Init debug UART */
     uart_init(UART_DEBUG_CONSOLE);
-
-
-
 
     /* Message over the UART */
     const Char_t hello_message[80] = "\n\rHello, this is the FC-200.\n\r";
@@ -84,18 +44,13 @@ Int32_t main()
     udp_setup_server();
     while(1)
     {
-
-    	d_ETH_TickFast();
+    	/* Call periodically to check if UDP messages are received */
+    	udp_sync_periodic();
 
     	// Main loop
 //    	if(count == 0)
 //    	{
     		can_write(CAN_CHANNEL_1, &tx1Message);
-    		can_write(CAN_CHANNEL_2, &tx2Message);
-    		can_write(CAN_CHANNEL_3, &tx3Message);
-    		can_write(CAN_CHANNEL_4, &tx4Message);
-    		can_write(CAN_CHANNEL_5, &tx5Message);
-
 //    	}
 
 		/* Reset all RX messages */
