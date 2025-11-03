@@ -1,8 +1,8 @@
 /****************************************************
- *  sys_srv_main.c                                         
- *  Created on: 25-Aug-2025 10:25:57 AM                      
- *  Implementation of the Class sys_srv_main       
- *  Copyright: LODD (c) 2025                     
+ *  sys_srv_main.c
+ *  Created on: 25-Aug-2025 10:25:57 AM
+ *  Implementation of the Class sys_srv_main
+ *  Copyright: LODD (c) 2025
  ****************************************************/
 
 #include "sys_srv_main.h"
@@ -30,7 +30,7 @@ static const d_Timer_t LOOP_TIMER = d_TIMER_TTC0_0;
  *
  * Timer Configuration Details:
  * - Timer frequency: 100 MHz / 64 = 1.5625 MHz
- * - Tick duration: 640 ns (0.64 µs)
+ * - Tick duration: 640 ns (0.64 ï¿½s)
  * - 32-bit counter wraparound time: approximately 45 minutes
  *
  * @param None
@@ -42,22 +42,24 @@ static const d_Timer_t LOOP_TIMER = d_TIMER_TTC0_0;
 void sys_boot(void)
 {
 
-	const Char_t error_msg[80]      = "\n\r !!!! FC-200 Initialization Failed !!!! \n\r";
-	const Char_t success_msg[80]    = "\n\r **** FC-200 Initialization Successful ****\n\r";
+	const Char_t error_msg[80] = "\n\r !!!! FC-200 Initialization Failed !!!! \n\r";
+	const Char_t success_msg[80] = "\n\r **** FC-200 Initialization Successful ****\n\r";
 	const Char_t init_start_msg[80] = "\n\r **** FC-200 Initialization Started **** \n\r";
 
 	d_Status_t fcuInit;
 	bool iocAOnline;
 	bool iocBOnline;
+	int32_t currSelectedMaster = 0;
+	uint32_t slotNumber = 0;
 
-	uart_write(UART_DEBUG_CONSOLE, (uint8_t*)init_start_msg, sizeof(init_start_msg));
+	uart_write(UART_DEBUG_CONSOLE, (uint8_t *)init_start_msg, sizeof(init_start_msg));
 
 	/* Free running Utility Timer */
 	/* Timer frequency = 100 MHz / 64 = 1.5625 MHz */
-	/* Tick duration = 1 / 1,562,500 Hz = 0.64 µs = 640 ns */
+	/* Tick duration = 1 / 1,562,500 Hz = 0.64 ï¿½s = 640 ns */
 	/* Calculation of Wraparound Time for a 32-bit integer */
 	/* 32-bit counter max = 2^32 = 4,294,967,296 ticks */
-	/* Wrap time = 4,294,967,296 × 0.64 µs = 2,748,364.8 ms = 2,748.3648 s = approx 45 minutes */
+	/* Wrap time = 4,294,967,296 ï¿½ 0.64 ï¿½s = 2,748,364.8 ms = 2,748.3648 s = approx 45 minutes */
 	d_TIMER_Initialise();
 	fcuInit = d_FCU_Initialise();
 
@@ -65,18 +67,70 @@ void sys_boot(void)
 	iocBOnline = d_FCU_IocOnline(d_FCU_IOC_B);
 
 	/* Check if all components are online */
-	if((fcuInit != d_STATUS_SUCCESS) || (iocAOnline == false) || (iocBOnline == false))
+	if ((fcuInit != d_STATUS_SUCCESS) || (iocAOnline == false) || (iocBOnline == false))
 	{
 		/* send initialization error message */
-		uart_write(UART_DEBUG_CONSOLE, (uint8_t*)error_msg, sizeof(error_msg));
-
+		uart_write(UART_DEBUG_CONSOLE, (uint8_t *)error_msg, sizeof(error_msg));
 	}
 	else
 	{
 		/* Initialization successful message */
-		uart_write(UART_DEBUG_CONSOLE, (uint8_t*)success_msg, sizeof(success_msg));
+		uart_write(UART_DEBUG_CONSOLE, (uint8_t *)success_msg, sizeof(success_msg));
 		d_INT_IrqDeviceInitialise();
+	}
 
+	if (d_FCU_IocOnline(d_FCU_IOC_A) == d_TRUE)
+	{
+		uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"\n\rIOC-A is Online.\n\r", 21);
+	}
+	else
+	{
+		uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"\n\rIOC-A is Offline.\n\r", 22);
+	}
+
+	if (d_FCU_IocOnline(d_FCU_IOC_B) == d_TRUE)
+	{
+		uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"\n\rIOC-B is Online.\n\r", 21);
+	}
+	else
+	{
+		uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"\n\rIOC-B is Offline.\n\r", 22);
+	}
+
+	/* Read Slot Number */
+	slotNumber = d_FCU_SlotNumber();
+
+	/* Read Master/Slave */
+	currSelectedMaster = d_FCU_GetMaster();
+
+	/* Set Master/Slave based on Slot Number and current selection */
+	if (slotNumber == 0)
+	{
+		/* Set FCU1 as Master/Slave */
+		if (currSelectedMaster == 0)
+		{
+			uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"\n\rFCU1 Selected as Sync master.\n\r", 34);
+			d_FCU_SetMaster();
+		}
+		else
+		{
+			uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"\n\rFCU1 Selected as Sync Slave.\n\r", 34);
+			d_FCU_SetSlave();
+		}
+	}
+	else
+	{
+		/* Set FCU2 as Master/Slave */
+		if (currSelectedMaster == 1)
+		{
+			uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"\n\rFCU2 Selected as Sync master.\n\r", 34);
+			d_FCU_SetMaster();
+		}
+		else
+		{
+			uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"\n\rFCU2 Selected as Sync Slave.\n\r", 34);
+			d_FCU_SetSlave();
+		}
 	}
 
 	return;
@@ -102,7 +156,7 @@ void sys_boot(void)
  */
 void sys_set_tick_period(uint64_t timer_tick_period)
 {
-	
+
 	/* SW Timer used to trigger main loop. */
 	(void)d_TIMER_Configure(LOOP_TIMER, d_FALSE, 0);
 	(void)d_TIMER_Options(LOOP_TIMER, d_TRUE);
@@ -120,10 +174,9 @@ void sys_set_tick_period(uint64_t timer_tick_period)
 	d_INT_Enable();
 
 	/* Enable interrupt */
-    d_INT_IrqEnable(XPS_TTC0_0_INT_ID);
+	d_INT_IrqEnable(XPS_TTC0_0_INT_ID);
 
 	return;
-
 }
 
 /**
@@ -167,8 +220,7 @@ void sys_sleep(void)
 	TaskEventFlag = false;
 
 	return;
-	
-} 
+}
 
 /**
  * @brief Tick interrupt handler for system timer
@@ -207,4 +259,3 @@ void sys_tickHandler(const Uint32_t parameter)
 
 	return;
 }
-

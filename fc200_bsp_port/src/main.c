@@ -1,13 +1,17 @@
 #include "type.h"
-#include "uart_interface.h"
-#include "can_interface.h"
 #include "soc/timer/d_timer.h"
-#include "sys_srv_interface.h"
-
 #include "soc/can/d_can_cfg.h"
 #include "soc/can/d_can.h"
+
 #include "sru/can_holt/d_can_holt.h"	 /* Discrete driver */
 #include "sru/can_holt/d_can_holt_cfg.h" /* Discrete driver config */
+#include "sru/ethernet/d_eth_interface.h"
+
+#include "sys_srv_interface.h"
+#include "uart_interface.h"
+#include "can_interface.h"
+#include "udp_interface.h"
+
 
 can_msg_t tx1Message = {
   .can_msg_id = 0xA400081,
@@ -60,22 +64,29 @@ Int32_t main()
 	/* FC-200 initialization */
     sys_boot();
     can_init(CAN_CHANNEL_1);
-    can_init(CAN_CHANNEL_2);
-    can_init(CAN_CHANNEL_3);
-    can_init(CAN_CHANNEL_4);
-    can_init(CAN_CHANNEL_5);
+//    can_init(CAN_CHANNEL_2);
+//    can_init(CAN_CHANNEL_3);
+//    can_init(CAN_CHANNEL_4);
+//    can_init(CAN_CHANNEL_5);
     /* Init debug UART */
     uart_init(UART_DEBUG_CONSOLE);
 
 
+
+
     /* Message over the UART */
     const Char_t hello_message[80] = "\n\rHello, this is the FC-200.\n\r";
-    const Char_t loop_msg[80] = "\n\r Main Loop \n\r";
+//    const Char_t loop_msg[80] = "\n\r Main Loop \n\r";
 
     uart_write(UART_DEBUG_CONSOLE, (uint8_t*)hello_message, sizeof(hello_message));
     sys_set_tick_period(1000000); // Set tick period to 1000 timer units (1 ms)
+
+    udp_setup_server();
     while(1)
     {
+
+    	d_ETH_TickFast();
+
     	// Main loop
 //    	if(count == 0)
 //    	{
