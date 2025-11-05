@@ -21,10 +21,14 @@ can_msg_t tx1Message = {
 
 can_msg_t rxMessage[10];
 
+
+
 Int32_t main()
 {
 
 	static uint64_t count = 0;
+	static uint32_t len = 0;
+	uint8_t buffer[2048] = {0};
 
 	/* FC-200 initialization */
 	sys_boot();
@@ -70,6 +74,9 @@ Int32_t main()
 		{
 			can_read(CAN_CHANNEL_1, &rxMessage[i]);
 		}
+
+
+		udp_receive(&buffer[0], &len, UDP_SRC_GCS);
 		//      }
 
 		count = (count + 1) % 200;

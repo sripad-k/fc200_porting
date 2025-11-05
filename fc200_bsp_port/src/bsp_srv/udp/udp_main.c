@@ -47,10 +47,8 @@ typedef enum
     // LP_ = Listen Port
     DST_PORT_IOCA_GCS = 0,     // External interface via switch on IOCA
     DST_PORT_IOCA_RPI,         // External interface via switch on IOCA
-    DST_PORT_IOCA_PIL,         // External interface via switch on IOCA
     DST_PORT_IOCB_GCS,         // External interface via switch on IOCB
     DST_PORT_IOCB_RPI,         // External interface via switch on IOCB
-    DST_PORT_IOCB_PIL,         // External interface via switch on IOCB
     DST_PORT_FCUPRIMARY,       // Primary interface FCU to FCU comms
     DST_PORT_FCUBACKUP,        // Backup interface FCU to FCU comms
     DST_PORT_FCU_VIA_IOCA,     // Internal FCU to FCU comms via the switch on the IOCA
@@ -64,11 +62,9 @@ const udpportconfig_t UdpPortConfig[DST_PORT_COUNT] =
   /* OCT1 OCT2 OCT3 OCT4  RXPORT TXPORT */
     {192, 168,  69,   5,  14501, 14501},    /* DST_PORT_IOCA_GCS     */
     {192, 168,  69, 120,   8000,  8000},    /* DST_PORT_IOCA_RPI     */
-    {192, 168,  69, 101,  14503, 14503},    /* DST_PORT_IOCA_PIL     */
 
     {192, 168,  69,   6,  15501, 15501},    /* DST_PORT_IOCB_GCS     */
     {192, 168,  69, 121,   8000,  8000},    /* DST_PORT_IOCB_RPI     */
-    {192, 168,  69, 101,  15503, 15503},    /* DST_PORT_IOCB_PIL     */
 
     {192, 168,  69,  51,   4000,  4000},    /* DST_PORT_FCUPRIMARY   */ 
     {192, 168,  69,  52,   4000,  4000},    /* DST_PORT_FCUBACKUP    */
@@ -81,9 +77,18 @@ const udpportconfig_t UdpPortConfig[DST_PORT_COUNT] =
 
 eth_if_port_def_t ListenPortArray[DST_PORT_COUNT];
 
-uint8_t GcsRxDataPool[BUFF_SIZE] = {0};
-uint8_t RpiRxDataPool[BUFF_SIZE] = {0};
-uint8_t PilRxDataPool[BUFF_SIZE] = {0};
+typedef struct {
+    uint8_t  data[BUFF_SIZE];
+    uint16_t length;
+    bool     valid;
+} udp_rx_buffer_t;
+
+
+static udp_rx_buffer_t GcsRxBufferA = { .valid = false };
+// Since we received data only from GCS - The double buffering would be implemented if necessary
+// static udp_rx_buffer_t GcsRxBufferB = { .valid = false };
+// static volatile udp_rx_buffer_t *GcsWriteBuffer;
+// static volatile udp_rx_buffer_t *GcsReadBuffer;
 
 static void display_mac(uint8_t mac_ethernet_address[6]);
 static void convert_uint8_to_char(const uint8_t value, char *str);
@@ -96,12 +101,6 @@ static void receivecallback_via_ioca_gcs(const Ipv4Addr_t sourceAddress,
                                              const Uint32_t length);
 
 static void receivecallback_via_ioca_rpi(const Ipv4Addr_t sourceAddress,
-                                             const Uint16_t sourcePort,
-                                             const Uint16_t destinationPort,
-                                             const Uint8_t *const pbuffer,
-                                             const Uint32_t length);
-
-static void receivecallback_via_ioca_pil(const Ipv4Addr_t sourceAddress,
                                              const Uint16_t sourcePort,
                                              const Uint16_t destinationPort,
                                              const Uint8_t *const pbuffer,
@@ -138,12 +137,9 @@ static bool setup_udp_listen_port(const udpportconfig_t *config, eth_if_port_def
  */                                  
 void udp_setup_server(void)
 {
-    /* Initialize the buffer data */
-    for(uint32_t buf_idx = 0; buf_idx < BUFF_SIZE; buf_idx++)
-    {
-        GcsRxDataPool[buf_idx] = 0;
-        PilRxDataPool[buf_idx] = 0;
-    }
+    /* Clear GCS receive buffer */
+    GcsRxBufferA.valid = false;
+    GcsRxBufferA.length = 0;
 
     /* Initialize the Ethernet interface */
     eth_initialise();
@@ -270,22 +266,7 @@ void udp_send_rpi(const uint8_t *buffer, uint32_t len)
  */
 void udp_send_pil(const uint8_t *buffer, uint32_t len)
 {
-    Uint8_t txBuffer[52];
-    uint32_t char_idx = 0;
-    /* Copy the data to the txBuffer */
-    for (char_idx = 0; char_idx < len && char_idx < sizeof(txBuffer); char_idx++)
-    {
-        txBuffer[char_idx] = buffer[char_idx];
-    }
-    d_Status_t txStatus = d_ETH_UdpSendIf(ListenPortArray[DST_PORT_IOCA_PIL].remoteIP, 
-                                          ListenPortArray[DST_PORT_IOCA_PIL].txPortNum, 
-                                          &txBuffer[0], char_idx, 0);
 
-    if (txStatus != d_STATUS_SUCCESS)
-    {
-        /* Transmit error message on UART */
-        uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"UDP PIL Send Error\n\r", 20);
-    }
 }
 
 /**
@@ -303,8 +284,25 @@ void udp_send_pil(const uint8_t *buffer, uint32_t len)
  * @note The implementation of this function should include processing logic
  *       based on the source of the UDP data
  */
-void udp_receive(uint8_t *buffer, uint32_t len, udp_source_t udp_source)
+void udp_receive(uint8_t *buffer, uint32_t *len, udp_source_t udp_source)
 {
+    if(udp_source == UDP_SRC_GCS)
+    {
+        if((GcsRxBufferA.valid == true) && (GcsRxBufferA.length > 0))
+        {
+            for(uint32_t idx = 0; idx < GcsRxBufferA.length; idx++)
+            {
+                buffer[idx] = GcsRxBufferA.data[idx];
+            }
+
+            /* Copy the length field */
+            *len = GcsRxBufferA.length;
+
+            /* Reset the length and validity */
+            GcsRxBufferA.length = 0;
+            GcsRxBufferA.valid = false;
+        }
+    }
 
 }
 
@@ -375,9 +373,6 @@ static d_Status_t eth_initialise(void)
     bool is_lp_setup_success = false;
     const char ioc_a_gcs_success[80] = "\n\rITB Interface setup for GCS (via IOC A) done.\n\r";
     const char ioc_b_gcs_success[80] = "\n\rITB Interface setup for GCS (via IOC B) done.\n\r";
-    
-    const char ioc_a_pil_success[80] = "\n\rITB Interface setup for PIL (via IOC A) done.\n\r";
-//    const char ioc_b_pil_success[80] = "\n\rITB Interface setup for PIL (via IOC B) done.\n\r";
 
     const char ioc_a_rpi_success[80] = "\n\rITB Interface setup for RPI (via IOC A) done.\n\r";
 //    const char ioc_b_rpi_success[80] = "\n\rITB Interface setup for RPI (via IOC B) done.\n\r";
@@ -447,19 +442,6 @@ static d_Status_t eth_initialise(void)
         if (is_lp_setup_success == true)
         {
             uart_write(UART_DEBUG_CONSOLE, (uint8_t *)ioc_a_rpi_success, sizeof(ioc_a_rpi_success));
-            /* increment the port count */
-            numPort++;
-        }
-
-        /* Configure the PIL Listening Port */
-        is_lp_setup_success = setup_udp_listen_port(&UdpPortConfig[DST_PORT_IOCA_PIL], 
-                                                    &ListenPortArray[DST_PORT_IOCA_PIL], 
-                                                    receivecallback_via_ioca_pil);
-
-        /* Check if UDP listening port for PIL setup successfully */
-        if (is_lp_setup_success == true)
-        {
-            uart_write(UART_DEBUG_CONSOLE, (uint8_t *)ioc_a_pil_success, sizeof(ioc_a_pil_success));
             /* increment the port count */
             numPort++;
         }
@@ -655,6 +637,25 @@ static d_Status_t eth_initialise(void)
     return returnValue;
 }
 
+/**
+ * @brief Sets up a UDP listening port with the specified configuration
+ * 
+ * This function configures a UDP port definition structure with the provided
+ * configuration parameters and establishes a UDP listener on the specified
+ * receive port. The function initializes the remote IP address, port numbers,
+ * message counters, and registers a callback function for incoming UDP packets.
+ * 
+ * @param config    Pointer to UDP port configuration structure containing
+ *                  IP address octets and port numbers
+ * @param portDef   Pointer to Ethernet interface port definition structure
+ *                  to be configured
+ * @param callback  Function pointer to UDP receive callback handler
+ * 
+ * @return true if UDP listener setup was successful, false otherwise
+ * 
+ * @note The function resets all message counters (msgInCount, msgOutCount, 
+ *       msgNotProcessedCount) to zero during initialization
+ */
 static bool setup_udp_listen_port(const udpportconfig_t *config, eth_if_port_def_t *portDef, d_ETH_UdpReceiveFunc_t callback)
 {
     portDef->remoteIP = d_ETH_Ipv4Addr(config->octet1, config->octet2, config->octet3, config->octet4);
@@ -709,69 +710,23 @@ receivecallback_via_ioca_gcs(
     {
         for(uint32_t i = 0; i < length && i < BUFF_SIZE; i++)
         {
-            GcsRxDataPool[i] = pbuffer[i];
+            GcsRxBufferA.data[i] = pbuffer[i];
         }
-
+        GcsRxBufferA.length = length;
+        GcsRxBufferA.valid = true;
         /* Mark message as processed */
         msgProcessed = d_TRUE;
+    }
+    else
+    {
+        GcsRxBufferA.valid = false;
+        GcsRxBufferA.length = 0;
     }
 
     /* If message was not processed, increment the not processed count */
     if (msgProcessed == d_FALSE)
     {
         ListenPortArray[DST_PORT_IOCA_GCS].msgNotProcessedCount++;
-    }
-
-    return;
-}
-
-/**
- * @brief Callback function to handle incoming UDP packets for IOCA PIL communication
- * 
- * This function processes incoming UDP packets received via the IOCA PIL interface.
- * It validates the destination port against the configured listening port and stores
- * the remote IP address for response purposes. Message statistics are updated to
- * track processed and unprocessed messages.
- * 
- * @param[in] sourceAddress     Source IP address of the incoming packet
- * @param[in] sourcePort        Source port number of the incoming packet  
- * @param[in] destinationPort   Destination port number of the incoming packet
- * @param[in] pbuffer          Pointer to the packet buffer containing received data
- * @param[in] length           Length of the received data in bytes
- * 
- * @return None
- * 
- * @note This function updates the ListenPortArray[DST_PORT_IOCA_PIL] entry with:
- *       - Message count statistics (msgInCount, msgNotProcessedCount)
- *       - Remote IP address for response routing
- * 
- * @warning The function only processes messages destined for the configured
- *          DST_PORT_IOCA_PIL port number
- */
-static void                         
-receivecallback_via_ioca_pil(
-    const Ipv4Addr_t sourceAddress, 
-    const Uint16_t sourcePort,      
-    const Uint16_t destinationPort, 
-    const Uint8_t *const pbuffer,   
-    const Uint32_t length           
-)
-{
-    Bool_t msgProcessed = d_FALSE;
-
-    ListenPortArray[DST_PORT_IOCA_PIL].msgInCount++;
-
-    // Check for valid message coming in from the ITB  (Correct IP source Address and UDP port.)
-    if (destinationPort == ListenPortArray[DST_PORT_IOCA_PIL].rxPortNum)
-    {
-        ListenPortArray[DST_PORT_IOCA_PIL].remoteIP = sourceAddress; // We store the itb's source address, and then respond to the same address.
-
-        msgProcessed = d_TRUE;
-    }
-
-    if (msgProcessed == d_FALSE)
-    {
-        ListenPortArray[DST_PORT_IOCA_PIL].msgNotProcessedCount++;
     }
 
     return;
