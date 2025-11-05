@@ -470,6 +470,7 @@ Uint32_t * const pBytesRead   /**< [out] Pointer to storage for number of bytes 
     buffer[index] = receiveBuffer[uart].buffer[(receiveBuffer[uart].indexOut + index) % RECEIVE_BUFFER_LENGTH];
   }
   *pBytesRead = readCount;
+  receiveBuffer[uart].count = 0;
   if (readCount == 0u)
   {
     status = d_STATUS_BUFFER_EMPTY;

@@ -15,7 +15,7 @@
 bool uart_init(UART_peripherals_t uart_ch);
 
 /* Implementation of operation 'uart_read' from interface 'UART_interface' */
-uint16_t uart_read(UART_peripherals_t uart_ch, uint8_t *ptr_rx_data, uint16_t max_buf_data_size);
+uint16_t uart_read(UART_peripherals_t uart_channel, uint8_t* ptr_rx_data, uint16_t max_buf_data_size);
 
 /* Implementation of operation 'uart_write' from interface 'UART_interface' */
 uint16_t uart_write(UART_peripherals_t uart_channel, uint8_t *ptr_tx_data, uint16_t max_buf_data_size);

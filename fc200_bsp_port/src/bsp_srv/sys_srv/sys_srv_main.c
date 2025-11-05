@@ -16,6 +16,7 @@
 #include "kernel/general/d_gen_register.h"
 #include "kernel/date_time/d_date_time.h"
 #include "uart_interface.h"
+#include "timer_interface.h"
 
 static bool TaskEventFlag = false;
 static uint32_t ElapsedTicksinMillisec = 0;
@@ -61,6 +62,8 @@ void sys_boot(void)
 	/* 32-bit counter max = 2^32 = 4,294,967,296 ticks */
 	/* Wrap time = 4,294,967,296 � 0.64 �s = 2,748,364.8 ms = 2,748.3648 s = approx 45 minutes */
 	d_TIMER_Initialise();
+	/* Initialise SW timer with 1 msec tick */
+	timer_init();
 	fcuInit = d_FCU_Initialise();
 
 	iocAOnline = d_FCU_IocOnline(d_FCU_IOC_A);

@@ -24,21 +24,21 @@ typedef struct
 static const uart_config_t UART_Config[UART_MAX_PERIPHERAL] = {
 
     {0,  115200,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}, /* DEBUG_CONSOLE */
-    {1,  115200,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}, /* RADALT */
-    {2,  100000,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}, /* SBUS */
-    {3,  460800,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}, /* INS */
-    {4,  115200,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}, /* SERVO */
+    {14,  115200,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}, /* RADALT */
+    {20,  100000,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}, /* SBUS */
+    {26,  460800,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}, /* INS */
+    {22,  115200,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}, /* SERVO */
     {5,  500000,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}  /* ADS */
 };
 
-static const uint32_t Uart_Channel_Map[UART_MAX_PERIPHERAL] = {
-    0,
-    1,
-    2,
-    3,
-    4,
-    5
-};
+//static const uint32_t Uart_Channel_Map[UART_MAX_PERIPHERAL] = {
+//    0,
+//    1,
+//    2,
+//    3,
+//    4,
+//    5
+//};
 
 
 
@@ -94,16 +94,16 @@ bool uart_init(UART_peripherals_t uart_ch)
  * @note This function performs parameter validation before attempting to read data
  * @note The actual number of bytes read may be less than max_buf_data_size
  */
-uint16_t uart_read(UART_peripherals_t uart_ch, uint8_t* ptr_rx_data, uint16_t max_buf_data_size)
+uint16_t uart_read(UART_peripherals_t uart_channel, uint8_t* ptr_rx_data, uint16_t max_buf_data_size)
 {
     uint32_t bytes_read = 0;
     uint16_t retval = 0; 
     d_Status_t status = d_STATUS_SUCCESS;
     /* If pointers passed are not equal to NULL and the given uart channel is in range */
-    if ((ptr_rx_data != NULL) && (uart_ch < UART_MAX_PERIPHERAL))
+    if ((ptr_rx_data != NULL) && (uart_channel < UART_MAX_PERIPHERAL))
     {
         /* Call BSP function to receive the data */
-        status = d_UART_Receive((Uint32_t)Uart_Channel_Map[uart_ch], ptr_rx_data, max_buf_data_size, &bytes_read);
+        status = d_UART_Receive((Uint32_t)UART_Config[uart_channel].uart_ch, ptr_rx_data, max_buf_data_size, &bytes_read);
         
         /* Check if the transmission was successful */
         if(status != d_STATUS_SUCCESS)
@@ -152,7 +152,7 @@ uint16_t uart_write(UART_peripherals_t uart_channel, uint8_t* ptr_tx_data, uint1
     if ((ptr_tx_data != NULL) && (uart_channel < UART_MAX_PERIPHERAL))
     {
         /* Call BSP function to transmit data */
-        status = d_UART_Transmit((Uint32_t)Uart_Channel_Map[uart_channel], ptr_tx_data, (Uint32_t)max_buf_data_size);
+        status = d_UART_Transmit((Uint32_t)UART_Config[uart_channel].uart_ch, ptr_tx_data, (Uint32_t)max_buf_data_size);
 
         /* Check if the transmission was successful */
         if(status == d_STATUS_SUCCESS)
