@@ -17,6 +17,7 @@ typedef enum
     UART_INS,
     UART_SERVO,
     UART_ADS,
+	UART_LOS,
     UART_MAX_PERIPHERAL
 } UART_peripherals_t;
 
