@@ -31,17 +31,6 @@ static const uart_config_t UART_Config[UART_MAX_PERIPHERAL] = {
     {5,  500000,  d_UART_DATA_BITS_8,  d_UART_PARITY_NONE,  d_UART_STOP_BITS_1}  /* ADS */
 };
 
-//static const uint32_t Uart_Channel_Map[UART_MAX_PERIPHERAL] = {
-//    0,
-//    1,
-//    2,
-//    3,
-//    4,
-//    5
-//};
-
-
-
 /**
  * @brief Initializes a UART peripheral with specified configuration parameters
  * 

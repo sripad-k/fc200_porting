@@ -31,6 +31,7 @@ Int32_t main()
 	static uint64_t count = 0;
 	uint8_t buffer[2048] = {0};
 	uint16_t length = 0;
+	uint16_t index = 0;
 
 	/* FC-200 initialization */
 	sys_boot();
@@ -80,12 +81,13 @@ Int32_t main()
 			can_read(CAN_CHANNEL_1, &rxMessage[i]);
 		}
 
-		length = uart_read(UART_INS, &buffer[0], 500);
+		length = uart_read(UART_INS, &buffer[index], 500);
 
 		if(length > 0)
 		{
 			uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"Shabash\r\n", 10);
 			length = 0;
+			index = (index + length) % 2048;
 		}
 
 

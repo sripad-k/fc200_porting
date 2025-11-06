@@ -457,6 +457,8 @@ Uint32_t * const pBytesRead   /**< [out] Pointer to storage for number of bytes 
 
   Uint32_t readCount;
   Uint32_t index;
+  Uint64_t interruptFlags = d_INT_CriticalSectionEnter();
+  
   if (length < receiveBuffer[uart].count)
   {
     readCount = length;
@@ -465,12 +467,19 @@ Uint32_t * const pBytesRead   /**< [out] Pointer to storage for number of bytes 
   {
     readCount = receiveBuffer[uart].count;
   }
+  
   for (index = 0; index < readCount; index++)
   {
     buffer[index] = receiveBuffer[uart].buffer[(receiveBuffer[uart].indexOut + index) % RECEIVE_BUFFER_LENGTH];
   }
+  
+  receiveBuffer[uart].count -= readCount;
+  receiveBuffer[uart].indexOut = (receiveBuffer[uart].indexOut + readCount) % RECEIVE_BUFFER_LENGTH;
+  
+  d_INT_CriticalSectionLeave(interruptFlags);
+  
   *pBytesRead = readCount;
-  receiveBuffer[uart].count = 0;
+  
   if (readCount == 0u)
   {
     status = d_STATUS_BUFFER_EMPTY;
@@ -513,8 +522,8 @@ const Uint32_t length   /**< [in] Number of bytes to discard */
     discardCount = receiveBuffer[uart].count;
   }
   receiveBuffer[uart].count = receiveBuffer[uart].count - discardCount;
-  d_INT_CriticalSectionLeave(interruptFlags);
   receiveBuffer[uart].indexOut = (receiveBuffer[uart].indexOut + discardCount) % RECEIVE_BUFFER_LENGTH;
+  d_INT_CriticalSectionLeave(interruptFlags);
 
   return d_STATUS_SUCCESS;
 }
