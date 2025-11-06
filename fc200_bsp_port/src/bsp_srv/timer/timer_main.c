@@ -7,15 +7,31 @@
 
 #include "timer_main.h"
 #include "soc/timer/d_timer_counter.h"
+#include "soc/timer/d_timer.h"
 
 static const d_Timer_t TIMER = d_TIMER_TTC1_0;
 
 void timer_init(void)
 {
-  (void)d_TIMER_Configure(TIMER, d_FALSE, 0);
-  (void)d_TIMER_Options(TIMER, d_TRUE);
-  (void)d_TIMER_Interval(TIMER, 100000 - 1);
-  (void)d_TIMER_Start(TIMER);
+
+  	/* SW Timer used to trigger main loop. */
+	(void)d_TIMER_Configure(TIMER, d_FALSE, 0);
+	(void)d_TIMER_Options(TIMER, d_TRUE);
+	(void)d_TIMER_Interval(TIMER, 100000 - 1);
+	(void)d_TIMER_Start(TIMER);
+	// (void)d_TIMER_InterruptEnable(TIMER, d_TIMER_INTERRUPT_INTERVAL);
+
+	// /* Initialize IRQ */
+	// d_INT_IrqDeviceInitialise();
+
+	// d_INT_IrqSetPriorityTriggerType(XPS_TTC1_0_INT_ID, 224, d_INT_RISING_EDGE);
+	// d_INT_IrqSetPriorityTriggerType(XPAR_FABRIC_SYNCHRONISER_IRQ_INTR, 232, d_INT_RISING_EDGE);
+
+	// /* Enable all interrupt once timer initialization is done*/
+	// d_INT_Enable();
+
+	// /* Enable interrupt */
+	// d_INT_IrqEnable(XPS_TTC0_0_INT_ID);
 }
 
 /**
@@ -25,9 +41,11 @@ void timer_init(void)
  */
 uint64_t timer_get_system_time_ms(void)
 {
-	uint32_t timer_value = 0;
-	(void)d_TIMER_Read(TIMER, &timer_value);
-    return (uint64_t)timer_value;
+	uint64_t timer_value = 0;
+//	(void)d_TIMER_Read(TIMER, &timer_value);
+    timer_value = d_TIMER_ReadValueInTicks();
+    timer_value = (timer_value*640) / 1000000;
+    return timer_value;
 }
 
 /**
@@ -148,3 +166,42 @@ void timer_delay(uint64_t delay_ms)
     }
 }
 
+
+//
+///**
+// * @brief Tick interrupt handler for system timer
+// *
+// * This function is called on each system timer tick interrupt. It performs
+// * essential system timing operations including timestamp updates and timer
+// * acknowledgment. The handler also manages interrupt nesting by sending
+// * an End of Interrupt (EOI) signal.
+// *
+// * @param unusedParam Unused parameter (required for interrupt handler signature)
+// *
+// * @return void
+// *
+// * @note This function sends EOI manually to enable interrupt nesting
+// * @note Sets TickHandlerRegistered flag to indicate handler execution
+// *
+// * @see d_DATE_TIME_TimestampUpdate()
+// * @see SW_TimerAck()
+// */
+//void timer_tickHandler(const Uint32_t parameter)
+//{
+//
+//	uint32_t interruptStatus = 0;
+//
+//	/* Update date time in timestamp */
+//	d_DATE_TIME_TimestampUpdate();
+//
+//	/* Acknowledge the interrupt. */
+//	(void)d_TIMER_InterruptStatus(d_TIMER_TTC0_0, &interruptStatus);
+//
+//	/* Reset the flag to resume the task*/
+//	TaskEventFlag = true;
+//
+//	/* Send EOI to allow nesting of same interrupt. No EOI sent by interrupt handler for this interrupt */
+//	d_GEN_RegisterWrite(XPAR_SCUGIC_0_CPU_BASEADDR + XSCUGIC_EOI_OFFSET, XPAR_XTTCPS_0_INTR);
+//
+//	return;
+//}
