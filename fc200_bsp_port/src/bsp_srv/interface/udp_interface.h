@@ -25,7 +25,7 @@ void udp_sync_periodic(void);
 void udp_send_gcs(const uint8_t *buffer, uint32_t len);
 void udp_send_rpi(const uint8_t *buffer, uint32_t len);
 void udp_send_pil(const uint8_t *buffer, uint32_t len);
-void udp_receive(uint8_t *buffer, uint32_t* len, udp_source_t udp_source);
+void udp_receive(uint8_t *buffer, uint32_t *len, udp_source_t udp_source);
 
 
 #endif /*!defined(H_UDP_INTERFACE)*/

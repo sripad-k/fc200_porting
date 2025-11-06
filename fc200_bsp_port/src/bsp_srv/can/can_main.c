@@ -125,7 +125,7 @@ can_status_t can_init(can_channel_t can_ch)
  * @param can_msg   CAN message structure containing:
  *                  - can_msg_id: CAN message identifier
  *                  - is_extended_id: Flag for extended ID format
- *                  - is_remote_frame: Flag for remote transmission request
+ *                  - is_remote_req: Flag for remote transmission request
  *                  - dlc: Data length code (must be <= CAN_MAX_DLC)
  *                  - data: Message payload bytes
  *
@@ -157,11 +157,11 @@ can_status_t can_write(can_channel_t can_ch, const can_msg_t *ptr_can_msg)
     else
     {
         /* Prepare the CAN message for transmission */
-        txMessage.extended = ptr_can_msg->is_extended_id ? d_TRUE : d_FALSE;
+        txMessage.extended = ptr_can_msg->extended_id_flag ? d_TRUE : d_FALSE;
         txMessage.id = (Uint32_t)((ptr_can_msg->can_msg_id >> CAN_EXTENDED_BIT_LEN) & CAN_BASE_ID_MASK);
         txMessage.exId = (Uint32_t)((ptr_can_msg->can_msg_id) & CAN_EXTENDED_ID_MASK);
         txMessage.substituteRemoteTxRequest = d_FALSE; /* Not supported in this interface */
-        txMessage.remoteTxRequest = ptr_can_msg->is_remote_frame ? d_TRUE : d_FALSE;
+        txMessage.remoteTxRequest = ptr_can_msg->is_remote_req ? d_TRUE : d_FALSE;
         txMessage.dataLength = ptr_can_msg->dlc;
 
         /* Copy the data bytes */
@@ -217,10 +217,10 @@ can_status_t can_read(can_channel_t can_ch, can_msg_t *ptr_can_msg)
         if (drv_status == d_STATUS_SUCCESS)
         {
             /* Prepare the received CAN message */
-            ptr_can_msg->is_extended_id = (rxMessage.extended == d_TRUE) ? true : false;
+            ptr_can_msg->extended_id_flag = (rxMessage.extended == d_TRUE) ? true : false;
             ptr_can_msg->can_msg_id = ((rxMessage.id & CAN_BASE_ID_MASK) << CAN_EXTENDED_BIT_LEN) |
                                       (rxMessage.exId & CAN_EXTENDED_ID_MASK);
-            ptr_can_msg->is_remote_frame = (rxMessage.remoteTxRequest == d_TRUE) ? true : false;
+            ptr_can_msg->is_remote_req = (rxMessage.remoteTxRequest == d_TRUE) ? true : false;
             ptr_can_msg->dlc = rxMessage.dataLength;
 
             /* Copy the data bytes */

@@ -18,8 +18,8 @@ typedef struct
 	uint32_t can_msg_id;
 	uint8_t  data[CAN_MAX_DLC];
 	uint8_t  dlc;
-	bool     is_extended_id;
-	bool     is_remote_frame;
+	bool     extended_id_flag;
+	bool     is_remote_req;
 } can_msg_t;
 
 typedef enum 
