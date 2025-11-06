@@ -467,6 +467,8 @@ Uint32_t * const pBytesRead   /**< [out] Pointer to storage for number of bytes 
   {
     readCount = receiveBuffer[uart].count;
   }
+
+   d_INT_CriticalSectionLeave(interruptFlags);
   
   for (index = 0; index < readCount; index++)
   {
@@ -476,7 +478,7 @@ Uint32_t * const pBytesRead   /**< [out] Pointer to storage for number of bytes 
   receiveBuffer[uart].count -= readCount;
   receiveBuffer[uart].indexOut = (receiveBuffer[uart].indexOut + readCount) % RECEIVE_BUFFER_LENGTH;
   
-  d_INT_CriticalSectionLeave(interruptFlags);
+ 
   
   *pBytesRead = readCount;
   
