@@ -5,7 +5,7 @@
 #include "da_interface.h"
 #include "ach_interface.h"
 #include "udp_interface.h"
-//#include "mavlink_io.h"
+#include "mavlink_io.h"
 #include "fcs_mi_interface.h"
 #define ONE_MSEC (1000000UL)
 
@@ -36,9 +36,7 @@ Int32_t main()
 	sys_set_tick_period(ONE_MSEC);
 
     /* Initialize default MAVLINK IO */
-//    mav_io_init();
-	/* UDP Server setup can be done only after interrupts are enabled */
-	udp_setup_server();
+    mav_io_init();
 
 	while (1)
 	{
@@ -49,7 +47,7 @@ Int32_t main()
         da_periodic();
 
         /* read the inbound mavlink message */
-        // mavlink_io_recv_periodic();
+        mavlink_io_recv_periodic();
 
         /* periodic flight control task processing */
         fcs_mi_periodic();
@@ -61,7 +59,7 @@ Int32_t main()
         ach_read_periodic();
 
         /* tx the outbound mavlink message */
-        // mavlink_io_send_periodic();
+        mavlink_io_send_periodic();
 
 		sys_sleep();
 	}
