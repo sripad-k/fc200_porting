@@ -136,6 +136,9 @@ void sys_boot(void)
 		}
 	}
 
+	d_FCU_Score(d_FCU_FCU_1, 225u);
+	d_FCU_Score(d_FCU_FCU_2, 25u);
+
 	return;
 }
 

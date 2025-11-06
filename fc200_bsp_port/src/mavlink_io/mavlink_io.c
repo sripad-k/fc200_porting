@@ -174,8 +174,6 @@ void mavlink_io_recv_periodic_uart(void)
 void mavlink_io_recv_periodic(void)
 {
     mavlink_io_recv_periodic_uart();
-    int udp_src;
-    mavlink_message_t msg = {0};
     mavlink_message_t gcs_msg = {0};
     uint32_t msg_len = 0;
     mavlink_status_t status;

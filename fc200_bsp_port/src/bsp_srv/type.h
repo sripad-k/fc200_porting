@@ -5,6 +5,7 @@
 #include "soc/defines/d_common_types.h"
 #include "soc/defines/d_common_status.h"
 #include "kernel/general/d_gen_string.h"
+#include "printf.h"
 
 // If the system stdint.h hasn't been included yet,
 // define your own types
