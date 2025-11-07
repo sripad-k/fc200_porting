@@ -606,6 +606,12 @@ bool da_ins_il_init(void)
 
     /* Initialize the INS UART Port */
     init_status = uart_init(UART_INS);
+
+    /* If initialization is successful */
+    if(init_status == true)
+    {
+    	uart_write(UART_INS, (uint8_t *)"INS ONLINE\r\n", 15);
+    }
     util_memset(&OpvtRawData, 0, sizeof(s_da_ins_opvt_t));
     util_memset(&UddRawData, 0, sizeof(s_da_ins_udd_t));
     timer_start(&InsMonitorTimer, INS_PERIODIC_TIMEOUT);

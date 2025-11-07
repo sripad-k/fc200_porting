@@ -173,7 +173,7 @@ void mavlink_io_recv_periodic_uart(void)
 
 void mavlink_io_recv_periodic(void)
 {
-    mavlink_io_recv_periodic_uart();
+//    mavlink_io_recv_periodic_uart();
     mavlink_message_t gcs_msg = {0};
     uint32_t msg_len = 0;
     mavlink_status_t status;
@@ -231,6 +231,7 @@ void mavlink_io_recv_periodic(void)
 void mavlink_io_send_periodic(void)
 {
     mav_io_gather_data(&MavioIn);
+
     send_mavlink_msg_gcs();
 
 #ifdef PIL_BUILD_ENABLED

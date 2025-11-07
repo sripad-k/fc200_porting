@@ -110,12 +110,24 @@ bool da_sbus_init(void)
 {
 
     /* SyncableUserCode{BE749DAE-8F50-4cf8-BD16-475B6BE67B3C}:Nbrlk8aPUZ */
+	bool sbus_init_success = false ;
     /* Initialize the communication timeout */
     SbusCommTimeout = false;
     /* Start the timer */
     timer_start(&SbusMonitorTimer, SBUS_TIMEOUT);
     timer_start(&SbusRssiTimer, SBUS_RSSI_PERIOD);
-    return (uart_init(UART_SBUS));
+
+    /* Init S-BUS UART */
+    sbus_init_success = uart_init(UART_SBUS);
+
+	/* If successful */
+	if(true == sbus_init_success)
+	{
+		/* Send a message indicating ONLINE from the same channel */
+		uart_write(UART_SBUS, (uint8_t *)"SBUS ONLINE\r\n", 16);
+	}
+
+    return(sbus_init_success);
 
     /* SyncableUserCode{BE749DAE-8F50-4cf8-BD16-475B6BE67B3C} */
 }

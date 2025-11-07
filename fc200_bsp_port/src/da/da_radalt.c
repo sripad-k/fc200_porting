@@ -93,6 +93,7 @@ bool da_get_radalt_timeout(void)
 bool da_radalt_init(void)
 {
     /* SyncableUserCode{6DDE5974-58DF-47fa-85E7-57F176257FB5}:Nbrlk8aPUZ */
+	bool radalt_init_success = false ;
 
     /* Set the RADALT Offset */
     radalt.offset = RADALT_OFFSET;
@@ -103,7 +104,16 @@ bool da_radalt_init(void)
     timer_start(&RadaltMonitorTimer, RADALT_TIMEOUT);
 
     /* Initialise the UART RADALT Channel */
-    return (uart_init(UART_RADALT));
+    radalt_init_success = uart_init(UART_RADALT);
+
+	/* If successful */
+	if(true == radalt_init_success)
+	{
+		/* Send a message indicating ONLINE from the same channel */
+		uart_write(UART_RADALT, (uint8_t *)"RADALT ONLINE\r\n", 18);
+	}
+
+	return radalt_init_success;
 
     /* SyncableUserCode{6DDE5974-58DF-47fa-85E7-57F176257FB5} */
 }

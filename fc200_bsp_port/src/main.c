@@ -7,12 +7,14 @@
 #include "udp_interface.h"
 #include "mavlink_io.h"
 #include "fcs_mi_interface.h"
+
 #define ONE_MSEC (1000000UL)
 
 
 Int32_t main()
 {
 
+	/* FC-200 initialization */
 	sys_boot();
 
     /* Initialize default GPIO configuration */
@@ -62,5 +64,6 @@ Int32_t main()
         mavlink_io_send_periodic();
 
 		sys_sleep();
+
 	}
 }

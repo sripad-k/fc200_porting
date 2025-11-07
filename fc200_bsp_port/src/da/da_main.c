@@ -14,17 +14,6 @@ void da_init(void)
 
     bool is_init_successful = false;
 
-    is_init_successful = uart_init(UART_DEBUG_CONSOLE);
-    if (is_init_successful == false)
-    {
-        /* Handle error */
-        printf("Console UART init failed\r\n");
-    }
-    else
-    {
-        printf("Console UART init successful\r\n");
-    }
-
     is_init_successful = da_ins_il_init();
     if (is_init_successful == false)
     {
@@ -74,6 +63,7 @@ void da_init(void)
 /* Operation 'da_periodic' of Class 'DA_main' */
 void da_periodic(void)
 {
+	uint32_t count = 0; //MUST BE DELETED AFTER FPGA FIX
     /* SyncableUserCode{DC606085-4129-4df6-B1F4-8768A171A8B6}:Nbrlk8aPUZ */
     /* Read INS_D Periodically */
     da_ins_il_read_periodic();
@@ -86,6 +76,20 @@ void da_periodic(void)
 
     /* Read SBUS Periodically */
     da_sbus_read_periodic();
+
+    /* WARNING: THIS IS A TEMPORARY FIX. THIS MUST BE FIXED IN FPGA H/W */
+    if( count == 0 )
+    {
+		uart_write(UART_INS, (uint8_t *)"1", 2);
+
+		uart_write(UART_RADALT, (uint8_t *)"2", 2);
+
+		uart_write(UART_ADS, (uint8_t *)"3", 2);
+
+		uart_write(UART_SBUS, (uint8_t *)"4", 2);
+    }
+
+    count = (count + 1)%100;
 
     /* SyncableUserCode{DC606085-4129-4df6-B1F4-8768A171A8B6} */
 }

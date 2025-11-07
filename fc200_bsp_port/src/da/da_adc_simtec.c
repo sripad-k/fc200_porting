@@ -361,11 +361,20 @@ uint16_t da_get_adc_9_status(void)
 bool da_adc_9_init(void)
 {
 	/* SyncableUserCode{B4BCDC35-D358-4bfd-9F57-EE1332701D39}:Nbrlk8aPUZ */
+	bool adc_init_success = false;
 	/* Initialise the timeout count to false */
 	Adc9CommTimeout = false;
 	/* Init the ADC timer */
 	timer_start(&Adc9MonitorTimer, ADC_9_TIMEOUT);
-	return (uart_init(UART_ADS));
+	/* Init ADC UART */
+	adc_init_success = uart_init(UART_ADS);
+	/* If successful */
+	if(true == adc_init_success)
+	{
+		/* Send a message indicating ONLINE from the same channel */
+		uart_write(UART_ADS, (uint8_t *)"ADC ONLINE\r\n", 15);
+	}
+	return (adc_init_success);
 	/* SyncableUserCode{B4BCDC35-D358-4bfd-9F57-EE1332701D39} */
 }
 
