@@ -185,6 +185,8 @@ void udp_sync_periodic(void)
 void udp_send_gcs(const uint8_t *buffer, uint32_t len)
 {
 	uint32_t selectedMaster = d_FCU_GetMaster();
+	uint32_t slot = d_FCU_SlotNumber();
+
 	d_Status_t txStatus = d_STATUS_SUCCESS;
     /* Prepare the transmission buffer */
     uint8_t txBuffer[MAX_TX_BUFF_SIZE];
@@ -196,7 +198,7 @@ void udp_send_gcs(const uint8_t *buffer, uint32_t len)
         txBuffer[char_idx] = buffer[char_idx];
     }
     
-    if( selectedMaster == 0 )
+    if(( selectedMaster == 0 ) && ( slot == 0 ))
     {
       /* Send the UDP packet */
       txStatus = d_ETH_UdpSendIf(ListenPortArray[DST_PORT_IOCA_GCS].remoteIP,
