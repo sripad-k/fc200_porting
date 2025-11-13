@@ -11,7 +11,9 @@ A lightweight, ARM-compatible, bare-metal printf implementation for debugging vi
 **📚 Documentation:**
 - **[README_PRINTF.md](README_PRINTF.md)** - Complete documentation and guide
 - **[PRINTF_QUICK_REF.md](PRINTF_QUICK_REF.md)** - Quick reference card
+- **[INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md)** - Step-by-step integration guide
 - **[printf_example.c](printf_example.c)** - Working example code
+- **[printf_test.c](printf_test.c)** - Simple test program
 
 **📁 Files:**
 - `printf.h` - Printf function declarations

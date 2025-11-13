@@ -75,6 +75,7 @@ printf("X=%d, Y=%d, Z=%d\n", x, y, z);
 | **[README_PRINTF.md](fc200_bsp_port/src/utils/README_PRINTF.md)** | Complete documentation - all features, configuration |
 | **[INTEGRATION_GUIDE.md](fc200_bsp_port/src/utils/INTEGRATION_GUIDE.md)** | Step-by-step integration into your code |
 | **[printf_example.c](fc200_bsp_port/src/utils/printf_example.c)** | Working example code with 8+ examples |
+| **[printf_test.c](fc200_bsp_port/src/utils/printf_test.c)** | Simple test program to verify printf works |
 
 ## 🔧 Key Features
 
