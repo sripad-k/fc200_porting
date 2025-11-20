@@ -65,6 +65,7 @@ void sys_boot(void)
 	/* Initialise SW timer with 1 msec tick */
 	timer_init();
 	fcuInit = d_FCU_Initialise();
+	d_INT_IrqDeviceInitialise();
 
 	iocAOnline = d_FCU_IocOnline(d_FCU_IOC_A);
 	iocBOnline = d_FCU_IocOnline(d_FCU_IOC_B);
@@ -79,7 +80,6 @@ void sys_boot(void)
 	{
 		/* Initialization successful message */
 		uart_write(UART_DEBUG_CONSOLE, (uint8_t *)success_msg, sizeof(success_msg));
-		d_INT_IrqDeviceInitialise();
 	}
 
 	if (d_FCU_IocOnline(d_FCU_IOC_A) == d_TRUE)
@@ -99,6 +99,11 @@ void sys_boot(void)
 	{
 		uart_write(UART_DEBUG_CONSOLE, (uint8_t *)"\n\rIOC-B is Offline.\n\r", 22);
 	}
+
+	d_FCU_Score(d_FCU_FCU_1, 225u);
+	d_FCU_Score(d_FCU_FCU_2, 25u);
+
+	d_FCU_NoGo(d_FCU_FCU_2);
 
 	/* Read Slot Number */
 	slotNumber = d_FCU_SlotNumber();
@@ -136,9 +141,6 @@ void sys_boot(void)
 		}
 	}
 
-	d_FCU_Score(d_FCU_FCU_1, 225u);
-	d_FCU_Score(d_FCU_FCU_2, 25u);
-
 	return;
 }
 
@@ -170,17 +172,19 @@ void sys_set_tick_period(uint64_t timer_tick_period)
 	(void)d_TIMER_Start(LOOP_TIMER);
 	(void)d_TIMER_InterruptEnable(LOOP_TIMER, d_TIMER_INTERRUPT_INTERVAL);
 
-	/* Initialize IRQ */
-	d_INT_IrqDeviceInitialise();
-
 	d_INT_IrqSetPriorityTriggerType(XPS_TTC0_0_INT_ID, 224, d_INT_RISING_EDGE);
 	d_INT_IrqSetPriorityTriggerType(XPAR_FABRIC_SYNCHRONISER_IRQ_INTR, 232, d_INT_RISING_EDGE);
 
 	/* Enable all interrupt once timer initialization is done*/
 	d_INT_Enable();
 
+	// Setup the Safety Discrete outputs.
+	(void)d_DISC_SetAsOutputPin(d_DISC_EMIO_0);
+	(void)d_DISC_SetAsOutputPin(d_DISC_EMIO_1);
+
 	/* Enable interrupt */
 	d_INT_IrqEnable(XPS_TTC0_0_INT_ID);
+	d_INT_IrqEnable(XPAR_FABRIC_SYNCHRONISER_IRQ_INTR); // 50 Hz firmware trigger.
 
 	return;
 }

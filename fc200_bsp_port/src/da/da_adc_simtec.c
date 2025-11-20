@@ -369,7 +369,7 @@ bool da_adc_9_init(void)
 	/* Init ADC UART */
 	adc_init_success = uart_init(UART_ADS);
 	/* If successful */
-	if(true == adc_init_success)
+	if (true == adc_init_success)
 	{
 		/* Send a message indicating ONLINE from the same channel */
 		uart_write(UART_ADS, (uint8_t *)"ADC ONLINE\r\n", 15);
@@ -518,13 +518,24 @@ static void da_ads_parse_data(const uint8_t *ptr_byte)
 				if (*ptr_byte != '\r')
 				{
 					validity_status = FLAG_INVALID;
+					printf("ADC fail\r\n");
+					for (uint8_t i = 0; i < MAX_CHARS; i++)
+					{
+						printf(" 0x%02X ", data_buffer[i]);
+					}
+					printf(" 0x%02X ", *ptr_byte);
+					printf("\r\n");
 				}
+				else
+				{
+					validity_status = FLAG_VALID;
 
-				/* Reload the timer on valid packet */
-				timer_reload(&Adc9MonitorTimer);
-				/* Decode the data Acquired  until now */
-				util_ascii_hex_to_float((uint8_t *)data_buffer, &ADC_Data_Pool[(uint8_t)param_id_ref].Data);
-				ADC_Data_Pool[(uint8_t)param_id_ref].Data_Flag = validity_status;
+					/* Reload the timer on valid packet */
+					timer_reload(&Adc9MonitorTimer);
+					/* Decode the data Acquired  until now */
+					util_ascii_hex_to_float((uint8_t *)data_buffer, &ADC_Data_Pool[(uint8_t)param_id_ref].Data);
+					ADC_Data_Pool[(uint8_t)param_id_ref].Data_Flag = validity_status;
+				}
 
 				state = SOH;
 			}

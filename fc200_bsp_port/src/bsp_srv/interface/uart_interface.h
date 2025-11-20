@@ -12,7 +12,7 @@
 #include "uart_peripherals_t.h" /* Include for 'relation to classifier' 'UART_peripherals_t' */
 
 /* The function initializes the VALID UART peripherals that are passed as argument */
-bool uart_init(UART_peripherals_t uart_ch);
+bool uart_init(UART_peripherals_t uart_channel);
 
 /* Implementation of operation 'uart_read' from interface 'UART_interface' */
 uint16_t uart_read(UART_peripherals_t uart_channel, uint8_t* ptr_rx_data, uint16_t max_buf_data_size);

@@ -898,6 +898,7 @@ static void da_ins_il_parse_data(const uint8_t *ptr_byte)
             {
                 /* Set the message flag to indicate failure */
                 imu_msg.flag = IL_DCODE_FAILED_CRC;
+                printf("INS fail\r\n");
             }
             /* Proceed to the first state in any case */
             state = STAGE1_HEADER0;

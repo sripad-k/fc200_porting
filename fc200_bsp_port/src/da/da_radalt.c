@@ -293,6 +293,7 @@ static void da_radalt_parse_data(radalt_msg_s *msg, const uint8_t *ptr_byte)
         else
         {
             msg->flag = RADALT_DCODE_FAILED_CRC;
+            printf("RADALT fail\r\n");
         }
 
         /* Reload the timer on valid packet */

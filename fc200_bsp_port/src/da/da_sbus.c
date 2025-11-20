@@ -275,6 +275,10 @@ static void da_sbus_parse_data(uint8_t byte)
                 /* Decode the received data */
                 da_sbus_decode();
             }
+            else
+            {
+            	printf("SBUS Fail\r\n");
+            }
             /* Always reset index after full frame */
             Sbus_Index = 0;
         }

@@ -12,13 +12,13 @@
 #include "sru/can_holt/d_can_holt_cfg.h" /* Discrete driver config */
 #include "xcanps.h"
 #include "soc/interrupt_manager/d_int_irq_handler.h"
+#include "sru/fcu/d_fcu.h"
 
 // Masks for extracting ID components
 #define CAN_BASE_ID_MASK (0x7FFU)       // 11 bits: 0b11111111111
 #define CAN_EXTENDED_ID_MASK (0x3FFFFU) // 18 bits: 0b111111111111111111
 #define CAN_EXTENDED_BIT_LEN (18)
 
-static can_msg_t CanRxMessage[CAN_CHANNEL_MAX];
 static bool CanInitialized[CAN_CHANNEL_MAX];
 
 /**
@@ -65,8 +65,8 @@ can_status_t can_init(can_channel_t can_ch)
                 if (d_CAN_ModeSet(can_ch, d_CAN_MODE_NORMAL) == d_STATUS_SUCCESS)
                 {
                     CanInitialized[can_ch] = true;
-//                    d_CAN_InterruptEnable(can_ch, XCANPS_IXR_RXFWMFLL_MASK);
-//                    d_INT_IrqEnable(d_CAN_Config[can_ch].interruptNumber);
+                    //                    d_CAN_InterruptEnable(can_ch, XCANPS_IXR_RXFWMFLL_MASK);
+                    //                    d_INT_IrqEnable(d_CAN_Config[can_ch].interruptNumber);
                 }
             }
             else
@@ -143,6 +143,8 @@ can_status_t can_write(can_channel_t can_ch, const can_msg_t *ptr_can_msg)
     can_status_t status = CAN_OK;
     d_Status_t drv_status = d_STATUS_SUCCESS;
     d_CAN_Message_t txMessage;
+    uint32_t selectedMaster = d_FCU_GetMaster();
+	uint32_t slot = d_FCU_SlotNumber();
 
     /* if channel is invalid */
     if ((can_ch >= CAN_CHANNEL_MAX) || (ptr_can_msg == NULL))
@@ -170,18 +172,26 @@ can_status_t can_write(can_channel_t can_ch, const can_msg_t *ptr_can_msg)
             txMessage.data[byte_id] = ptr_can_msg->data[byte_id];
         }
 
-        if (can_ch <= CAN_CHANNEL_2)
+        /* IMPORTANT: Currently Transmit CAN Message only from FCU-1 - MUST CHANGE to either of the master FCU-1 or FCU-2*/
+        if ((selectedMaster == 0) && (slot == 0))
         {
-            /* Send the CAN message from MPSoC PS CAN Controller */
-            drv_status = d_CAN_SendMessage(can_ch, &txMessage);
+            if (can_ch <= CAN_CHANNEL_2)
+            {
+                /* Send the CAN message from MPSoC PS CAN Controller */
+                drv_status = d_CAN_SendMessage(can_ch, &txMessage);
+            }
+            else
+            {
+                /* Send the CAN message from CAN HOLT Devices after remapping the channel number */
+                drv_status = d_CAN_HOLT_SendMessage(can_ch - CAN_CHANNEL_3, (d_CAN_HOLT_Message_t *)&txMessage);
+            }
+
+            if (drv_status != d_STATUS_SUCCESS)
+            {
+                status = CAN_ERROR;
+            }
         }
         else
-        {
-            /* Send the CAN message from CAN HOLT Devices after remapping the channel number */
-            drv_status = d_CAN_HOLT_SendMessage(can_ch - CAN_CHANNEL_3, (d_CAN_HOLT_Message_t *)&txMessage);
-        }
-
-        if (drv_status != d_STATUS_SUCCESS)
         {
             status = CAN_ERROR;
         }
@@ -238,10 +248,10 @@ can_status_t can_read(can_channel_t can_ch, can_msg_t *ptr_can_msg)
     return status;
 }
 
-/* IMPORTANT: CAN Filter Cannot be set once initialized to normal mode - 
+/* IMPORTANT: CAN Filter Cannot be set once initialized to normal mode -
    Filter settings must be performed in the init and before mode is set to normal*/
-   can_status_t can_set_filter(can_channel_t can_ch, bool is_single_id_filter, 
-	                        const uint32_t *const start_id, const uint32_t *const end_id)
+can_status_t can_set_filter(can_channel_t can_ch, bool is_single_id_filter,
+                            const uint32_t *const start_id, const uint32_t *const end_id)
 {
     return CAN_OK;
 }
