@@ -24,7 +24,7 @@
 #include "kernel/error_handler/d_error_handler.h"
 #include "soc/timer/d_timer.h"
 #include "soc/uart/d_uart.h"
-#include "soc/interrupt_manager/d_INT_Critical.h"
+#include "soc/interrupt_manager/d_int_critical.h"
 #include "sru/fcu/d_fcu.h"
 #include "sru/spi_pl/d_spi_pl.h"
 #include "sru/spi_pl/d_spi_pl_cfg.h"

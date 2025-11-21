@@ -185,10 +185,10 @@ const d_UART_StopBits_t stopBits  /**< [in] Number of stop bits */
     /* Disable all UART interrupts */
     uartRegisterWrite(uart, UART_IER, 0x00u);
   
-    /* Enable FIFO with 14 byte trigger level, DMA mode 0 */
+    /* Enable FIFO with 4 byte trigger level, DMA mode 0 */ /* 14 byte trigger level Misses Data */
     /* It has been found that the first write is not always effective and a second is necessary */
-    uartRegisterWrite(uart, UART_FCR, 0xC7u);
-    uartRegisterWrite(uart, UART_FCR, 0xC7u);
+    uartRegisterWrite(uart, UART_FCR, 0x47u);
+    uartRegisterWrite(uart, UART_FCR, 0x47u);
 
     /* No loopback */
     uartRegisterWrite(uart, UART_MCR, 0x00u);
@@ -457,8 +457,6 @@ Uint32_t * const pBytesRead   /**< [out] Pointer to storage for number of bytes 
 
   Uint32_t readCount;
   Uint32_t index;
-  Uint64_t interruptFlags = d_INT_CriticalSectionEnter();
-  
   if (length < receiveBuffer[uart].count)
   {
     readCount = length;
@@ -467,19 +465,11 @@ Uint32_t * const pBytesRead   /**< [out] Pointer to storage for number of bytes 
   {
     readCount = receiveBuffer[uart].count;
   }
-  
   for (index = 0; index < readCount; index++)
   {
     buffer[index] = receiveBuffer[uart].buffer[(receiveBuffer[uart].indexOut + index) % RECEIVE_BUFFER_LENGTH];
   }
-  
-  receiveBuffer[uart].count -= readCount;
-  receiveBuffer[uart].indexOut = (receiveBuffer[uart].indexOut + readCount) % RECEIVE_BUFFER_LENGTH;
-  
-  d_INT_CriticalSectionLeave(interruptFlags);
-  
   *pBytesRead = readCount;
-  
   if (readCount == 0u)
   {
     status = d_STATUS_BUFFER_EMPTY;
@@ -522,8 +512,8 @@ const Uint32_t length   /**< [in] Number of bytes to discard */
     discardCount = receiveBuffer[uart].count;
   }
   receiveBuffer[uart].count = receiveBuffer[uart].count - discardCount;
-  receiveBuffer[uart].indexOut = (receiveBuffer[uart].indexOut + discardCount) % RECEIVE_BUFFER_LENGTH;
   d_INT_CriticalSectionLeave(interruptFlags);
+  receiveBuffer[uart].indexOut = (receiveBuffer[uart].indexOut + discardCount) % RECEIVE_BUFFER_LENGTH;
 
   return d_STATUS_SUCCESS;
 }
