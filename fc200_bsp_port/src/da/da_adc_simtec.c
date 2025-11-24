@@ -28,11 +28,16 @@
 #define SOH4 (0x04)
 #define SOH5 (0x05)
 #define SOH6 (0x06)
-
+#define ADC_MAX_RX_RATE_HZ (100)
+#define ONE_SECOND_MS (1000)
 #define ADC_9_TIMEOUT (60) /* 60 msec timeout for ADC-9 */
 
 static s_timer_data_t Adc9MonitorTimer;
+static s_timer_data_t AdcDataRateMon;
+static float AdcMsgRateHz;
+static uint16_t AdcMsgRateCounter;
 static bool Adc9CommTimeout;
+
 
 typedef enum
 {
@@ -336,6 +341,11 @@ bool da_get_adc_9_timeout(void)
 	return Adc9CommTimeout;
 }
 
+float da_get_adc_9_msg_rate_hz(void)
+{
+	return AdcMsgRateHz;
+}
+
 /**
  * @brief Retrieves the current status of the ADC.
  *
@@ -366,6 +376,8 @@ bool da_adc_9_init(void)
 	Adc9CommTimeout = false;
 	/* Init the ADC timer */
 	timer_start(&Adc9MonitorTimer, ADC_9_TIMEOUT);
+	/* Start the Message Rate Timer */
+	timer_start(&AdcDataRateMon, ONE_SECOND_MS);
 	/* Init ADC UART */
 	adc_init_success = uart_init(UART_ADS);
 	/* If successful */
@@ -395,6 +407,41 @@ void da_adc_9_read_periodic(void)
 	da_ads_process_data();
 	Adc9CommTimeout = timer_check_expiry(&Adc9MonitorTimer);
 	/* SyncableUserCode{7121996B-F893-4085-92C1-FFF4ABC7C697} */
+}
+
+/* Operation 'da_ads_process_data' of Class 'DA_ads' */
+/**
+ * @brief Processes incoming data from the ADS UART interface.
+ *
+ * This function reads data from the UART interface associated with the ADS module
+ * into the ADC_RxPacket buffer. If any bytes are read, it iterates through each byte
+ * and applies the deframing logic by calling da_ads_parse_data() on each byte.
+ *
+ * The function is intended to be called periodically to handle incoming data streams.
+ *
+ * @note The function assumes that ADC_RxPacket and ADC_RX_BUFFER_SIZE are defined and accessible.
+ * @note The UART_ADS identifier and uart_read() function must be properly configured.
+ */
+static void da_ads_process_data(void)
+{
+	/* SyncableUserCode{1CC49295-17BB-4466-8D04-4C79B38942A6}:Nbrlk8aPUZ */
+	uint16_t bytes_read;
+	uint16_t byte_id;
+
+	/* UART Read IMU Buffer */
+	bytes_read = uart_read((uint8_t)UART_ADS, &ADC_RxPacket[0], ADC_RX_BUFFER_SIZE);
+
+	/* if bytes are read in the current cycle */
+	if (bytes_read > 0)
+	{
+		/* Iterate through all the bytes read */
+		for (byte_id = 0; byte_id < bytes_read; byte_id++)
+		{
+			/*Apply Deframing Logic */
+			da_ads_parse_data(&ADC_RxPacket[byte_id]);
+		}
+	}
+	/* SyncableUserCode{1CC49295-17BB-4466-8D04-4C79B38942A6} */
 }
 
 /* Operation 'da_ads_parse_data' of Class 'DA_ads' */
@@ -517,17 +564,44 @@ static void da_ads_parse_data(const uint8_t *ptr_byte)
 				/* Check for carriage return */
 				if (*ptr_byte != '\r')
 				{
+					/* If carriage return is not found, mark data as invalid */
 					validity_status = FLAG_INVALID;
 				}
 				else
 				{
+					/* If data is valid, set the validity status */
 					validity_status = FLAG_VALID;
-
 					/* Reload the timer on valid packet */
 					timer_reload(&Adc9MonitorTimer);
 					/* Decode the data Acquired  until now */
 					util_ascii_hex_to_float((uint8_t *)data_buffer, &ADC_Data_Pool[(uint8_t)param_id_ref].Data);
 					ADC_Data_Pool[(uint8_t)param_id_ref].Data_Flag = validity_status;
+
+					/*-------- Compute Message Data Rate  --------*/
+					/* Increment counter to compute ADC inbound message rate */
+					if (timer_check_expiry(&AdcDataRateMon) == true)
+					{
+						/* Rate = ( Number of messages received in 1 second * 100 )/ (maximum possible rx message in 1 second = 100) */
+						AdcMsgRateHz = (float)AdcMsgRateCounter;
+						/* Print message rate */
+						printf("ADC Msg Rate = %.2f Hz\r\n", AdcMsgRateHz);
+						/* Reload the timer */
+						timer_reload(&AdcDataRateMon);
+						/* Reset the message rate counter to 0*/
+						AdcMsgRateCounter = 0;
+					}
+
+					/* Hold an upper ceiling for the message rate counter */
+					if (AdcMsgRateCounter < ADC_MAX_RX_RATE_HZ)
+					{
+						/* Increment the counter per valid message received */
+						AdcMsgRateCounter++;
+					}
+					else
+					{
+						/* Ciel it to the maximum Rate */
+						AdcMsgRateCounter = ADC_MAX_RX_RATE_HZ;
+					}
 				}
 
 				state = SOH;
@@ -556,41 +630,6 @@ static void da_ads_parse_data(const uint8_t *ptr_byte)
 	/* SyncableUserCode{9D076C2D-36A0-4c14-98E6-5C59543C1502} */
 }
 
-/* Operation 'da_ads_process_data' of Class 'DA_ads' */
-/**
- * @brief Processes incoming data from the ADS UART interface.
- *
- * This function reads data from the UART interface associated with the ADS module
- * into the ADC_RxPacket buffer. If any bytes are read, it iterates through each byte
- * and applies the deframing logic by calling da_ads_parse_data() on each byte.
- *
- * The function is intended to be called periodically to handle incoming data streams.
- *
- * @note The function assumes that ADC_RxPacket and ADC_RX_BUFFER_SIZE are defined and accessible.
- * @note The UART_ADS identifier and uart_read() function must be properly configured.
- */
-static void da_ads_process_data(void)
-{
-	/* SyncableUserCode{1CC49295-17BB-4466-8D04-4C79B38942A6}:Nbrlk8aPUZ */
-	uint16_t bytes_read;
-	uint16_t byte_id;
-
-	/* UART Read IMU Buffer */
-	bytes_read = uart_read((uint8_t)UART_ADS, &ADC_RxPacket[0], ADC_RX_BUFFER_SIZE);
-
-	/* if bytes are read in the current cycle */
-	if (bytes_read > 0)
-	{
-		/* Iterate through all the bytes read */
-		for (byte_id = 0; byte_id < bytes_read; byte_id++)
-		{
-			/*Apply Deframing Logic */
-			da_ads_parse_data(&ADC_RxPacket[byte_id]);
-		}
-	}
-	/* SyncableUserCode{1CC49295-17BB-4466-8D04-4C79B38942A6} */
-}
-
 /**
  * @brief Retrieves ADC data and its validity flag for a given label.
  *
@@ -613,7 +652,7 @@ static void da_map_adc_data_and_flag(da_ads_label_t label, da_ads_data_t *data)
 	else
 	{
 		/* Otherwise set the data and the data
-			validity flag to default values */
+		validity flag to default values */
 		data->Data = 0.0f;
 		data->Data_Flag = FLAG_INVALID;
 	}

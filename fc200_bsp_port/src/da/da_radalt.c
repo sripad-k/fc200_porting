@@ -20,11 +20,20 @@
 /* Correspond to number of cycles to consider the radalt alive */
 #define CNT_RADALT_TRESHOLD (100)
 
+/* Packet Head Signature */
 #define PACKET_HEAD_SIGN (0xFE)
 
+/* Version ID Signature */
 #define VERSION_ID_SIGN (0x02)
 
+/* RADALT timeout */
 #define RADALT_TIMEOUT (60)
+
+/* Time for Message Rate Calculation */
+#define ONE_SECOND_MS (1000) /* in milliseconds */
+
+/* Max RADALT RX Rate Ceiling */
+#define RADALT_MAX_RX_RATE_HZ (100)
 
 typedef enum
 {
@@ -44,6 +53,11 @@ static void da_radalt_msg_decode(radalt_s *ptr_radalt, const radalt_msg_s *msg);
 static radalt_s radalt;
 
 static s_timer_data_t RadaltMonitorTimer;
+static s_timer_data_t RadaltDataRateMon;
+static float RadaltMsgRateHz;
+static uint16_t RadaltMsgRateCounter;
+
+
 static bool RadaltCommTimeout;
 
 /**
@@ -77,6 +91,16 @@ bool da_get_radalt_data(float *agl)
 }
 
 /**
+ * @brief Get the radar altimeter message rate in Hz
+ * 
+ * @return float The current radar altimeter message rate in hertz
+ */
+float da_get_radalt_msg_rate_hz(void)
+{
+	return RadaltMsgRateHz;
+}
+
+/**
  * @brief Retrieves the status of the radar altimeter communication timeout.
  *
  * This function returns the current value of the RadaltCommTimeout flag,
@@ -102,6 +126,9 @@ bool da_radalt_init(void)
     RadaltCommTimeout = false;
     /* Start the timer */
     timer_start(&RadaltMonitorTimer, RADALT_TIMEOUT);
+
+    /* Start the Message Rate Timer */
+    timer_start(&RadaltDataRateMon, ONE_SECOND_MS);
 
     /* Initialise the UART RADALT Channel */
     radalt_init_success = uart_init(UART_RADALT);
@@ -289,6 +316,33 @@ static void da_radalt_parse_data(radalt_msg_s *msg, const uint8_t *ptr_byte)
         if (msg->us_d1_msg.checksum == (temp & 0xFF))
         {
             msg->flag = RADALT_DCODE_CRC_OK;
+
+            /* ------- Compute the Message Rate of RADALT ------- */
+                /* Increment counter to compute RADALT inbound message rate */
+                if(timer_check_expiry(&RadaltDataRateMon) == true)
+                {
+                    /* Rate = ( Number of messages received in 1 second * 100 )/ (maximum possible rx message in 1 second = 100) */
+                    RadaltMsgRateHz = (float)RadaltMsgRateCounter ;
+                    /* Print message rate */
+                    printf("RADALT Msg Rate = %.2f Hz\r\n", RadaltMsgRateHz);
+                    /* Reload the timer */
+                    timer_reload(&RadaltDataRateMon);
+                    /* Reset the message rate counter to 0*/
+                    RadaltMsgRateCounter = 0;
+                }
+
+                /* Hold an upper ceiling for the message rate counter */
+                if(RadaltMsgRateCounter < RADALT_MAX_RX_RATE_HZ)
+                {
+                	/* Increment the counter per valid message received */
+                    RadaltMsgRateCounter++;
+                }
+                else
+                {
+                    /* Ciel it to the maximum Rate */
+                    RadaltMsgRateCounter = RADALT_MAX_RX_RATE_HZ;      
+                }
+
         }
         else
         {

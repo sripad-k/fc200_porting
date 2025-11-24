@@ -16,6 +16,8 @@
 #define IO_DATA_INS_D (0x01)
 #define INS_OPVT (0x52)
 #define INS_UDD (0x95)
+#define ONE_SECOND_MS (1000)
+#define INS_MAX_RX_RATE_HZ (100)
 
 #define IMU_BUFFER_SIZE (300)
 
@@ -75,7 +77,11 @@ static s_da_ins_udd_t UddRawData;
 static s_ins_d_scaled_data_t InsProcessedData;
 
 static s_timer_data_t InsMonitorTimer;
+static s_timer_data_t InsDataRateMon;
 static bool InsCommTimeout;
+
+uint16_t InsMsgRateCounter; /* Counter to track INS inbound message rate */
+float InsMsgRateHz;         /* Calculated INS inbound data rate in Hz */
 
 /* private function prototypes */
 static void da_ins_il_parse_data(const uint8_t *ptr_byte);
@@ -562,6 +568,23 @@ bool da_get_ins_il_pos_invalid(void)
 }
 
 /**
+ * @brief Get the INS message rate in Hz
+ * 
+ * This function retrieves the current INS (Inertial Navigation System) message 
+ * rate from the processed data structure.
+ * 
+ * @param None
+ * 
+ * @return float The INS message rate in Hz from the processed data structure
+ * 
+ * @note This function provides read-only access to the INS message rate
+ */
+float da_get_ins_msg_rate_hz(void)
+{
+    return InsMsgRateHz;
+}
+
+/**
  * @brief Retrieves the latest valid UDD (User Defined Data) from the IMU message.
  *
  * This function checks if the IMU message has a valid checksum. If the checksum is valid,
@@ -615,6 +638,7 @@ bool da_ins_il_init(void)
     util_memset(&OpvtRawData, 0, sizeof(s_da_ins_opvt_t));
     util_memset(&UddRawData, 0, sizeof(s_da_ins_udd_t));
     timer_start(&InsMonitorTimer, INS_PERIODIC_TIMEOUT);
+    timer_start(&InsDataRateMon, ONE_SECOND_MS);
 
     return init_status;
     /* SyncableUserCode{2BE41689-8893-484a-90EB-C9334493186E} */
@@ -677,6 +701,7 @@ static void da_ins_il_process_data(void)
             {
                 /* Decode the received data */
                 da_ins_il_decode();
+                
             }
         }
     }
@@ -893,6 +918,32 @@ static void da_ins_il_parse_data(const uint8_t *ptr_byte)
                 imu_msg.flag = IL_DCODE_CRC_OK;
                 /* Reload timer upon successful deframing */
                 timer_reload(&InsMonitorTimer);
+
+                /*-------- Compute Message Data Rate  --------*/
+                /* Increment counter to compute INS inbound message rate */
+                if(timer_check_expiry(&InsDataRateMon) == true)
+                {
+                    /* Rate = ( Number of messages received in 1 second * 100 )/ (maximum possible rx message in 1 second = 100) */
+                    InsMsgRateHz = (float)InsMsgRateCounter ;
+                    /* Print message rate */
+                    printf("INS Msg Rate = %.2f Hz\r\n", InsMsgRateHz);
+                    /* Reload the timer */
+                    timer_reload(&InsDataRateMon);
+                    /* Reset the message rate counter to 0*/
+                    InsMsgRateCounter = 0;
+                }
+
+                /* Hold an upper ceiling for the message rate counter */
+                if(InsMsgRateCounter < INS_MAX_RX_RATE_HZ)
+                {
+                	/* Increment the counter per valid message received */
+                    InsMsgRateCounter++;
+                }
+                else
+                {
+                    /*  Ciel it to the maximum Rate */
+                    InsMsgRateCounter = INS_MAX_RX_RATE_HZ;
+                }
             }
             else
             {

@@ -942,8 +942,8 @@ static void handle_gcs_message(const mavlink_message_t *msg, mavio_out_t *mavio_
         /* Reset the timer for GCS heartbeat */
         timer_reload(&GcsHeartbeatMonitor);
         // Process heartbeat message
-        printf("Received Heartbeat: System ID %d, Component ID %d\r\n",
-               msg->sysid, msg->compid);
+        // printf("Received Heartbeat: System ID %d, Component ID %d\r\n",
+        //        msg->sysid, msg->compid);
         break;
     }
     case MAVLINK_MSG_ID_COMMAND_INT:

@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "types_ads.h": "c"
+        "types_ads.h": "c",
+        "timer_interface.h": "c"
     }
 }
