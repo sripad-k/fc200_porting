@@ -9,7 +9,7 @@
 
 void pwm_init()
 {
-	
+	d_PWM_Initialise();
 }
 
 bool pwm_configure(uint16_t channel, uint16_t frequency)
@@ -19,6 +19,7 @@ bool pwm_configure(uint16_t channel, uint16_t frequency)
 
 bool pwm_set(uint16_t channel, double duty_cycle)
 {
+	d_PWM_Output(0u, channel, (Float32_t)duty_cycle);
 	return  true;
 } 
 

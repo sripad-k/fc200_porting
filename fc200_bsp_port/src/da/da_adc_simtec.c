@@ -518,13 +518,6 @@ static void da_ads_parse_data(const uint8_t *ptr_byte)
 				if (*ptr_byte != '\r')
 				{
 					validity_status = FLAG_INVALID;
-					printf("ADC fail\r\n");
-					for (uint8_t i = 0; i < MAX_CHARS; i++)
-					{
-						printf(" 0x%02X ", data_buffer[i]);
-					}
-					printf(" 0x%02X ", *ptr_byte);
-					printf("\r\n");
 				}
 				else
 				{

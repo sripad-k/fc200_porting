@@ -17,7 +17,7 @@
 #define INS_OPVT (0x52)
 #define INS_UDD (0x95)
 
-#define IMU_BUFFER_SIZE (500)
+#define IMU_BUFFER_SIZE (300)
 
 #define ATTITUDE_SCALING (0.01f)
 #define ANGULAR_VEL_SCALING (0.02f)       /* 1.0/KG(= 50.0) */

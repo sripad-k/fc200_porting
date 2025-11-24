@@ -256,12 +256,12 @@ bool ach_servo_init(void)
 	/* Initialize the Low Voltage Timer */
 	timer_reset(&LowVoltageTimer);
 
-//	 /* Initialize the UART for Servo Communication */
-//	 if (true == uart_init(UART_SERVO))
-//	 {
-//	 	/* If UART initialization fails, return false */
-//	 	init_status = true;
-//	 }
+	// /* Initialize the UART for Servo Communication */
+	// if (true == uart_init(UART_SERVO))
+	// {
+	// 	/* If UART initialization fails, return false */
+	// 	init_status = true;
+	// }
 
 	/* Return Servo Initialization Status */
 	return (init_status);
@@ -765,7 +765,6 @@ static void ach_servo_parse(const uint8_t *ptr_byte, kst_rs485_msg_t *msg_decode
 			{
 				/* Indicate a decoding error */
 				msg_decode->msg_status = RS485_DECODE_ERROR;
-				printf("SERVO fail\r\n");
 			}
 			/* Reset back to Frame Head in either case */
 			state = STAGE1_FRAME_HEAD;

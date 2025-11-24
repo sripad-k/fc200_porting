@@ -56,8 +56,8 @@ can_status_t can_init(can_channel_t can_ch);
 can_status_t can_write(can_channel_t can_ch, const can_msg_t *ptr_can_msg);
 can_status_t can_read(can_channel_t can_ch, can_msg_t *ptr_can_msg);
 
-can_status_t can_set_filter(can_channel_t can_ch, bool is_single_id_filter, 
-	                        const uint32_t *const start_id, const uint32_t *const end_id);
+// can_status_t can_set_filter(can_channel_t can_ch, bool is_single_id_filter, 
+// 	                        const uint32_t *const start_id, const uint32_t *const end_id);
 
 #endif /*!defined(H_CAN_INTERFACE)*/
  

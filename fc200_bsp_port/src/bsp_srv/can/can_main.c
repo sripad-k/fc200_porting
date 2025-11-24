@@ -65,8 +65,8 @@ can_status_t can_init(can_channel_t can_ch)
                 if (d_CAN_ModeSet(can_ch, d_CAN_MODE_NORMAL) == d_STATUS_SUCCESS)
                 {
                     CanInitialized[can_ch] = true;
-                    //                    d_CAN_InterruptEnable(can_ch, XCANPS_IXR_RXFWMFLL_MASK);
-                    //                    d_INT_IrqEnable(d_CAN_Config[can_ch].interruptNumber);
+//                    d_CAN_InterruptEnable(can_ch, XCANPS_IXR_RXFWMFLL_MASK);
+//                    d_INT_IrqEnable(d_CAN_Config[can_ch].interruptNumber);
                 }
             }
             else
@@ -248,10 +248,10 @@ can_status_t can_read(can_channel_t can_ch, can_msg_t *ptr_can_msg)
     return status;
 }
 
-/* IMPORTANT: CAN Filter Cannot be set once initialized to normal mode -
-   Filter settings must be performed in the init and before mode is set to normal*/
-can_status_t can_set_filter(can_channel_t can_ch, bool is_single_id_filter,
-                            const uint32_t *const start_id, const uint32_t *const end_id)
-{
-    return CAN_OK;
-}
+// /* IMPORTANT: CAN Filter Cannot be set once initialized to normal mode - 
+//    Filter settings must be performed in the init and before mode is set to normal*/
+// can_status_t can_set_filter(can_channel_t can_ch, bool is_single_id_filter, 
+// 	                        const uint32_t *const start_id, const uint32_t *const end_id)
+// {
+//     return CAN_OK;
+// }
