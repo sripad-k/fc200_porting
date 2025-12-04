@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: FW_attCtrl.c
  *
  * Code generated for Simulink model 'FW_attCtrl'.
  *
  * Model version                  : 2.68
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:51:07 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:05:15 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -82,7 +78,7 @@ void FW_attCtrl(const real_T *rtu_FW_Controller_att_pitch_cmd, const real_T
 
   /* DiscreteIntegrator: '<S3>/Discrete-Time Integrator' */
   if ((*rtu_FW_Controller_att_pitch_reset) ||
-      (FW_attCtrl_DW.DiscreteTimeIntegrator_PrevResetState != 0)) {
+      (FW_attCtrl_DW.DiscreteTimeIntegrator_PrevResetState != ((int8_T)0))) {
     FW_attCtrl_DW.DiscreteTimeIntegrator_DSTATE = 0.0;
   }
 
@@ -131,12 +127,13 @@ void FW_attCtrl(const real_T *rtu_FW_Controller_att_pitch_cmd, const real_T
    *  RelationalOperator: '<S9>/Compare'
    *  Signum: '<S6>/Sign'
    */
-  rtb_Switch = (((*rtu_controllerCA_FW_c_erp1) >= 0.95) || (i_0 <= 0)) ?
-    ((int32_T)1) : ((int32_T)0);
+  rtb_Switch = (((*rtu_controllerCA_FW_c_erp1) >= 0.95) || (i_0 <= ((int32_T)
+    ((int8_T)0)))) ? ((int32_T)1) : ((int32_T)0);
 
   /* DiscreteIntegrator: '<S4>/Discrete-Time Integrator' */
   if ((*rtu_FW_Controller_att_roll_reset) ||
-      (FW_attCtrl_DW.DiscreteTimeIntegrator_PrevResetState_i2m1oat1uz != 0)) {
+      (FW_attCtrl_DW.DiscreteTimeIntegrator_PrevResetState_i2m1oat1uz !=
+       ((int8_T)0))) {
     FW_attCtrl_DW.DiscreteTimeIntegrator_DSTATE_ej0a0oln2v = 0.0;
   }
 
@@ -185,8 +182,8 @@ void FW_attCtrl(const real_T *rtu_FW_Controller_att_pitch_cmd, const real_T
    *  RelationalOperator: '<S16>/Compare'
    *  Signum: '<S13>/Sign'
    */
-  rtb_Switch_mn4j10pnvz = (((*rtu_controllerCA_FW_c_erp2) >= 0.95) || (i_0 <= 0))
-    ? ((int32_T)1) : ((int32_T)0);
+  rtb_Switch_mn4j10pnvz = (((*rtu_controllerCA_FW_c_erp2) >= 0.95) || (i_0 <=
+    ((int32_T)((int8_T)0)))) ? ((int32_T)1) : ((int32_T)0);
 
   /* SignalConversion generated from: '<Root>/FW_IntData' incorporates:
    *  DiscreteIntegrator: '<S4>/Discrete-Time Integrator'
@@ -205,7 +202,8 @@ void FW_attCtrl(const real_T *rtu_FW_Controller_att_pitch_cmd, const real_T
    *  RelationalOperator: '<S17>/Compare'
    */
   *rty_FW_IntData_roll_sat = (real_T)(((*rtu_FW_Controller_att_roll_reset) ||
-    (rtb_Switch_mn4j10pnvz == 0)) ? ((int32_T)1) : ((int32_T)0));
+    (rtb_Switch_mn4j10pnvz == ((int32_T)((int8_T)0)))) ? ((int32_T)1) :
+    ((int32_T)0));
 
   /* SignalConversion generated from: '<Root>/FW_IntData' incorporates:
    *  Constant: '<S11>/Constant'
@@ -213,7 +211,7 @@ void FW_attCtrl(const real_T *rtu_FW_Controller_att_pitch_cmd, const real_T
    *  RelationalOperator: '<S11>/Compare'
    */
   *rty_FW_IntData_pitch_sat = (real_T)(((*rtu_FW_Controller_att_pitch_reset) ||
-    (rtb_Switch == 0)) ? ((int32_T)1) : ((int32_T)0));
+    (rtb_Switch == ((int32_T)((int8_T)0)))) ? ((int32_T)1) : ((int32_T)0));
 
   /* SignalConversion generated from: '<Root>/FwAttCmd' incorporates:
    *  BusAssignment: '<Root>/Bus Assignment1'
@@ -380,7 +378,7 @@ void FW_attCtrl(const real_T *rtu_FW_Controller_att_pitch_cmd, const real_T
    *  Switch: '<S5>/Switch'
    *  Trigonometry: '<S5>/Sin'
    */
-  *rty_rud_L = 35.0 * (((9.81 * sin(rtb_RateLimiter)) / u) - rtu_Sensor->omg[2]);
+  *rty_rud_L = 30.0 * (((9.81 * sin(rtb_RateLimiter)) / u) - rtu_Sensor->omg[2]);
 
   /* Update for DiscreteIntegrator: '<S3>/Discrete-Time Integrator' incorporates:
    *  Constant: '<S3>/K_itgt_theta'

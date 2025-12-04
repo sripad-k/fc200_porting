@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: attCtrl.c
  *
  * Code generated for Simulink model 'attCtrl'.
  *
- * Model version                  : 2.67
+ * Model version                  : 2.68
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:52:03 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:06:19 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -154,10 +150,10 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
   /* '<S18>:1:14' eulerdot(1) = omegaB(1) + sp*tt*omegaB(2) + cp*tt*omegaB(3); */
   /* '<S18>:1:15' eulerdot(2) = cp*omegaB(2) - sp*omegaB(3); */
   /* '<S18>:1:16' eulerdot(3) = sp/ct*omegaB(2) + cp/ct*omegaB(3); */
-  rtb_VectorConcatenate_idx_0 = (1.526 * (rtb_VectorConcatenate2_idx_0 -
+  rtb_VectorConcatenate_idx_0 = (1.46 * (rtb_VectorConcatenate2_idx_0 -
     rtu_Sensor->eul_ang[0])) - ((rtu_Sensor->omg[0] + ((sp * tt) *
     rtu_Sensor->omg[1])) + ((cp * tt) * rtu_Sensor->omg[2]));
-  tt = (1.526 * (rtb_VectorConcatenate2_0 - rtu_Sensor->eul_ang[1])) - ((cp *
+  tt = (1.46 * (rtb_VectorConcatenate2_0 - rtu_Sensor->eul_ang[1])) - ((cp *
     rtu_Sensor->omg[1]) - (sp * rtu_Sensor->omg[2]));
 
   /* Sum: '<S6>/Sum' incorporates:
@@ -165,12 +161,12 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  Product: '<S6>/Divide'
    */
   rtb_VectorConcatenate2_idx_0 = rtb_VectorConcatenate_idx_0 +
-    ((*rtu_MR_IntCF_roll_CF) / 4.511);
-  rtb_VectorConcatenate2_idx_1 = tt + ((*rtu_MR_IntCF_pitch_CF) / 4.511);
+    ((*rtu_MR_IntCF_roll_CF) / 9.13);
+  rtb_VectorConcatenate2_idx_1 = tt + ((*rtu_MR_IntCF_pitch_CF) / 9.13);
 
   /* DiscreteIntegrator: '<S6>/Discrete-Time Integrator' */
   if ((*rtu_busControllerIF_attAlt_init_reset) ||
-      (attCtrl_DW.DiscreteTimeIntegrator_PrevResetState != 0)) {
+      (attCtrl_DW.DiscreteTimeIntegrator_PrevResetState != ((int8_T)0))) {
     attCtrl_DW.DiscreteTimeIntegrator_DSTATE_gdd4rgtej1[0] =
       attCtrl_ConstB.integralResetValue;
     attCtrl_DW.DiscreteTimeIntegrator_DSTATE_gdd4rgtej1[1] =
@@ -202,8 +198,8 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  RelationalOperator: '<S12>/Compare'
    *  Signum: '<S7>/Sign'
    */
-  rtb_VectorConcatenate3_0 = (rtb_VectorConcatenate3_tmp || (i <= 0)) ?
-    ((int32_T)1) : ((int32_T)0);
+  rtb_VectorConcatenate3_0 = (rtb_VectorConcatenate3_tmp || (i <= ((int32_T)
+    ((int8_T)0)))) ? ((int32_T)1) : ((int32_T)0);
   rtb_VectorConcatenate3_idx_0 = rtb_VectorConcatenate3_0;
 
   /* Product: '<S6>/Product5' incorporates:
@@ -216,7 +212,7 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
   /* Product: '<S6>/Product2' incorporates:
    *  Constant: '<S6>/Constant1'
    */
-  rtb_Product2_0 = 5.901 * rtb_VectorConcatenate_0;
+  rtb_Product2_0 = 7.124 * rtb_VectorConcatenate_0;
 
   /* Product: '<S9>/Product' incorporates:
    *  Constant: '<S9>/Constant3'
@@ -243,7 +239,7 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  Constant: '<S6>/Constant3'
    *  Product: '<S6>/Product4'
    */
-  rtb_VectorConcatenate1_kdvnt1zcqc_idx_0 = (rtb_Product2_0 + (0.051 * u)) +
+  rtb_VectorConcatenate1_kdvnt1zcqc_idx_0 = (rtb_Product2_0 + (0.0933 * u)) +
     rtb_VectorConcatenate_0;
 
   /* Product: '<S6>/Product' incorporates:
@@ -271,8 +267,8 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  RelationalOperator: '<S12>/Compare'
    *  Signum: '<S7>/Sign'
    */
-  rtb_VectorConcatenate3_0 = (rtb_VectorConcatenate3_tmp || (i <= 0)) ?
-    ((int32_T)1) : ((int32_T)0);
+  rtb_VectorConcatenate3_0 = (rtb_VectorConcatenate3_tmp || (i <= ((int32_T)
+    ((int8_T)0)))) ? ((int32_T)1) : ((int32_T)0);
 
   /* Product: '<S6>/Product5' incorporates:
    *  Bias: '<S6>/Bias'
@@ -283,7 +279,7 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
   /* Product: '<S6>/Product2' incorporates:
    *  Constant: '<S6>/Constant1'
    */
-  rtb_Product2_0 = 5.901 * rtb_VectorConcatenate_0;
+  rtb_Product2_0 = 7.124 * rtb_VectorConcatenate_0;
 
   /* Product: '<S9>/Product' incorporates:
    *  Constant: '<S9>/Constant3'
@@ -304,7 +300,7 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  Constant: '<S6>/Constant3'
    *  Product: '<S6>/Product4'
    */
-  rtb_VectorConcatenate2_idx_0 = (rtb_Product2_0 + (0.051 * u)) +
+  rtb_VectorConcatenate2_idx_0 = (rtb_Product2_0 + (0.0933 * u)) +
     rtb_VectorConcatenate_0;
 
   /* Switch: '<Root>/Switch' incorporates:
@@ -379,7 +375,8 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
 
   /* DiscreteIntegrator: '<S2>/Discrete-Time Integrator' */
   if ((*rtu_busControllerIF_attAlt_init_reset) ||
-      (attCtrl_DW.DiscreteTimeIntegrator_PrevResetState_pabim4iwvd != 0)) {
+      (attCtrl_DW.DiscreteTimeIntegrator_PrevResetState_pabim4iwvd != ((int8_T)0)))
+  {
     attCtrl_DW.DiscreteTimeIntegrator_DSTATE_ijqjwdlaw0 =
       attCtrl_ConstB.integralResetValue_hxh4svakxk;
   }
@@ -421,7 +418,8 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  RelationalOperator: '<S13>/Compare'
    */
   *rty_MR_Int_roll_sat = (real_T)(((*rtu_busControllerIF_attAlt_init_reset) ||
-    (rtb_VectorConcatenate3_idx_0 == 0)) ? ((int32_T)1) : ((int32_T)0));
+    (rtb_VectorConcatenate3_idx_0 == ((int32_T)((int8_T)0)))) ? ((int32_T)1) :
+    ((int32_T)0));
 
   /* SignalConversion generated from: '<Root>/MR_Int' incorporates:
    *  Constant: '<S14>/Constant'
@@ -430,7 +428,8 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  Switch: '<S7>/Switch'
    */
   *rty_MR_Int_pitch_sat = (real_T)(((*rtu_busControllerIF_attAlt_init_reset) ||
-    (rtb_VectorConcatenate3_0 == 0)) ? ((int32_T)1) : ((int32_T)0));
+    (rtb_VectorConcatenate3_0 == ((int32_T)((int8_T)0)))) ? ((int32_T)1) :
+    ((int32_T)0));
 
   /* Sum: '<S2>/Sum' incorporates:
    *  DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
@@ -465,7 +464,7 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  Product: '<S6>/Product'
    *  Product: '<S6>/Product3'
    */
-  attCtrl_DW.DiscreteTimeIntegrator_DSTATE_gdd4rgtej1[0] += 0.01 * (4.511 *
+  attCtrl_DW.DiscreteTimeIntegrator_DSTATE_gdd4rgtej1[0] += 0.01 * (9.13 *
     rtb_VectorConcatenate2_0);
 
   /* Update for DiscreteIntegrator: '<S9>/omega' */
@@ -494,7 +493,7 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  Product: '<S6>/Product3'
    *  Product: '<S7>/Product'
    */
-  attCtrl_DW.DiscreteTimeIntegrator_DSTATE_gdd4rgtej1[1] += 0.01 * (4.511 *
+  attCtrl_DW.DiscreteTimeIntegrator_DSTATE_gdd4rgtej1[1] += 0.01 * (9.13 *
     (rtb_VectorConcatenate2_idx_1 * ((real_T)rtb_VectorConcatenate3_0)));
 
   /* Update for DiscreteIntegrator: '<S9>/omega' incorporates:
@@ -526,8 +525,8 @@ void attCtrl(const real_T *rtu_busControllerIF_attAlt_rollCmd, const real_T
    *  Signum: '<S15>/Sign'
    */
   attCtrl_DW.DiscreteTimeIntegrator_DSTATE_ijqjwdlaw0 += 0.01 * (0.5 * (tt *
-    ((real_T)((((*rtu_busControllerCA_c_erp3) >= 0.95) || (i <= 0)) ? ((int32_T)
-    1) : ((int32_T)0)))));
+    ((real_T)((((*rtu_busControllerCA_c_erp3) >= 0.95) || (i <= ((int32_T)
+    ((int8_T)0)))) ? ((int32_T)1) : ((int32_T)0)))));
   attCtrl_DW.DiscreteTimeIntegrator_PrevResetState_pabim4iwvd = (int8_T)
     ((*rtu_busControllerIF_attAlt_init_reset) ? 1 : 0);
 }

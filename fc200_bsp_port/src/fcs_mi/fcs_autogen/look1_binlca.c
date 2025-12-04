@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: look1_binlca.c
  *
  * Code generated for Simulink model 'att_ctrl_switcher'.
  *
- * Model version                  : 2.203
+ * Model version                  : 2.209
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:52:10 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:06:26 2025
  */
 
 #include "look1_binlca.h"
@@ -46,17 +42,17 @@ real_T look1_binlca(real_T u0, const real_T bp0[], const real_T table[],
     frac = 0.0;
   } else if (u0 < bp0[maxIndex]) {
     /* Binary Search */
-    bpIdx = (maxIndex >> 1U);
+    bpIdx = (maxIndex >> ((uint32_T)1U));
     iLeft = 0U;
     iRght = maxIndex;
-    while ((iRght - iLeft) > 1U) {
+    while ((iRght - iLeft) > ((uint32_T)1U)) {
       if (u0 < bp0[bpIdx]) {
         iRght = bpIdx;
       } else {
         iLeft = bpIdx;
       }
 
-      bpIdx = ((iRght + iLeft) >> 1U);
+      bpIdx = ((iRght + iLeft) >> ((uint32_T)1U));
     }
 
     frac = (u0 - bp0[iLeft]) / (bp0[iLeft + 1U] - bp0[iLeft]);

@@ -256,12 +256,12 @@ bool ach_servo_init(void)
 	/* Initialize the Low Voltage Timer */
 	timer_reset(&LowVoltageTimer);
 
-	// /* Initialize the UART for Servo Communication */
-	// if (true == uart_init(UART_SERVO))
-	// {
-	// 	/* If UART initialization fails, return false */
-	// 	init_status = true;
-	// }
+	/* Initialize the UART for Servo Communication */
+	if (true == uart_init(UART_SERVO))
+	{
+		/* If UART initialization fails, return false */
+		init_status = true;
+	}
 
 	/* Return Servo Initialization Status */
 	return (init_status);
@@ -446,7 +446,7 @@ static void ach_servo_command_msg(e_servo_positions_t servo_id, ach_servo_kst_cm
 	p_msg[9] = FRAME_END;
 
 	/* Write the message to the UART peripheral */
-	//(void)uart_write(UART_SERVO, p_msg, BYTES_PER_MSG);
+	(void)uart_write(UART_SERVO, p_msg, BYTES_PER_MSG);
 }
 
 /**
@@ -522,7 +522,7 @@ void ach_servo_read_periodic(void)
 	util_memset(&ServoMsg, 0, sizeof(kst_rs485_msg_t));
 
 	/* Read the UART Buffer */
-	uint16_t bytes_read = 0 /*uart_read(UART_SERVO, &ServoRxPacket[0], SERVO_BUFFER_SIZE)*/;
+	uint16_t bytes_read = uart_read(UART_SERVO, &ServoRxPacket[0], SERVO_BUFFER_SIZE);
 
 	if (bytes_read > 0)
 	{

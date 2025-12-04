@@ -82,20 +82,7 @@ void ach_read_periodic()
  */
 void ach_cmd_periodic(void)
 {
-    // ach_cmd_servo_periodic();
+    ach_cmd_servo_periodic();
     ach_cmd_epu_periodic();
     (void)ach_cmd_pusher_periodic();
-}
-
-/**
- * @brief Performs the power-up test for the servo.
- *
- * This function initiates the power-up test sequence for the servo by
- * calling the ach_servo_powerup_test() function. It is typically used
- * during system initialization to verify servo functionality.
- *
- * @note Ensure that all necessary hardware is properly initialized before calling this function.
- */
-void ach_powerup_test(void)
-{
 }

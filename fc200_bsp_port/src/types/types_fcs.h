@@ -12,8 +12,9 @@ typedef struct
     float fcs_mr_h_d;
     float fcs_mr_hdot_d;
     float fcs_mr_h_hold;
-    float fcs_fw_roll_d;  // deg
-    float fcs_fw_pitch_d; // deg
+    float fcs_mr_vel_ne_d[2]; // m/s
+    float fcs_fw_roll_d;      // deg
+    float fcs_fw_pitch_d;     // deg
     float fcs_fw_h_d;
     float fcs_fw_cas_d;         // m/s
     float fcs_mr_pit_intg;      // crossfeed

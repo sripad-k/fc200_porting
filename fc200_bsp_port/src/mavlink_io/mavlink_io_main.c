@@ -50,12 +50,14 @@ bool mav_io_get_pic_cmd(uint8_t *pic_cmd, uint16_t *pic_cmd_cnt)
     return false;
 }
 
-bool mav_io_get_umm_cmd(uint8_t *loiter_on, uint8_t *tecs_on)
+bool mav_io_get_umm_cmd(uint8_t *loiter_on, uint8_t *loiter_on_cnt, uint8_t *tecs_on, uint8_t *tecs_on_cnt)
 {
-    if (loiter_on != NULL && tecs_on != NULL)
+    if (loiter_on != NULL && loiter_on_cnt != NULL && tecs_on != NULL && tecs_on_cnt != NULL)
     {
         *loiter_on = MavioOut.loiter_on;
+        *loiter_on_cnt = MavioOut.loiter_on_cnt;
         *tecs_on = MavioOut.tecs_on;
+        *tecs_on_cnt = MavioOut.tecs_on_cnt;
         return true;
     }
     return false;

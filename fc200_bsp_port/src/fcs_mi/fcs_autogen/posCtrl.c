@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: posCtrl.c
  *
  * Code generated for Simulink model 'posCtrl'.
  *
- * Model version                  : 2.50
+ * Model version                  : 2.51
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:52:23 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:06:39 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -153,15 +149,15 @@ void posCtrl(const busWaypointManager *rtu_busWptManager, const std_sensor_t
    *  RelationalOperator: '<S5>/Compare'
    *  RelationalOperator: '<S6>/Compare'
    */
-  rtb_LogicalOperator = ((((((((*rtu_vom_status) == TAKEOFF) ||
-    ((*rtu_vom_status) == LAND)) || ((*rtu_vom_status) == HOVER)) ||
-    ((*rtu_vom_status) == MR_RTH)) || ((*rtu_vom_status) == F_TRANS)) ||
-    ((*rtu_vom_status) == B_TRANS)) && ((*rtu_vom_status) !=
+  rtb_LogicalOperator = ((((((((*rtu_vom_status) == VOM_TAKEOFF) ||
+    ((*rtu_vom_status) == VOM_LAND)) || ((*rtu_vom_status) == VOM_HOVER)) ||
+    ((*rtu_vom_status) == VOM_MR_RTH)) || ((*rtu_vom_status) == VOM_F_TRANS)) ||
+    ((*rtu_vom_status) == VOM_B_TRANS)) && ((*rtu_vom_status) !=
     posCtrl_DW.Delay1_DSTATE));
 
   /* Delay: '<Root>/Delay' */
-  posCtrl_DW.icLoad_gwql4htcwe = ((rtb_LogicalOperator && (((uint32_T)
-    posCtrl_PrevZCX.Delay_Reset_ZCE) != POS_ZCSIG)) ||
+  posCtrl_DW.icLoad_gwql4htcwe = ((rtb_LogicalOperator &&
+    (posCtrl_PrevZCX.Delay_Reset_ZCE != ((uint8_T)POS_ZCSIG))) ||
     (posCtrl_DW.icLoad_gwql4htcwe));
   posCtrl_PrevZCX.Delay_Reset_ZCE = rtb_LogicalOperator ? ((ZCSigState)1) :
     ((ZCSigState)0);
@@ -464,7 +460,7 @@ void posCtrl(const busWaypointManager *rtu_busWptManager, const std_sensor_t
    *  Product: '<Root>/Product1'
    *  Sum: '<S9>/Sum'
    */
-  *rty_busControllerIF_vel_velCmdH_x = 0.25 * (sps - rtb_R_idx_2);
+  *rty_busControllerIF_vel_velCmdH_x = 0.2 * (sps - rtb_R_idx_2);
 
   /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
    *  Gain: '<S9>/Gain'
@@ -472,7 +468,7 @@ void posCtrl(const busWaypointManager *rtu_busWptManager, const std_sensor_t
    *  Product: '<Root>/Product1'
    *  Sum: '<S9>/Sum'
    */
-  *rty_busControllerIF_vel_velCmdH_y = 0.25 * (rtb_Sum_mnw5bny0bd_idx_0 -
+  *rty_busControllerIF_vel_velCmdH_y = 0.2 * (rtb_Sum_mnw5bny0bd_idx_0 -
     rtb_R_idx_1);
 
   /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:

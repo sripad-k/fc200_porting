@@ -85,7 +85,7 @@ float da_get_adc_9_msg_rate_hz(void);
 
 /*--------------------------------- RADALT GETTERS ----------------------------------*/
 bool da_get_radalt_timeout(void);
-bool da_get_radalt_data(float *agl);
+bool da_get_radalt_data(float *agl, float *snr);
 float da_get_radalt_msg_rate_hz(void);
 
 /*--------------------------------- SBUS GETTERS ------------------------------------*/

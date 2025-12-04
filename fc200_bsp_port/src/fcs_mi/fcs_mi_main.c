@@ -40,7 +40,10 @@ void fcs_mi_get_fcs_dscr(
     uint8_t *gnss_loss,
     uint8_t *ins_selection,
     uint8_t *adc_selection,
-    uint16_t *current_waypoint_idx)
+    uint16_t *current_waypoint_idx,
+    uint8_t *tecs_on,
+    uint8_t *loiter_on,
+    uint8_t *cog_track_on)
 {
     *vom_status = controllerMain_Y.fcs_state.vom_status;
     *safety_status = controllerMain_Y.fcs_state.safety_state;
@@ -52,6 +55,9 @@ void fcs_mi_get_fcs_dscr(
     *ins_selection = 0;                                   // TODO
     *adc_selection = 0;                                   // TODO
     *current_waypoint_idx = controllerMain_Y.wp_req_idx;
+    *tecs_on = controllerMain_Y.fcs_state.tecs_mode;
+    *loiter_on = controllerMain_Y.fcs_state.loiter_mode;
+    *cog_track_on = controllerMain_Y.fcs_state.CoG_tracking;
 }
 
 void fcs_mi_get_fcs_cont(
@@ -104,6 +110,8 @@ void fcs_mi_get_fbctrl(
     fbctrl_data->fcs_mr_h_d = pt_log->controllerAltCtrl.hCmd;
     fbctrl_data->fcs_mr_hdot_d = pt_log->controllerAltCtrl.hDotCmd;
     fbctrl_data->fcs_mr_h_hold = pt_log->controllerAltCtrl.hHold;
+    fbctrl_data->fcs_mr_vel_ne_d[0] = pt_log->controllerVelCtrl.velCmd[0];
+    fbctrl_data->fcs_mr_vel_ne_d[1] = pt_log->controllerVelCtrl.velCmd[1];
 
     fbctrl_data->fcs_fw_roll_d = pt_log->fwAttCmd.rollCmd;
     fbctrl_data->fcs_fw_pitch_d = pt_log->fwAttCmd.pitchCmd;
@@ -144,7 +152,6 @@ int fcs_mi_get_act_cmd(
     return 0; // Success
 }
 
-#ifndef PIL_BUILD_ENABLED
 static void update_fcs_input_ins_1(void)
 {
     /* get Euler Angles */
@@ -247,7 +254,7 @@ static void update_fcs_input_ins_1(void)
 
 static void update_fcs_input_ins_2(void)
 {
-  
+    // TODO: need to fill in
 }
 
 // static void update_fcs_input_ads_2(void);
@@ -255,25 +262,29 @@ static void update_fcs_input_ads_1(void)
 {
     float cas = 0.0;
     bool valid = da_get_adc_9_cas(&cas);
-    controllerMain_U.sensor_in.ads_1.aspd_cas = cas;
+
+    if (!isnan(cas) && !isinf(cas))
+    {
+        controllerMain_U.sensor_in.ads_1.aspd_cas = cas;
+    }
+
     controllerMain_U.sensor_in.ads_1.aspd_cas_invalid = valid;
 }
 
 static void update_fcs_input_ads_2(void)
 {
-
+    // TODO: need to fill in
 }
 
 static void update_fcs_input_radalt(void)
 {
     float alt_radalt;
-    if (da_get_radalt_data(&alt_radalt))
+    float radalt_snr;
+    if (da_get_radalt_data(&alt_radalt, &radalt_snr))
     {
         controllerMain_U.sensor_in.h_radar_agl = alt_radalt;
     }
 }
-
-#endif // PIL_BUILD_ENABLED
 
 static void update_fcs_input_ep(void)
 {
@@ -337,10 +348,12 @@ static void update_fcs_input_gcs_cmd(void)
     controllerMain_U.std_command.pic_cmd_cnt = pic_cmd_cnt;
 
     // commnads used in UMM mode
-    uint8_t loiter_on, tecs_on;
-    mav_io_get_umm_cmd(&loiter_on, &tecs_on);
+    uint8_t loiter_on, loiter_on_cnt, tecs_on, tecs_on_cnt;
+    mav_io_get_umm_cmd(&loiter_on, &loiter_on_cnt, &tecs_on, &tecs_on_cnt);
     controllerMain_U.extd_cmd.loiter_cmd = loiter_on;
+    controllerMain_U.extd_cmd.loiter_cmd_cnt = loiter_on_cnt;
     controllerMain_U.extd_cmd.tecs_cmd = tecs_on;
+    controllerMain_U.extd_cmd.tecs_cmd_cnt = tecs_on_cnt;
 
     controllerMain_U.std_command.airspeed_cas_cmd = 25.0;
     controllerMain_U.std_command.fwrth_apr_deg = 135.0;
@@ -405,86 +418,6 @@ static void update_fcs_output_pusher(void)
     ach_set_pusher_pwm(duty_cycle);
 }
 
-#ifdef PIL_BUILD_ENABLED
-
-static void update_pil_input(void)
-{
-    pil_in_t pil_in = {0};
-
-    mav_io_get_pil_input(&pil_in);
-
-    int i;
-    for (i = 0; i < 3; i++)
-    {
-        controllerMain_U.sensor_in.ins_1.eul_ang[i] = pil_in.ins_data[0].euler_rpy[i];
-        controllerMain_U.sensor_in.ins_1.omg[i] = pil_in.ins_data[0].omg[i];
-        controllerMain_U.sensor_in.ins_1.acc[i] = pil_in.ins_data[0].acc[i];
-        controllerMain_U.sensor_in.ins_1.v_ned[i] = pil_in.ins_data[0].vel_ned[i];
-
-        controllerMain_U.sensor_in.ins_2.eul_ang[i] = pil_in.ins_data[1].euler_rpy[i];
-        controllerMain_U.sensor_in.ins_2.omg[i] = pil_in.ins_data[1].omg[i];
-        controllerMain_U.sensor_in.ins_2.acc[i] = pil_in.ins_data[1].acc[i];
-        controllerMain_U.sensor_in.ins_2.v_ned[i] = pil_in.ins_data[1].vel_ned[i];
-    }
-
-    controllerMain_U.sensor_in.ins_1.lat = ((double)pil_in.ins_data[0].latitude) * 1e-7 * DEG2RAD;
-    controllerMain_U.sensor_in.ins_1.lon = ((double)pil_in.ins_data[0].longitude) * 1e-7 * DEG2RAD;
-    controllerMain_U.sensor_in.ins_1.alt_gps_amsl = pil_in.ins_data[0].alt_amsl;
-
-    controllerMain_U.sensor_in.ins_2.lat = ((double)pil_in.ins_data[1].latitude) * 1e-7 * DEG2RAD;
-    controllerMain_U.sensor_in.ins_2.lon = ((double)pil_in.ins_data[1].longitude) * 1e-7 * DEG2RAD;
-    controllerMain_U.sensor_in.ins_2.alt_gps_amsl = pil_in.ins_data[1].alt_amsl;
-
-    controllerMain_U.sensor_in.ads_1.aspd_cas = pil_in.adc_data[0].aspd_cas;
-    controllerMain_U.sensor_in.ads_1.alt_baro_amsl = pil_in.adc_data[0].alt_baro_amsl;
-    controllerMain_U.sensor_in.ads_1.aoa = pil_in.adc_data[0].aoa;
-    controllerMain_U.sensor_in.ads_1.aos = pil_in.adc_data[0].aos;
-
-    controllerMain_U.sensor_in.ads_2.aspd_cas = pil_in.adc_data[1].aspd_cas;
-    controllerMain_U.sensor_in.ads_2.alt_baro_amsl = pil_in.adc_data[1].alt_baro_amsl;
-    controllerMain_U.sensor_in.ads_2.aoa = pil_in.adc_data[1].aoa;
-    controllerMain_U.sensor_in.ads_2.aos = pil_in.adc_data[1].aos;
-
-    controllerMain_U.sensor_in.h_radar_agl = pil_in.radalt_agl;
-    controllerMain_U.sensor_in.wow[0] = pil_in.wow[0];
-    controllerMain_U.sensor_in.wow[1] = pil_in.wow[1];
-    controllerMain_U.sensor_in.wow[2] = pil_in.wow[2];
-
-    controllerMain_U.sensor_in.ins_1.att_invalid = pil_in.ins_data[0].att_invalid;
-    controllerMain_U.sensor_in.ins_1.omg_invalid = !pil_in.ins_data[0].gyro_healthy;
-    controllerMain_U.sensor_in.ins_1.acc_invalid = !pil_in.ins_data[0].acc_healthy;
-    controllerMain_U.sensor_in.ins_1.pos_invalid = pil_in.ins_data[0].pos_invalid;
-    controllerMain_U.sensor_in.ins_1.data_timeout = 0; // TODO: set timeout
-
-    controllerMain_U.sensor_in.ins_2.att_invalid = pil_in.ins_data[1].att_invalid;
-    controllerMain_U.sensor_in.ins_2.omg_invalid = !pil_in.ins_data[1].gyro_healthy;
-    controllerMain_U.sensor_in.ins_2.acc_invalid = !pil_in.ins_data[1].acc_healthy;
-    controllerMain_U.sensor_in.ins_2.pos_invalid = pil_in.ins_data[1].pos_invalid;
-    controllerMain_U.sensor_in.ins_2.data_timeout = 0; // TODO: set timeout
-}
-
-static void update_pil_output(void)
-{
-    pil_out_t pil_out;
-
-    int i = 0;
-    for (i = 0; i < 8; i++)
-    {
-        pil_out.rotor_cmd_cval[i] = controllerMain_Y.std_ctrl.lifter_cval_cmd[i];
-    }
-
-    for (i = 0; i < 12; i++)
-    {
-        pil_out.servo_cmd_deg[i] = controllerMain_Y.std_ctrl.acs_servo_deg_cmd[i];
-    }
-
-    pil_out.pusher_cmd_pwm = controllerMain_Y.std_ctrl.pusher_pwm_cmd;
-
-    mav_io_set_pil_out(&pil_out);
-}
-
-#endif // PIL_BUILD_ENABLED
-
 /*
  set gcs terminal data
 */
@@ -507,9 +440,6 @@ void fcs_mi_set_gcs_data(mavio_in_t *mavio_in)
  */
 void fcs_mi_periodic(void)
 {
-#ifdef PIL_BUILD_ENABLED
-    update_pil_input();
-#else
     update_fcs_input_ins_1();
 
     update_fcs_input_ins_2();
@@ -519,7 +449,6 @@ void fcs_mi_periodic(void)
     update_fcs_input_ads_2();
 
     update_fcs_input_radalt();
-#endif
 
     update_fcs_input_ep();
 
@@ -536,8 +465,4 @@ void fcs_mi_periodic(void)
     update_fcs_output_epu();
 
     update_fcs_output_pusher();
-
-#ifdef PIL_BUILD_ENABLED
-    update_pil_output();
-#endif
 }

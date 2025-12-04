@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: att_ctrl_switcher.c
  *
  * Code generated for Simulink model 'att_ctrl_switcher'.
  *
- * Model version                  : 2.203
+ * Model version                  : 2.209
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:52:10 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:06:26 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -200,7 +196,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
   /* RelationalOperator: '<S21>/Compare' incorporates:
    *  Constant: '<S21>/Constant'
    */
-  rtb_Compare_bdk0wsg3vg = ((*rtu_vom_status) == HOVER);
+  rtb_Compare_bdk0wsg3vg = ((*rtu_vom_status) == VOM_HOVER);
 
   /* Switch: '<S25>/Switch' incorporates:
    *  UnitDelay: '<S25>/ud'
@@ -230,7 +226,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
    *  DataTypeConversion: '<S27>/Data Type Conversion'
    *  UnitDelay: '<S30>/FixPt Unit Delay2'
    */
-  if (att_ctrl_switcher_DW.FixPtUnitDelay2_DSTATE != 0U) {
+  if (att_ctrl_switcher_DW.FixPtUnitDelay2_DSTATE != ((uint8_T)0)) {
     rtb_Switch3_h3usfnxrts = rtb_Compare_bdk0wsg3vg ? 1.0 : 0.0;
   }
 
@@ -367,8 +363,8 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
    *  Gain: '<S26>/Gain'
    *  Sum: '<S26>/Sum2'
    */
-  att_ctrl_switcher_DW.icLoad = ((rtb_OR_kzzf1eb5vp && (((uint32_T)
-    att_ctrl_switcher_PrevZCX.Delay_Reset_ZCE) != POS_ZCSIG)) ||
+  att_ctrl_switcher_DW.icLoad = ((rtb_OR_kzzf1eb5vp &&
+    (att_ctrl_switcher_PrevZCX.Delay_Reset_ZCE != ((uint8_T)POS_ZCSIG))) ||
     (att_ctrl_switcher_DW.icLoad));
   att_ctrl_switcher_PrevZCX.Delay_Reset_ZCE = rtb_OR_kzzf1eb5vp ? ((ZCSigState)1)
     : ((ZCSigState)0);
@@ -399,15 +395,20 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
 
   /* End of Switch: '<S6>/Switch' */
 
+  /* BusAssignment: '<S6>/Bus Assignment1' incorporates:
+   *  Logic: '<S32>/AND'
+   */
+  *rty_busControllerIF_att_yawHold = rtb_OR_lhfjdl0z3o;
+
   /* RelationalOperator: '<S35>/Compare' incorporates:
    *  Constant: '<S35>/Constant'
    */
-  rtb_OR_kzzf1eb5vp = ((*rtu_vom_status) == MANUAL);
+  rtb_OR_kzzf1eb5vp = ((*rtu_vom_status) == VOM_MANUAL);
 
   /* Delay: '<S34>/Delay' */
-  att_ctrl_switcher_DW.icLoad_fqpjqu1dam = ((rtb_OR_kzzf1eb5vp && (((uint32_T)
-    att_ctrl_switcher_PrevZCX.Delay_Reset_ZCE_axihigadeh) != POS_ZCSIG)) ||
-    (att_ctrl_switcher_DW.icLoad_fqpjqu1dam));
+  att_ctrl_switcher_DW.icLoad_fqpjqu1dam = ((rtb_OR_kzzf1eb5vp &&
+    (att_ctrl_switcher_PrevZCX.Delay_Reset_ZCE_axihigadeh != ((uint8_T)POS_ZCSIG)))
+    || (att_ctrl_switcher_DW.icLoad_fqpjqu1dam));
   att_ctrl_switcher_PrevZCX.Delay_Reset_ZCE_axihigadeh = rtb_OR_kzzf1eb5vp ?
     ((ZCSigState)1) : ((ZCSigState)0);
   if (att_ctrl_switcher_DW.icLoad_fqpjqu1dam) {
@@ -426,9 +427,6 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
   }
 
   /* End of Switch: '<S34>/Switch' */
-
-  /* BusAssignment: '<S7>/Bus Assignment1' */
-  *rty_busControllerIF_att_yawHold = rtb_OR_lhfjdl0z3o;
 
   /* Lookup_n-D: '<S9>/1-D Lookup Table' */
   rtb_uDLookupTable = look1_binlca(*rtu_sensor_aspd_cas,
@@ -494,7 +492,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
    *  Constant: '<S11>/Constant'
    *  Product: '<S11>/Product'
    */
-  if ((*rtu_loiter_mode) > 0U) {
+  if ((*rtu_loiter_mode) > ((uint8_T)0)) {
     rtb_Switch1_lxdynkvoci = *rtu_rollCmd_fw_guid;
   } else {
     rtb_Switch1_lxdynkvoci = 0.52359877559829882 * rtu_Pilot->roll_ch;
@@ -503,7 +501,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
   /* End of Switch: '<S11>/Switch1' */
 
   /* Switch: '<S11>/Switch4' */
-  if ((*rtu_TECS_mode) > 0U) {
+  if ((*rtu_TECS_mode) > ((uint8_T)0)) {
     /* BusAssignment: '<S11>/Bus Assignment1' */
     rtb_BusAssignment1_hzqxy3zxod_pitchCmd = *rtu_dTECSThetaCmd_rad;
   } else {
@@ -523,7 +521,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
   /* RelationalOperator: '<S42>/Compare' incorporates:
    *  Constant: '<S42>/Constant'
    */
-  rtb_OR_kzzf1eb5vp = ((*rtu_vom_status) == UMAN);
+  rtb_OR_kzzf1eb5vp = ((*rtu_vom_status) == VOM_UMAN);
 
   /* Logic: '<S41>/OR' incorporates:
    *  RelationalOperator: '<S43>/FixPt Relational Operator'
@@ -545,9 +543,9 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
                         att_ctrl_switcher_DW.DelayInput1_DSTATE));
 
   /* Delay: '<S45>/Delay' */
-  att_ctrl_switcher_DW.icLoad_b1rfgb1u0f = ((rtb_OR_lhfjdl0z3o && (((uint32_T)
-    att_ctrl_switcher_PrevZCX.Delay_Reset_ZCE_i5j3dzdcmn) != POS_ZCSIG)) ||
-    (att_ctrl_switcher_DW.icLoad_b1rfgb1u0f));
+  att_ctrl_switcher_DW.icLoad_b1rfgb1u0f = ((rtb_OR_lhfjdl0z3o &&
+    (att_ctrl_switcher_PrevZCX.Delay_Reset_ZCE_i5j3dzdcmn != ((uint8_T)POS_ZCSIG)))
+    || (att_ctrl_switcher_DW.icLoad_b1rfgb1u0f));
   att_ctrl_switcher_PrevZCX.Delay_Reset_ZCE_i5j3dzdcmn = rtb_OR_lhfjdl0z3o ?
     ((ZCSigState)1) : ((ZCSigState)0);
   if (att_ctrl_switcher_DW.icLoad_b1rfgb1u0f) {
@@ -581,7 +579,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
    *  Switch: '<S41>/Switch3'
    *  Trigonometry: '<S41>/Tan'
    */
-  if ((*rtu_CoG_tracking) > 0U) {
+  if ((*rtu_CoG_tracking) > ((uint8_T)0)) {
     rtb_Switch2_oqkzp4xkeg = *rtu_sensor_chi;
 
     /* Switch: '<S46>/Switch3' incorporates:
@@ -700,7 +698,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
    *  Product: '<S7>/Product1'
    */
   switch (*rtu_vom_status) {
-   case READY:
+   case VOM_READY:
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S8>/Bus Assignment1'
      */
@@ -737,7 +735,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
     *rty_busControllerIF_att_init_reset = true;
     break;
 
-   case STARTUP:
+   case VOM_STARTUP:
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S10>/Bus Assignment1'
      */
@@ -774,21 +772,21 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
     *rty_busControllerIF_att_init_reset = true;
     break;
 
-   case TAKEOFF:
+   case VOM_TAKEOFF:
     /* SignalConversion generated from: '<Root>/busControllerIF_att' */
     *rty_busControllerIF_att_yawCmd =
       *rtu_mode_data_autotakeoff_data_takeoff_yaw_ref;
 
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S3>/Bus Assignment1'
+     *  Constant: '<S3>/r_cmd'
      */
     *rty_busControllerIF_att_yawRateCmd = 0.0;
 
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
-     *  BusAssignment: '<S3>/Bus Assignment1'
-     *  Constant: '<S3>/Constant'
+     *  Logic: '<S3>/NOT'
      */
-    *rty_busControllerIF_att_yawHold = true;
+    *rty_busControllerIF_att_yawHold = !(*rtu_sFlags_bGPSLoss);
 
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S3>/Bus Assignment1'
@@ -799,7 +797,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
     *rty_busControllerIF_att_init_reset = !(*rtu_bInAirFlag);
     break;
 
-   case HOVER:
+   case VOM_HOVER:
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S6>/Bus Assignment1'
      */
@@ -828,7 +826,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
     *rty_busControllerIF_att_init_reset = false;
     break;
 
-   case MANUAL:
+   case VOM_MANUAL:
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  Constant: '<S7>/Constant'
      *  Product: '<S7>/Product'
@@ -868,7 +866,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
     *rty_busControllerIF_att_init_reset = !(*rtu_bInAirFlag);
     break;
 
-   case LAND:
+   case VOM_LAND:
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S2>/Bus Assignment1'
      */
@@ -884,14 +882,14 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
 
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S2>/Bus Assignment1'
+     *  Constant: '<S2>/Constant'
      */
     *rty_busControllerIF_att_yawRateCmd = 0.0;
 
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
-     *  BusAssignment: '<S2>/Bus Assignment1'
-     *  Constant: '<S2>/Constant'
+     *  Logic: '<S2>/NOT'
      */
-    *rty_busControllerIF_att_yawHold = true;
+    *rty_busControllerIF_att_yawHold = !(*rtu_sFlags_bGPSLoss);
 
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S2>/Bus Assignment1'
@@ -902,7 +900,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
     *rty_busControllerIF_att_init_reset = !(*rtu_bInAirFlag);
     break;
 
-   case MR_RTH:
+   case VOM_MR_RTH:
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S9>/Bus Assignment1'
      */
@@ -938,7 +936,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
     *rty_busControllerIF_att_init_reset = false;
     break;
 
-   case UMAN:
+   case VOM_UMAN:
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S11>/Bus Assignment1'
      */
@@ -973,7 +971,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
       ((*rtu_lifter_state) != ON));
     break;
 
-   case F_TRANS:
+   case VOM_F_TRANS:
     /* SignalConversion generated from: '<Root>/busControllerIF_att' incorporates:
      *  BusAssignment: '<S5>/Bus Assignment1'
      */
@@ -1010,7 +1008,7 @@ void att_ctrl_switcher(const real_T rtu_sensor_eul_ang[3], const real_T
     *rty_busControllerIF_att_init_reset = false;
     break;
 
-   case B_TRANS:
+   case VOM_B_TRANS:
     /* Switch: '<S4>/Switch3' incorporates:
      *  Switch: '<S4>/Switch1'
      */

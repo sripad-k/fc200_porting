@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: FW_attCtrl_switcher.c
  *
  * Code generated for Simulink model 'FW_attCtrl_switcher'.
  *
- * Model version                  : 2.57
+ * Model version                  : 2.60
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:51:14 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:05:23 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -93,13 +89,13 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
    *  Constant: '<S9>/Constant'
    *  RelationalOperator: '<S9>/Compare'
    */
-  rtb_BusAssignment2_kto4fbsvxd_roll_reset = ((*rtu_Sensor_aspd_cas) <= 5.0);
+  rtb_BusAssignment2_kto4fbsvxd_roll_reset = ((*rtu_Sensor_aspd_cas) <= 10.0);
 
   /* BusAssignment: '<S3>/Bus Assignment2' incorporates:
    *  Constant: '<S12>/Constant'
    *  RelationalOperator: '<S12>/Compare'
    */
-  rtb_BusAssignment2_hpg3cr2njl_roll_reset = ((*rtu_Sensor_aspd_cas) <= 5.0);
+  rtb_BusAssignment2_hpg3cr2njl_roll_reset = ((*rtu_Sensor_aspd_cas) <= 10.0);
 
   /* Switch: '<S4>/Switch' incorporates:
    *  Constant: '<S4>/100pwm_per_sec'
@@ -188,7 +184,7 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
    *  RelationalOperator: '<S13>/Compare'
    */
   rtb_Switch = rtb_Saturation_ey2vnfgrbn;
-  rtb_BusAssignment2_feseftyew1_roll_reset = ((*rtu_Sensor_aspd_cas) <= 5.0);
+  rtb_BusAssignment2_feseftyew1_roll_reset = ((*rtu_Sensor_aspd_cas) <= 10.0);
 
   /* Update for UnitDelay: '<S4>/Unit Delay' incorporates:
    *  Constant: '<S15>/Constant'
@@ -200,16 +196,16 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
    *  Constant: '<S17>/Constant'
    *  RelationalOperator: '<S17>/Compare'
    */
-  rtb_BusAssignment2_bjcftf0k5t_roll_reset = ((*rtu_Sensor_aspd_cas) <= 5.0);
+  rtb_BusAssignment2_bjcftf0k5t_roll_reset = ((*rtu_Sensor_aspd_cas) <= 10.0);
 
   /* BusAssignment: '<S6>/Bus Assignment2' incorporates:
    *  Constant: '<S18>/Constant'
    *  RelationalOperator: '<S18>/Compare'
    */
-  rtb_BusAssignment2_gp1xqxoqtd_roll_reset = ((*rtu_Sensor_aspd_cas) <= 5.0);
+  rtb_BusAssignment2_gp1xqxoqtd_roll_reset = ((*rtu_Sensor_aspd_cas) <= 10.0);
 
   /* MultiPortSwitch: '<S7>/Multiport Switch1' */
-  if ((*rtu_TECS_mode) == 0U) {
+  if ((*rtu_TECS_mode) == ((uint8_T)0)) {
     rtb_Saturation_ey2vnfgrbn = *rtu_MR_att_cmd_pitchCmd;
 
     /* MultiPortSwitch: '<S7>/Multiport Switch2' */
@@ -226,7 +222,7 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
   /* RelationalOperator: '<S19>/Compare' incorporates:
    *  Constant: '<S19>/Constant'
    */
-  rtb_Compare_evr0ymsvl3 = ((*rtu_Sensor_aspd_cas) <= 5.0);
+  rtb_Compare_evr0ymsvl3 = ((*rtu_Sensor_aspd_cas) <= 10.0);
 
   /* MultiPortSwitch: '<Root>/Multiport Switch' incorporates:
    *  BusAssignment: '<S1>/Bus Assignment2'
@@ -241,7 +237,7 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
    *  Constant: '<S8>/Constant'
    */
   switch (*rtu_vom_status) {
-   case UMAN:
+   case VOM_UMAN:
     rty_busFW_Controller_att->roll_cmd = *rtu_MR_att_cmd_rollCmd;
     rty_busFW_Controller_att->pitch_cmd = rtb_Saturation_ey2vnfgrbn;
 
@@ -262,7 +258,7 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
     rty_busFW_Controller_att->yaw_reset = rtb_Compare_evr0ymsvl3;
     break;
 
-   case F_TRANS:
+   case VOM_F_TRANS:
     rty_busFW_Controller_att->roll_cmd = *rtu_MR_att_cmd_rollCmd;
     rty_busFW_Controller_att->pitch_cmd = *rtu_MR_att_cmd_pitchCmd;
     rty_busFW_Controller_att->pusher_cmd = rtb_Switch;
@@ -274,7 +270,7 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
       rtb_BusAssignment2_feseftyew1_roll_reset;
     break;
 
-   case B_TRANS:
+   case VOM_B_TRANS:
     rty_busFW_Controller_att->roll_cmd = *rtu_MR_att_cmd_rollCmd;
     rty_busFW_Controller_att->pitch_cmd =
       rtb_BusAssignment2_kto4fbsvxd_pitch_cmd;
@@ -287,7 +283,7 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
       rtb_BusAssignment2_kto4fbsvxd_roll_reset;
     break;
 
-   case FLTDIR:
+   case VOM_FLTDIR:
     rty_busFW_Controller_att->roll_cmd = *rtu_rollCmd_FW_guidance;
     rty_busFW_Controller_att->pitch_cmd = *rtu_ControllerTECS_theta_cmd;
 
@@ -309,7 +305,7 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
       rtb_BusAssignment2_hpg3cr2njl_roll_reset;
     break;
 
-   case LOITER:
+   case VOM_LOITER:
     rty_busFW_Controller_att->roll_cmd = *rtu_rollCmd_FW_guidance;
     rty_busFW_Controller_att->pitch_cmd = *rtu_ControllerTECS_theta_cmd;
 
@@ -331,7 +327,7 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
       rtb_BusAssignment2_gp1xqxoqtd_roll_reset;
     break;
 
-   case WAYPNT:
+   case VOM_WAYPNT:
     rty_busFW_Controller_att->roll_cmd = *rtu_rollCmd_FW_guidance;
     rty_busFW_Controller_att->pitch_cmd = *rtu_ControllerTECS_theta_cmd;
 
@@ -350,7 +346,7 @@ void FW_attCtrl_switcher(const vom_t *rtu_vom_status, const real_T
     rty_busFW_Controller_att->yaw_reset = false;
     break;
 
-   case FW_RTH:
+   case VOM_FW_RTH:
     rty_busFW_Controller_att->roll_cmd = *rtu_rollCmd_FW_guidance;
     rty_busFW_Controller_att->pitch_cmd = *rtu_ControllerTECS_theta_cmd;
 

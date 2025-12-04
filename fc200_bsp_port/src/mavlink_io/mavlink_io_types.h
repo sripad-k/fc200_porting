@@ -11,6 +11,7 @@
 
 #include "type.h"
 #include "types_sbus.h"
+#include "types_fcs.h"
 
 #define MAX_MISSION_ITEMS 100
 
@@ -127,7 +128,8 @@ typedef struct
     float oat_celsius;   // in degrees Celsius
 
     float alt_radalt_filt; // in meters from FCS
-    float alt_radalt_raw;  // in meters from sensor
+
+    fcs_mi_fbctrl_data_t fbctrl_data;
 
     /* FCS discrete state*/
     uint8_t vom_status;
@@ -137,6 +139,9 @@ typedef struct
     uint8_t ep_data_loss; // external pilot data loss
     uint8_t ip_data_loss; // internal pilot data loss
     uint8_t gnss_loss;    // GNSS data loss
+    uint8_t tecs_on;
+    uint8_t loiter_on;
+    uint8_t cog_track_on;
 
     /* WPN VOM info*/
     uint16_t current_waypoint_idx; // currently executing waypoint index
@@ -149,6 +154,11 @@ typedef struct
     /* dual ADC data */
     mavio_adc_data_t adc_data[2];
     uint8_t adc_selection; // 0: ADC1, 1: ADC2
+
+    /* radalt data */
+    float radalt_agl; // in meters
+    float radalt_snr; // in dB
+    bool radalt_timeout;
 
     /* RC input (external pilot)*/
     rc_input_t rc_input;
@@ -189,8 +199,10 @@ typedef struct
     uint16_t pic_cmd_cnt;
 
     uint8_t loiter_on;
+    uint8_t loiter_on_cnt;
 
     uint8_t tecs_on;
+    uint8_t tecs_on_cnt;
 
     uint8_t precharge_enable;
 

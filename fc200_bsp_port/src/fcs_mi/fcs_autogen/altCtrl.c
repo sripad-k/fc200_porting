@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: altCtrl.c
  *
  * Code generated for Simulink model 'altCtrl'.
  *
  * Model version                  : 2.16
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:51:56 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:06:12 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -113,7 +109,7 @@ void altCtrl(const real_T *rtu_ctrlIF_vel_hRateCmd, const real_T
 
   /* DiscreteIntegrator: '<S1>/Discrete-Time Integrator1' */
   if ((*rtu_ctrlIF_vel_init_reset_hdot) ||
-      (altCtrl_DW.DiscreteTimeIntegrator1_PrevResetState != 0)) {
+      (altCtrl_DW.DiscreteTimeIntegrator1_PrevResetState != ((int8_T)0))) {
     altCtrl_DW.DiscreteTimeIntegrator1_DSTATE = altCtrl_ConstB.Constant;
     if (altCtrl_DW.DiscreteTimeIntegrator1_DSTATE < -1.0) {
       altCtrl_DW.DiscreteTimeIntegrator1_DSTATE = -1.0;
@@ -150,7 +146,7 @@ void altCtrl(const real_T *rtu_ctrlIF_vel_hRateCmd, const real_T
    *  Gain: '<Root>/Multiply'
    *  Saturate: '<Root>/Saturation'
    */
-  rty_controllerAltCtrl->forceDes = 65.45 * rtb_velD_to_hdot;
+  rty_controllerAltCtrl->forceDes = 67.45 * rtb_velD_to_hdot;
   rty_controllerAltCtrl->hCmd = *rtu_ctrlIF_vel_hCmd;
   rty_controllerAltCtrl->hHold = *rtu_ctrlIF_vel_hHold;
 
@@ -197,7 +193,7 @@ void altCtrl(const real_T *rtu_ctrlIF_vel_hRateCmd, const real_T
    */
   altCtrl_DW.DiscreteTimeIntegrator1_DSTATE += 0.01 * (3.1529 *
     (rtb_Sum_ijs2kwqy4e * ((real_T)((((*rtu_busControllerCA_c_erp2) >= 0.95) ||
-    (tmp <= 0)) ? ((int32_T)1) : ((int32_T)0)))));
+    (tmp <= ((int32_T)((int8_T)0)))) ? ((int32_T)1) : ((int32_T)0)))));
   if (altCtrl_DW.DiscreteTimeIntegrator1_DSTATE < -1.0) {
     altCtrl_DW.DiscreteTimeIntegrator1_DSTATE = -1.0;
   }

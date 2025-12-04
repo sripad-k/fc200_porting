@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: controllerMain.c
  *
  * Code generated for Simulink model 'controllerMain'.
  *
- * Model version                  : 3.599
+ * Model version                  : 3.618
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:53:18 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:07:43 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -141,10 +137,6 @@ controllerMain_csevfv4opo_T controllerMain_U;
 
 /* External outputs (root outports fed by signals with default storage) */
 controllerMain_jzldyrnxon_T controllerMain_Y;
-const ext_command_t controllerMain_rtZext_command_t = { 0U,/* loiter_cmd */
-  ON,                                  /* lifter_cmd */
-  0U                                   /* tecs_cmd */
-};
 
 /* Model step function */
 void controllerMain_step(void)
@@ -218,20 +210,20 @@ void controllerMain_step(void)
   real_T rtb_BusAssignment1_ins_1_acc[3];
   real_T rtb_BusAssignment1_ins_1_omg[3];
   real_T notch0_gyro_states;
-  real_T notch0_gyro_states_0;
   real_T rtb_BusAssignment1_ads_1_alt_baro_amsl_tmp;
   real_T rtb_BusAssignment1_ads_1_aoa_tmp;
   real_T rtb_BusAssignment1_ads_1_aos_tmp;
   real_T rtb_BusAssignment1_ads_1_aspd_cas;
   real_T rtb_BusAssignment1_cvb352wjyj_gspd;
-  real_T rtb_BusAssignment1_dmryoc4syw_pitch_CF;
   real_T rtb_BusAssignment1_h_radar_agl_tmp;
+  real_T rtb_BusAssignment1_ins_1_alt_gps_amsl_tmp;
   real_T rtb_BusAssignment1_ins_1_eul_ang_idx_0;
   real_T rtb_BusAssignment1_ins_1_eul_ang_idx_1;
   real_T rtb_BusAssignment1_ins_1_eul_ang_idx_2;
   real_T rtb_BusAssignment1_ins_1_v_ned_idx_0;
   real_T rtb_BusAssignment1_ins_1_v_ned_idx_1;
   real_T rtb_BusAssignment1_ins_1_v_ned_idx_2;
+  real_T rtb_BusAssignment1_nc41wq0lh0_pitch_CF;
   real_T rtb_BusAssignment1_wow_idx_0;
   real_T rtb_BusAssignment1_wow_idx_1;
   real_T rtb_BusAssignment1_wow_idx_2;
@@ -280,10 +272,12 @@ void controllerMain_step(void)
   safety_state_t rtb_safety_state;
   vom_t rtb_vom_status_ofjzuvdpj2;
 
-  /* SignalConversion generated from: '<S26>/Bus Assignment1' incorporates:
-   *  BusAssignment: '<S26>/Bus Assignment1'
+  /* SignalConversion generated from: '<S27>/Bus Assignment1' incorporates:
+   *  BusAssignment: '<S27>/Bus Assignment1'
    *  Inport: '<Root>/sensor_in'
    */
+  rtb_BusAssignment1_ins_1_alt_gps_amsl_tmp =
+    controllerMain_U.sensor_in.ins_1.alt_gps_amsl;
   rtb_BusAssignment1_ads_1_aoa_tmp = controllerMain_U.sensor_in.ads_1.aoa;
   rtb_BusAssignment1_ads_1_aos_tmp = controllerMain_U.sensor_in.ads_1.aos;
   rtb_BusAssignment1_ads_1_aspd_cas = controllerMain_U.sensor_in.ads_1.aspd_cas;
@@ -306,42 +300,42 @@ void controllerMain_step(void)
     [2];
   rtb_BusAssignment1_wow_idx_2 = controllerMain_U.sensor_in.wow[2];
   (void)memcpy(&rtb_BusAssignment1_rotor_rpm[0],
-               &controllerMain_U.sensor_in.rotor_rpm[0], (sizeof(real_T)) << 3U);
+               &controllerMain_U.sensor_in.rotor_rpm[0], (sizeof(real_T)) <<
+               ((uint32_T)3U));
   for (i = 0; i < 3; i++) {
-    /* DiscreteFilter: '<S26>/notch0_gyro' incorporates:
-     *  BusAssignment: '<S26>/Bus Assignment1'
-     *  DiscreteFilter: '<S26>/notch0_acc'
-     *  DiscreteFilter: '<S26>/notch0_acc1'
-     *  DiscreteFilter: '<S26>/notch0_gyro1'
+    /* DiscreteFilter: '<S27>/notch0_gyro' incorporates:
+     *  BusAssignment: '<S27>/Bus Assignment1'
+     *  DiscreteFilter: '<S27>/notch0_acc'
+     *  DiscreteFilter: '<S27>/notch0_acc1'
+     *  DiscreteFilter: '<S27>/notch0_gyro1'
      *  Inport: '<Root>/sensor_in'
      */
     memOffset_tmp = i * 2;
     notch0_gyro_states = controllerMain_DW.notch0_gyro_states[memOffset_tmp];
-    notch0_gyro_states_0 = controllerMain_DW.notch0_gyro_states[memOffset_tmp +
-      1];
+    rtb_va_filt = controllerMain_DW.notch0_gyro_states[memOffset_tmp + 1];
     rtb_BusAssignment1_cvb352wjyj_gspd = (controllerMain_U.sensor_in.ins_1.omg[i]
       - (-1.5843030311528565 * notch0_gyro_states)) - (0.92439049165820752 *
-      notch0_gyro_states_0);
+      rtb_va_filt);
     notch0_gyro_tmp[i] = rtb_BusAssignment1_cvb352wjyj_gspd;
     rtb_BusAssignment1_ins_1_omg[i] = ((0.96219524582910376 *
       rtb_BusAssignment1_cvb352wjyj_gspd) + (-1.5843030311528565 *
-      notch0_gyro_states)) + (0.96219524582910376 * notch0_gyro_states_0);
+      notch0_gyro_states)) + (0.96219524582910376 * rtb_va_filt);
 
-    /* DiscreteFilter: '<S26>/notch0_acc' incorporates:
-     *  BusAssignment: '<S26>/Bus Assignment1'
+    /* DiscreteFilter: '<S27>/notch0_acc' incorporates:
+     *  BusAssignment: '<S27>/Bus Assignment1'
      *  Inport: '<Root>/sensor_in'
      */
     notch0_gyro_states = controllerMain_DW.notch0_acc_states[memOffset_tmp];
-    notch0_gyro_states_0 = controllerMain_DW.notch0_acc_states[memOffset_tmp + 1];
+    rtb_va_filt = controllerMain_DW.notch0_acc_states[memOffset_tmp + 1];
     rtb_BusAssignment1_cvb352wjyj_gspd = (controllerMain_U.sensor_in.ins_1.acc[i]
       - (-1.5843030311528565 * notch0_gyro_states)) - (0.92439049165820752 *
-      notch0_gyro_states_0);
+      rtb_va_filt);
     notch0_acc_tmp[i] = rtb_BusAssignment1_cvb352wjyj_gspd;
     rtb_BusAssignment1_ins_1_acc[i] = ((0.96219524582910376 *
       rtb_BusAssignment1_cvb352wjyj_gspd) + (-1.5843030311528565 *
-      notch0_gyro_states)) + (0.96219524582910376 * notch0_gyro_states_0);
+      notch0_gyro_states)) + (0.96219524582910376 * rtb_va_filt);
 
-    /* DiscreteFilter: '<S26>/notch0_gyro1' incorporates:
+    /* DiscreteFilter: '<S27>/notch0_gyro1' incorporates:
      *  Inport: '<Root>/sensor_in'
      */
     notch0_gyro1_tmp[i] = (controllerMain_U.sensor_in.ins_2.omg[i] -
@@ -349,7 +343,7 @@ void controllerMain_step(void)
       - (0.92439049165820752 *
          controllerMain_DW.notch0_gyro1_states[memOffset_tmp + 1]);
 
-    /* DiscreteFilter: '<S26>/notch0_acc1' incorporates:
+    /* DiscreteFilter: '<S27>/notch0_acc1' incorporates:
      *  Inport: '<Root>/sensor_in'
      */
     notch0_acc1_tmp[i] = (controllerMain_U.sensor_in.ins_2.acc[i] -
@@ -359,48 +353,43 @@ void controllerMain_step(void)
        + 1]);
   }
 
-  /* SignalConversion generated from: '<S26>/Bus Assignment1' incorporates:
+  /* SignalConversion generated from: '<S27>/Bus Assignment1' incorporates:
    *  Inport: '<Root>/sensor_in'
    */
   rtb_BusAssignment1_cvb352wjyj_gspd = controllerMain_U.sensor_in.ins_1.lat;
 
-  /* SignalConversion generated from: '<S27>/Vector Concatenate' incorporates:
+  /* SignalConversion generated from: '<S28>/Vector Concatenate' incorporates:
    *  Inport: '<Root>/sensor_in'
-   *  SignalConversion generated from: '<S26>/Bus Assignment1'
+   *  SignalConversion generated from: '<S27>/Bus Assignment1'
    */
   rtb_BusConversion_InsertedFor_Model3_at_inport_0_BusCreator1.posLLA[0] =
     controllerMain_U.sensor_in.ins_1.lat;
 
-  /* SignalConversion generated from: '<S26>/Bus Assignment1' incorporates:
+  /* SignalConversion generated from: '<S27>/Bus Assignment1' incorporates:
    *  Inport: '<Root>/sensor_in'
    */
   notch0_gyro_states = controllerMain_U.sensor_in.ins_1.lon;
 
-  /* SignalConversion generated from: '<S27>/Vector Concatenate' incorporates:
+  /* SignalConversion generated from: '<S28>/Vector Concatenate' incorporates:
    *  Inport: '<Root>/sensor_in'
-   *  SignalConversion generated from: '<S26>/Bus Assignment1'
+   *  SignalConversion generated from: '<S27>/Bus Assignment1'
    */
   rtb_BusConversion_InsertedFor_Model3_at_inport_0_BusCreator1.posLLA[1] =
     controllerMain_U.sensor_in.ins_1.lon;
 
-  /* SignalConversion generated from: '<S26>/Bus Assignment1' incorporates:
+  /* SignalConversion generated from: '<S28>/Vector Concatenate' incorporates:
    *  Inport: '<Root>/sensor_in'
-   */
-  notch0_gyro_states_0 = controllerMain_U.sensor_in.ins_1.alt_gps_amsl;
-
-  /* SignalConversion generated from: '<S27>/Vector Concatenate' incorporates:
-   *  Inport: '<Root>/sensor_in'
-   *  SignalConversion generated from: '<S26>/Bus Assignment1'
+   *  SignalConversion generated from: '<S27>/Bus Assignment1'
    */
   rtb_BusConversion_InsertedFor_Model3_at_inport_0_BusCreator1.posLLA[2] =
     controllerMain_U.sensor_in.ins_1.alt_gps_amsl;
 
-  /* Memory: '<S23>/Memory' */
+  /* Memory: '<S24>/Memory' */
   rtb_va_filt = controllerMain_DW.Memory_PreviousInput;
 
   /* RateLimiter: '<S4>/Rate Limiter' incorporates:
    *  Inport: '<Root>/sensor_in'
-   *  SignalConversion generated from: '<S26>/Bus Assignment1'
+   *  SignalConversion generated from: '<S27>/Bus Assignment1'
    */
   rtb_RateLimiter = controllerMain_U.sensor_in.h_radar_agl -
     controllerMain_DW.PrevY;
@@ -417,20 +406,20 @@ void controllerMain_step(void)
   /* End of RateLimiter: '<S4>/Rate Limiter' */
 
   /* Switch: '<S4>/Switch' incorporates:
-   *  Constant: '<S29>/Constant'
    *  Constant: '<S30>/Constant'
    *  Constant: '<S31>/Constant'
+   *  Constant: '<S32>/Constant'
    *  Inport: '<Root>/sensor_in'
-   *  Logic: '<S22>/OR'
-   *  RelationalOperator: '<S29>/Compare'
+   *  Logic: '<S23>/OR'
    *  RelationalOperator: '<S30>/Compare'
    *  RelationalOperator: '<S31>/Compare'
-   *  SignalConversion generated from: '<S26>/Bus Assignment1'
+   *  RelationalOperator: '<S32>/Compare'
+   *  SignalConversion generated from: '<S27>/Bus Assignment1'
    *  UnitDelay: '<Root>/Unit Delay1'
    */
-  if (((controllerMain_DW.UnitDelay1_DSTATE == TAKEOFF) ||
-       (controllerMain_DW.UnitDelay1_DSTATE == LAND)) ||
-      (controllerMain_DW.UnitDelay1_DSTATE == MANUAL)) {
+  if (((controllerMain_DW.UnitDelay1_DSTATE == VOM_TAKEOFF) ||
+       (controllerMain_DW.UnitDelay1_DSTATE == VOM_LAND)) ||
+      (controllerMain_DW.UnitDelay1_DSTATE == VOM_MANUAL)) {
     rtb_Switch_di0iual0gm = rtb_RateLimiter;
   } else {
     rtb_Switch_di0iual0gm = controllerMain_U.sensor_in.h_radar_agl;
@@ -439,17 +428,17 @@ void controllerMain_step(void)
   /* End of Switch: '<S4>/Switch' */
 
   /* BusAssignment: '<S4>/Bus Assignment' incorporates:
-   *  BusAssignment: '<S26>/Bus Assignment1'
    *  BusAssignment: '<S27>/Bus Assignment1'
+   *  BusAssignment: '<S28>/Bus Assignment1'
    *  Inport: '<Root>/sensor_in'
-   *  SignalConversion generated from: '<S26>/Bus Assignment1'
+   *  SignalConversion generated from: '<S27>/Bus Assignment1'
    */
   (void)memset(&controllerMain_B.BusAssignment.dcm_e2b[0], 0, 9U * (sizeof
     (real_T)));
   controllerMain_B.BusAssignment.aoa = controllerMain_U.sensor_in.ads_1.aoa;
   controllerMain_B.BusAssignment.aos = controllerMain_U.sensor_in.ads_1.aos;
   controllerMain_B.BusAssignment.h_gps_amsl =
-    controllerMain_U.sensor_in.ads_1.alt_baro_amsl;
+    controllerMain_U.sensor_in.ins_1.alt_gps_amsl;
   controllerMain_B.BusAssignment.h_baro_amsl =
     controllerMain_U.sensor_in.ads_1.alt_baro_amsl;
   controllerMain_B.BusAssignment.eul_ang[0] =
@@ -480,13 +469,14 @@ void controllerMain_step(void)
   controllerMain_B.BusAssignment.accel_b[2] = rtb_BusAssignment1_ins_1_acc[2];
   controllerMain_B.BusAssignment.wow[2] = controllerMain_U.sensor_in.wow[2];
   (void)memcpy(&controllerMain_B.BusAssignment.rotor_rpm[0],
-               &controllerMain_U.sensor_in.rotor_rpm[0], (sizeof(real_T)) << 3U);
+               &controllerMain_U.sensor_in.rotor_rpm[0], (sizeof(real_T)) <<
+               ((uint32_T)3U));
 
   /* Sqrt: '<S4>/Sqrt' incorporates:
    *  Inport: '<Root>/sensor_in'
    *  Product: '<S4>/Product'
    *  Product: '<S4>/Product1'
-   *  SignalConversion generated from: '<S26>/Bus Assignment1'
+   *  SignalConversion generated from: '<S27>/Bus Assignment1'
    *  Sum: '<S4>/Add'
    */
   rtb_roll_ch = sqrt((controllerMain_U.sensor_in.ins_1.v_ned[0] *
@@ -510,8 +500,8 @@ void controllerMain_step(void)
 
   /* BusAssignment: '<S4>/Bus Assignment' incorporates:
    *  Inport: '<Root>/sensor_in'
-   *  Memory: '<S23>/Memory'
-   *  SignalConversion generated from: '<S26>/Bus Assignment1'
+   *  Memory: '<S24>/Memory'
+   *  SignalConversion generated from: '<S27>/Bus Assignment1'
    *  Trigonometry: '<S4>/Atan2'
    */
   controllerMain_B.BusAssignment.chi = atan2
@@ -521,15 +511,15 @@ void controllerMain_step(void)
     controllerMain_DW.Memory_PreviousInput;
   controllerMain_B.BusAssignment.h_radar_agl = rtb_Switch_di0iual0gm;
 
-  /* RelationalOperator: '<S14>/Compare' incorporates:
-   *  Constant: '<S14>/Constant'
+  /* RelationalOperator: '<S15>/Compare' incorporates:
+   *  Constant: '<S15>/Constant'
    *  UnitDelay: '<Root>/Unit Delay2'
    */
   rtb_Compare_lvr1zt3dde = (controllerMain_DW.UnitDelay2_DSTATE == EXTERNAL);
 
-  /* Switch generated from: '<S15>/Switch' incorporates:
+  /* Switch generated from: '<S16>/Switch' incorporates:
    *  Inport: '<Root>/pilot_ext'
-   *  UnitDelay generated from: '<S15>/ud'
+   *  UnitDelay generated from: '<S16>/ud'
    */
   if (rtb_Compare_lvr1zt3dde) {
     rtb_roll_ch = controllerMain_U.pilot_ext.roll_ch;
@@ -545,54 +535,54 @@ void controllerMain_step(void)
     rtb_engine_ch = controllerMain_DW.ud_5_DSTATE;
   }
 
-  /* End of Switch generated from: '<S15>/Switch' */
+  /* End of Switch generated from: '<S16>/Switch' */
 
-  /* Product: '<S16>/delta rise limit' incorporates:
-   *  Constant: '<S15>/Constant1'
-   *  SampleTimeMath: '<S16>/sample time'
+  /* Product: '<S17>/delta rise limit' incorporates:
+   *  Constant: '<S16>/Constant1'
+   *  SampleTimeMath: '<S17>/sample time'
    *
-   * About '<S16>/sample time':
+   * About '<S17>/sample time':
    *  y = K where K = ( w * Ts )
    *   */
   rtb_omega_jjutubfppl = 0.01;
 
-  /* Switch: '<S19>/Init' incorporates:
-   *  DataTypeConversion: '<S15>/Data Type Conversion1'
-   *  DataTypeConversion: '<S16>/Data Type Conversion'
-   *  UnitDelay: '<S19>/FixPt Unit Delay1'
-   *  UnitDelay: '<S19>/FixPt Unit Delay2'
+  /* Switch: '<S20>/Init' incorporates:
+   *  DataTypeConversion: '<S16>/Data Type Conversion1'
+   *  DataTypeConversion: '<S17>/Data Type Conversion'
+   *  UnitDelay: '<S20>/FixPt Unit Delay1'
+   *  UnitDelay: '<S20>/FixPt Unit Delay2'
    */
-  if (controllerMain_DW.FixPtUnitDelay2_DSTATE != 0U) {
+  if (controllerMain_DW.FixPtUnitDelay2_DSTATE != ((uint8_T)0)) {
     rtb_uDLookupTable = rtb_Compare_lvr1zt3dde ? 1.0 : 0.0;
   } else {
     rtb_uDLookupTable = controllerMain_DW.FixPtUnitDelay1_DSTATE;
   }
 
-  /* End of Switch: '<S19>/Init' */
+  /* End of Switch: '<S20>/Init' */
 
-  /* Sum: '<S16>/Difference Inputs1' incorporates:
-   *  DataTypeConversion: '<S15>/Data Type Conversion1'
+  /* Sum: '<S17>/Difference Inputs1' incorporates:
+   *  DataTypeConversion: '<S16>/Data Type Conversion1'
    *
-   * Block description for '<S16>/Difference Inputs1':
+   * Block description for '<S17>/Difference Inputs1':
    *
    *  Add in CPU
    */
   rtb_UkYk1 = ((real_T)(rtb_Compare_lvr1zt3dde ? 1.0 : 0.0)) - rtb_uDLookupTable;
 
-  /* Switch: '<S18>/Switch2' incorporates:
-   *  RelationalOperator: '<S18>/LowerRelop1'
+  /* Switch: '<S19>/Switch2' incorporates:
+   *  RelationalOperator: '<S19>/LowerRelop1'
    */
   if (rtb_UkYk1 <= 0.01) {
-    /* Product: '<S16>/delta fall limit' incorporates:
-     *  SampleTimeMath: '<S16>/sample time'
+    /* Product: '<S17>/delta fall limit' incorporates:
+     *  SampleTimeMath: '<S17>/sample time'
      *
-     * About '<S16>/sample time':
+     * About '<S17>/sample time':
      *  y = K where K = ( w * Ts )
      *   */
     rtb_deltafalllimit = 0.01 * controllerMain_ConstB.Gain;
 
-    /* Switch: '<S18>/Switch' incorporates:
-     *  RelationalOperator: '<S18>/UpperRelop'
+    /* Switch: '<S19>/Switch' incorporates:
+     *  RelationalOperator: '<S19>/UpperRelop'
      */
     if (rtb_UkYk1 < rtb_deltafalllimit) {
       rtb_omega_jjutubfppl = rtb_deltafalllimit;
@@ -600,28 +590,28 @@ void controllerMain_step(void)
       rtb_omega_jjutubfppl = rtb_UkYk1;
     }
 
-    /* End of Switch: '<S18>/Switch' */
+    /* End of Switch: '<S19>/Switch' */
   }
 
-  /* End of Switch: '<S18>/Switch2' */
+  /* End of Switch: '<S19>/Switch2' */
 
-  /* Sum: '<S16>/Difference Inputs2'
+  /* Sum: '<S17>/Difference Inputs2'
    *
-   * Block description for '<S16>/Difference Inputs2':
+   * Block description for '<S17>/Difference Inputs2':
    *
    *  Add in CPU
    */
   rtb_UkYk1 = rtb_omega_jjutubfppl + rtb_uDLookupTable;
 
   /* BusCreator generated from: '<Root>/Model3' incorporates:
-   *  Fcn: '<S15>/Fcn'
+   *  Fcn: '<S16>/Fcn'
    */
   rtb_BusConversion_InsertedFor_Model3_at_inport_0_BusCreator1.yawCmd = 1.0 -
     rtb_UkYk1;
 
-  /* Switch generated from: '<S15>/Switch1' incorporates:
+  /* Switch generated from: '<S16>/Switch1' incorporates:
    *  Inport: '<Root>/pilot_int'
-   *  UnitDelay generated from: '<S15>/ud1'
+   *  UnitDelay generated from: '<S16>/ud1'
    */
   if (rtb_Compare_lvr1zt3dde) {
     rtb_deltafalllimit = controllerMain_DW.ud1_1_DSTATE;
@@ -637,7 +627,7 @@ void controllerMain_step(void)
     rtb_engine_ch_bjavj5sodg = controllerMain_U.pilot_int.engine_ch;
   }
 
-  /* End of Switch generated from: '<S15>/Switch1' */
+  /* End of Switch generated from: '<S16>/Switch1' */
 
   /* BusAssignment: '<S2>/Bus Assignment' incorporates:
    *  Inport: '<Root>/pilot_ext'
@@ -645,12 +635,12 @@ void controllerMain_step(void)
   controllerMain_B.BusAssignment_b4zvdvf4m4 = controllerMain_U.pilot_ext;
 
   /* BusAssignment: '<S2>/Bus Assignment' incorporates:
-   *  Fcn: '<S15>/Fcn'
-   *  Product: '<S15>/Divide'
-   *  Product: '<S15>/Divide1'
-   *  Sum: '<S15>/Add'
-   *  Switch generated from: '<S15>/Switch2'
-   *  Switch generated from: '<S15>/Switch4'
+   *  Fcn: '<S16>/Fcn'
+   *  Product: '<S16>/Divide'
+   *  Product: '<S16>/Divide1'
+   *  Sum: '<S16>/Add'
+   *  Switch generated from: '<S16>/Switch2'
+   *  Switch generated from: '<S16>/Switch4'
    */
   controllerMain_B.BusAssignment_b4zvdvf4m4.roll_ch = (rtb_roll_ch * rtb_UkYk1)
     + ((1.0 - rtb_UkYk1) * rtb_deltafalllimit);
@@ -730,15 +720,18 @@ void controllerMain_step(void)
                        &controllerMain_B.BusAssignment.aspd_cas,
                        &controllerMain_B.BusAssignment.h_radar_agl,
                        &controllerMain_B.BusAssignment.chi,
-                       &controllerMain_B.BusAssignment_b4zvdvf4m4.switch_1,
+                       &controllerMain_B.BusAssignment_b4zvdvf4m4.throttle_ch,
                        &controllerMain_B.BusAssignment_b4zvdvf4m4.arm_ch,
+                       &controllerMain_B.BusAssignment_b4zvdvf4m4.switch_1,
                        &controllerMain_B.UnitDelay.forceDes,
                        &controllerMain_U.failure_flags.gcs_link_loss,
                        &controllerMain_U.failure_flags.gps_loss,
                        &controllerMain_U.failure_flags.ep_data_loss,
                        &controllerMain_U.failure_flags.ip_data_loss,
                        &controllerMain_U.extd_cmd.loiter_cmd,
+                       &controllerMain_U.extd_cmd.loiter_cmd_cnt,
                        &controllerMain_U.extd_cmd.tecs_cmd,
+                       &controllerMain_U.extd_cmd.tecs_cmd_cnt,
                        &rtb_Compare_lvr1zt3dde, &rtb_reduce_speed_alt_done,
                        &rtb_circle_align_done, &rtb_cross_tangent_point_done,
                        &rtb_omega_jjutubfppl, &rtb_uDLookupTable,
@@ -762,12 +755,13 @@ void controllerMain_step(void)
                        &controllerMain_B.TECS_mode,
                        &controllerMain_B.lifter_state,
                        &controllerMain_B.pic_status,
-                       &controllerMain_B.CoG_tracking);
+                       &controllerMain_B.CoG_tracking,
+                       &controllerMain_B.dCapturedAlt_m);
 
-  /* RelationalOperator: '<S21>/Compare' incorporates:
-   *  Constant: '<S21>/Constant'
+  /* RelationalOperator: '<S22>/Compare' incorporates:
+   *  Constant: '<S22>/Constant'
    */
-  rtb_Compare_lvr1zt3dde = (controllerMain_B.safety_state == DISARMED);
+  rtb_Compare_lvr1zt3dde = (controllerMain_B.safety_state == AC_DISARMED);
 
   /* BusCreator generated from: '<Root>/Model3' incorporates:
    *  ModelReference generated from: '<Root>/Model7'
@@ -911,8 +905,8 @@ void controllerMain_step(void)
                  &rtb_roll_cmd);
 
   /* Saturate: '<S4>/V_d_lim_to_100mps' incorporates:
-   *  BusAssignment: '<S26>/Bus Assignment1'
    *  BusAssignment: '<S27>/Bus Assignment1'
+   *  BusAssignment: '<S28>/Bus Assignment1'
    */
   if (rtb_BusAssignment1_ins_1_v_ned_idx_2 > 100.0) {
     rtb_omega_jjutubfppl = 100.0;
@@ -928,22 +922,22 @@ void controllerMain_step(void)
    */
   rtb_approach_ang = atan2(-rtb_omega_jjutubfppl, rtb_va_filt);
 
-  /* DiscreteIntegrator: '<S25>/omega' */
-  if (controllerMain_DW.omega_IC_LOADING != 0U) {
+  /* DiscreteIntegrator: '<S26>/omega' */
+  if (controllerMain_DW.omega_IC_LOADING != ((uint8_T)0)) {
     controllerMain_DW.omega_DSTATE = rtb_approach_ang;
   }
 
   rtb_omega_jjutubfppl = controllerMain_DW.omega_DSTATE;
 
-  /* DiscreteIntegrator: '<S24>/omega' */
-  if (controllerMain_DW.omega_IC_LOADING_bb503dutix != 0U) {
+  /* DiscreteIntegrator: '<S25>/omega' */
+  if (controllerMain_DW.omega_IC_LOADING_bb503dutix != ((uint8_T)0)) {
     controllerMain_DW.omega_DSTATE_l5hd10dn0e = rtb_va_filt;
   }
 
-  /* Product: '<S24>/Product' incorporates:
-   *  Constant: '<S24>/Constant3'
-   *  DiscreteIntegrator: '<S24>/omega'
-   *  Sum: '<S24>/Sum'
+  /* Product: '<S25>/Product' incorporates:
+   *  Constant: '<S25>/Constant3'
+   *  DiscreteIntegrator: '<S25>/omega'
+   *  Sum: '<S25>/Sum'
    */
   rtb_cur_leg_heading = 20.0 * (rtb_va_filt -
     controllerMain_DW.omega_DSTATE_l5hd10dn0e);
@@ -952,7 +946,7 @@ void controllerMain_step(void)
   rtb_cur_leg_length = rtb_cur_leg_heading / controllerMain_ConstB.Switch3;
 
   /* BusCreator generated from: '<Root>/Model6' incorporates:
-   *  DiscreteIntegrator: '<S25>/omega'
+   *  DiscreteIntegrator: '<S26>/omega'
    *  Sum: '<S4>/Add1'
    *  Sum: '<S4>/Add2'
    */
@@ -1009,13 +1003,13 @@ void controllerMain_step(void)
     controllerMain_ConstP.uDLookupTable_tableData, &controllerMain_DW.m_bpIndex,
     1U);
 
-  /* RelationalOperator: '<S9>/Compare' incorporates:
-   *  Constant: '<S9>/Constant'
+  /* RelationalOperator: '<S10>/Compare' incorporates:
+   *  Constant: '<S10>/Constant'
    */
   rtb_Delay5 = (rtb_uDLookupTable == 0.0);
 
-  /* RelationalOperator: '<S7>/Compare' incorporates:
-   *  Constant: '<S7>/Constant'
+  /* RelationalOperator: '<S8>/Compare' incorporates:
+   *  Constant: '<S8>/Constant'
    */
   rtb_reduce_speed_alt_done = (rtb_uDLookupTable == 1.0);
 
@@ -1034,7 +1028,7 @@ void controllerMain_step(void)
   rtb_cur_leg_length *= rtb_cur_leg_length;
 
   /* Gain: '<S1>/Gain4' */
-  rtb_cur_leg_remaining_dist = 0.026587677815999994 * rtb_cur_leg_length;
+  rtb_cur_leg_remaining_dist = 0.028106416800000002 * rtb_cur_leg_length;
 
   /* Gain: '<S1>/Gain2' incorporates:
    *  Constant: '<S1>/Constant3'
@@ -1052,21 +1046,21 @@ void controllerMain_step(void)
     ((rtb_cur_leg_remaining_dist * controllerMain_DW.Delay7_1_DSTATE) / 43.46))
     - (controllerMain_DW.Delay4_1_DSTATE * rtb_uDLookupTable));
 
-  /* Logic: '<S5>/Logical Operator3' incorporates:
-   *  Logic: '<S6>/Logical Operator3'
+  /* Logic: '<S6>/Logical Operator3' incorporates:
+   *  Logic: '<S7>/Logical Operator3'
    */
   rtb_circle_align_done = !rtb_reduce_speed_alt_done;
 
-  /* Switch: '<S5>/Switch' incorporates:
+  /* Switch: '<S6>/Switch' incorporates:
    *  Delay generated from: '<Root>/Delay7'
-   *  Logic: '<S5>/Logical Operator1'
-   *  Logic: '<S5>/Logical Operator2'
-   *  Logic: '<S5>/Logical Operator3'
+   *  Logic: '<S6>/Logical Operator1'
+   *  Logic: '<S6>/Logical Operator2'
+   *  Logic: '<S6>/Logical Operator3'
    */
   if (((controllerMain_DW.Delay7_3_DSTATE != 0.0) || rtb_Delay5) &&
       rtb_circle_align_done) {
     /* Gain: '<S1>/Gain5' incorporates:
-     *  Constant: '<S5>/Constant4'
+     *  Constant: '<S6>/Constant4'
      */
     rtb_land_wp_lon = -0.0;
   } else {
@@ -1074,10 +1068,10 @@ void controllerMain_step(void)
     rtb_land_wp_lon = -rtb_land_wp_lat;
   }
 
-  /* End of Switch: '<S5>/Switch' */
+  /* End of Switch: '<S6>/Switch' */
 
   /* Gain: '<S1>/Gain1' */
-  rtb_cur_leg_length *= 0.00887568192;
+  rtb_cur_leg_length *= 0.025806517920000004;
 
   /* Gain: '<S1>/Gain' incorporates:
    *  Constant: '<S1>/Constant'
@@ -1095,19 +1089,19 @@ void controllerMain_step(void)
     ((rtb_cur_leg_length * controllerMain_DW.Delay7_2_DSTATE) / 38.84)) -
     (controllerMain_DW.Delay4_2_DSTATE * rtb_uDLookupTable));
 
-  /* Switch: '<S6>/Switch' incorporates:
-   *  Constant: '<S12>/Constant'
+  /* Switch: '<S7>/Switch' incorporates:
    *  Constant: '<S13>/Constant'
+   *  Constant: '<S14>/Constant'
    *  Delay generated from: '<Root>/Delay7'
-   *  Logic: '<S6>/Logical Operator1'
-   *  Logic: '<S6>/Logical Operator2'
-   *  RelationalOperator: '<S12>/Compare'
+   *  Logic: '<S7>/Logical Operator1'
+   *  Logic: '<S7>/Logical Operator2'
    *  RelationalOperator: '<S13>/Compare'
+   *  RelationalOperator: '<S14>/Compare'
    */
   if (((controllerMain_DW.Delay7_4_DSTATE == 1.0) || (rtb_uDLookupTable == 0.0))
       && rtb_circle_align_done) {
     /* Gain: '<S1>/Gain3' incorporates:
-     *  Constant: '<S6>/Constant4'
+     *  Constant: '<S7>/Constant4'
      */
     rtb_Model4_o1 = -0.0;
   } else {
@@ -1115,7 +1109,7 @@ void controllerMain_step(void)
     rtb_Model4_o1 = -rtb_curpos_to_wp_heading;
   }
 
-  /* End of Switch: '<S6>/Switch' */
+  /* End of Switch: '<S7>/Switch' */
 
   /* Outport: '<Root>/ctrl_log' incorporates:
    *  BusAssignment: '<S1>/Bus Assignment'
@@ -1140,7 +1134,8 @@ void controllerMain_step(void)
   MR_CA(&rtb_altCtrl_ref.forceDes, &rtb_Model1_o1.momentDes[0],
         &controllerMain_B.vom_status, &controllerMain_B.rampup_phase,
         &controllerMain_B.BusAssignment.aspd_cas, &controllerMain_B.lifter_state,
-        &controllerMain_B.mode_data.eFWLifter_Mode, &rtb_MR_CA_ref);
+        &controllerMain_B.mode_data.eFWLifter_Mode,
+        &controllerMain_B.BusAssignment_b4zvdvf4m4.throttle_ch, &rtb_MR_CA_ref);
 
   /* ModelReference generated from: '<Root>/Model12' */
   FW_attCtrl_switcher(&controllerMain_B.vom_status,
@@ -1153,19 +1148,19 @@ void controllerMain_step(void)
                       &controllerMain_B.mode_data.eFWLifter_Mode, &rtb_roll_cmd,
                       &rtb_Model12);
 
-  /* Logic: '<S5>/Logical Operator6' incorporates:
-   *  Logic: '<S6>/Logical Operator6'
+  /* Logic: '<S6>/Logical Operator6' incorporates:
+   *  Logic: '<S7>/Logical Operator6'
    */
   rtb_circle_align_done = !rtb_Delay5;
 
-  /* Switch: '<S5>/Switch1' incorporates:
-   *  Constant: '<S5>/Constant4'
-   *  Constant: '<S8>/Constant'
+  /* Switch: '<S6>/Switch1' incorporates:
+   *  Constant: '<S6>/Constant4'
+   *  Constant: '<S9>/Constant'
    *  Delay generated from: '<Root>/Delay4'
-   *  Logic: '<S5>/Logical Operator4'
-   *  Logic: '<S5>/Logical Operator5'
-   *  Logic: '<S5>/Logical Operator6'
-   *  RelationalOperator: '<S8>/Compare'
+   *  Logic: '<S6>/Logical Operator4'
+   *  Logic: '<S6>/Logical Operator5'
+   *  Logic: '<S6>/Logical Operator6'
+   *  RelationalOperator: '<S9>/Compare'
    */
   if ((rtb_reduce_speed_alt_done || (controllerMain_DW.Delay4_3_DSTATE == 1.0)) &&
       rtb_circle_align_done) {
@@ -1175,19 +1170,19 @@ void controllerMain_step(void)
   /* BusAssignment: '<S1>/Bus Assignment1' incorporates:
    *  Constant: '<S1>/Ixx'
    *  Product: '<S1>/Divide3'
-   *  Switch: '<S5>/Switch1'
+   *  Switch: '<S6>/Switch1'
    */
   rtb_roll_cmd = (rtb_land_wp_lat * 43.46) / rtb_cur_leg_remaining_dist;
 
-  /* Switch: '<S6>/Switch1' incorporates:
-   *  Constant: '<S10>/Constant'
+  /* Switch: '<S7>/Switch1' incorporates:
    *  Constant: '<S11>/Constant'
-   *  Constant: '<S6>/Constant4'
+   *  Constant: '<S12>/Constant'
+   *  Constant: '<S7>/Constant4'
    *  Delay generated from: '<Root>/Delay4'
-   *  Logic: '<S6>/Logical Operator4'
-   *  Logic: '<S6>/Logical Operator5'
-   *  RelationalOperator: '<S10>/Compare'
+   *  Logic: '<S7>/Logical Operator4'
+   *  Logic: '<S7>/Logical Operator5'
    *  RelationalOperator: '<S11>/Compare'
+   *  RelationalOperator: '<S12>/Compare'
    */
   if (((rtb_uDLookupTable == 1.0) || (controllerMain_DW.Delay4_4_DSTATE == 1.0))
       && rtb_circle_align_done) {
@@ -1197,9 +1192,9 @@ void controllerMain_step(void)
   /* BusAssignment: '<S1>/Bus Assignment1' incorporates:
    *  Constant: '<S1>/Iyy'
    *  Product: '<S1>/Divide1'
-   *  Switch: '<S6>/Switch1'
+   *  Switch: '<S7>/Switch1'
    */
-  rtb_BusAssignment1_dmryoc4syw_pitch_CF = (rtb_curpos_to_wp_heading * 38.84) /
+  rtb_BusAssignment1_nc41wq0lh0_pitch_CF = (rtb_curpos_to_wp_heading * 38.84) /
     rtb_cur_leg_length;
 
   /* Outport: '<Root>/ctrl_log' incorporates:
@@ -1212,7 +1207,7 @@ void controllerMain_step(void)
              &controllerMain_B.BusAssignment,
              &controllerMain_DW.Delay3_DSTATE.c_erp1,
              &controllerMain_DW.Delay3_DSTATE.c_erp2, &rtb_roll_cmd,
-             &rtb_BusAssignment1_dmryoc4syw_pitch_CF, &rtb_Model4_o1,
+             &rtb_BusAssignment1_nc41wq0lh0_pitch_CF, &rtb_Model4_o1,
              &rtb_curpos_to_wp_heading, &rtb_cur_leg_length,
              &rtb_roll_int_mtg3gjguro, &rtb_pitch_int_fkznhgwxng,
              &rtb_roll_sat_cvg42to5m1, &rtb_pitch_sat_hd1k1f2mpb,
@@ -1245,8 +1240,8 @@ void controllerMain_step(void)
    *  Constant: '<S3>/Constant8'
    */
   for (i = 0; i < 8; i++) {
-    /* Switch: '<S20>/Switch3' incorporates:
-     *  Constant: '<S20>/DISARMED_omg_d'
+    /* Switch: '<S21>/Switch3' incorporates:
+     *  Constant: '<S21>/DISARMED_omg_d'
      */
     if (rtb_Compare_lvr1zt3dde) {
       controllerMain_Y.std_ctrl.lifter_rpm_cmd[i] = 0.0;
@@ -1255,7 +1250,7 @@ void controllerMain_step(void)
         rtb_Model11_o1.lifter_rpm_cmd[i];
     }
 
-    /* End of Switch: '<S20>/Switch3' */
+    /* End of Switch: '<S21>/Switch3' */
   }
 
   controllerMain_Y.std_ctrl.eng_throttle_cmd = 0.0;
@@ -1263,8 +1258,8 @@ void controllerMain_step(void)
                &rtb_Model11_o1.acs_servo_deg_cmd[0], 12U * (sizeof(real_T)));
   controllerMain_Y.std_ctrl.nlg_servo_deg_cmd = 0.0;
   for (i = 0; i < 8; i++) {
-    /* Switch: '<S20>/Switch4' incorporates:
-     *  Constant: '<S20>/DISARMED_dutyCycle'
+    /* Switch: '<S21>/Switch4' incorporates:
+     *  Constant: '<S21>/DISARMED_dutyCycle'
      */
     if (rtb_Compare_lvr1zt3dde) {
       controllerMain_Y.std_ctrl.lifter_cval_cmd[i] = 0.0;
@@ -1273,16 +1268,16 @@ void controllerMain_step(void)
         rtb_Model11_o1.lifter_cval_cmd[i];
     }
 
-    /* End of Switch: '<S20>/Switch4' */
+    /* End of Switch: '<S21>/Switch4' */
   }
 
   controllerMain_Y.std_ctrl.eng_mixture_cmd = 0.0;
   controllerMain_Y.std_ctrl.eng_ignition_cmd = 0.0;
 
-  /* Switch: '<S20>/Switch2' */
+  /* Switch: '<S21>/Switch2' */
   if (rtb_Compare_lvr1zt3dde) {
     /* Outport: '<Root>/std_ctrl' incorporates:
-     *  Constant: '<S20>/DISARMED_PWM'
+     *  Constant: '<S21>/DISARMED_PWM'
      */
     controllerMain_Y.std_ctrl.pusher_pwm_cmd = 1000.0;
   } else {
@@ -1290,15 +1285,15 @@ void controllerMain_step(void)
     controllerMain_Y.std_ctrl.pusher_pwm_cmd = rtb_Model11_o1.pusher_pwm_cmd;
   }
 
-  /* End of Switch: '<S20>/Switch2' */
+  /* End of Switch: '<S21>/Switch2' */
 
   /* Outport: '<Root>/ctrl_log' incorporates:
    *  BusAssignment: '<Root>/Bus Assignment1'
    *  BusAssignment: '<S1>/Bus Assignment'
    *  BusAssignment: '<S1>/Bus Assignment1'
    *  BusAssignment: '<S1>/Bus Assignment2'
-   *  BusAssignment: '<S26>/Bus Assignment1'
    *  BusAssignment: '<S27>/Bus Assignment1'
+   *  BusAssignment: '<S28>/Bus Assignment1'
    *  BusAssignment: '<S4>/Bus Assignment1'
    *  BusCreator generated from: '<Root>/Bus Assignment1'
    *  Delay generated from: '<Root>/Delay4'
@@ -1308,7 +1303,7 @@ void controllerMain_step(void)
    *  ModelReference generated from: '<Root>/Model2'
    *  ModelReference generated from: '<Root>/Model3'
    *  RelationalOperator: '<S4>/NotEqual'
-   *  SignalConversion generated from: '<S26>/Bus Assignment1'
+   *  SignalConversion generated from: '<S27>/Bus Assignment1'
    * */
   controllerMain_Y.ctrl_log.controllerAttCtrl = rtb_Model1_o1;
   controllerMain_Y.ctrl_log.controllerAltCtrl = rtb_altCtrl_ref;
@@ -1340,7 +1335,7 @@ void controllerMain_step(void)
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.aos =
     rtb_BusAssignment1_ads_1_aos_tmp;
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.h_gps_amsl =
-    rtb_BusAssignment1_ads_1_alt_baro_amsl_tmp;
+    rtb_BusAssignment1_ins_1_alt_gps_amsl_tmp;
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.h_baro_amsl =
     rtb_BusAssignment1_ads_1_alt_baro_amsl_tmp;
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.h_radar_agl =
@@ -1374,7 +1369,7 @@ void controllerMain_step(void)
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.omg[2] =
     rtb_BusAssignment1_ins_1_omg[2];
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.pos_lla[2] =
-    notch0_gyro_states_0;
+    rtb_BusAssignment1_ins_1_alt_gps_amsl_tmp;
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.vel_ned[2] =
     rtb_BusAssignment1_ins_1_v_ned_idx_2;
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.accel_b[2] =
@@ -1383,7 +1378,7 @@ void controllerMain_step(void)
     rtb_BusAssignment1_wow_idx_2;
   (void)memcpy
     (&controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.rotor_rpm[0],
-     &rtb_BusAssignment1_rotor_rpm[0], (sizeof(real_T)) << 3U);
+     &rtb_BusAssignment1_rotor_rpm[0], (sizeof(real_T)) << ((uint32_T)3U));
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.gspd = 0.0;
   controllerMain_Y.ctrl_log.SensorMgmt.static_sensor_voting_out.chi = 0.0;
   controllerMain_Y.ctrl_log.SensorMgmt.rad_alt_out = rtb_Switch_di0iual0gm;
@@ -1409,7 +1404,7 @@ void controllerMain_step(void)
   controllerMain_Y.ctrl_log.IntegratorCF.MR_IntCF.lambda = rtb_uDLookupTable;
   controllerMain_Y.ctrl_log.IntegratorCF.FW_IntCF.roll_CF = rtb_roll_cmd;
   controllerMain_Y.ctrl_log.IntegratorCF.FW_IntCF.pitch_CF =
-    rtb_BusAssignment1_dmryoc4syw_pitch_CF;
+    rtb_BusAssignment1_nc41wq0lh0_pitch_CF;
   controllerMain_Y.ctrl_log.IntegratorCF.FW_IntCF.lambda = rtb_uDLookupTable;
   controllerMain_Y.ctrl_log.IntegratorCF.lambda = rtb_uDLookupTable;
   controllerMain_Y.ctrl_log.fwAttCmd.pitchCmd = rtb_cur_leg_remaining_dist;
@@ -1428,9 +1423,34 @@ void controllerMain_step(void)
   controllerMain_Y.fcs_state.tecs_mode = rtb_tecs_mode;
   controllerMain_Y.fcs_state.CoG_tracking = rtb_CoG_tracking;
 
-  /* Saturate: '<S23>/Saturation' incorporates:
-   *  BusAssignment: '<S26>/Bus Assignment1'
+  /* Outport: '<Root>/gcs_fb' incorporates:
+   *  BusAssignment: '<S4>/Bus Assignment'
+   *  BusAssignment: '<S5>/Bus Assignment'
+   */
+  controllerMain_Y.gcs_fb.mr_roll_sp = rtb_rollCmd;
+  controllerMain_Y.gcs_fb.mr_pitch_sp = rtb_pitchCmd;
+  controllerMain_Y.gcs_fb.mr_yaw_sp = rtb_yawCmd;
+  controllerMain_Y.gcs_fb.mr_yawrate_sp = rtb_yawRateCmd;
+  controllerMain_Y.gcs_fb.mr_yaw_hold = rtb_yawHold;
+  controllerMain_Y.gcs_fb.mr_att_intg_reset = rtb_init_reset;
+  controllerMain_Y.gcs_fb.mr_alt_sp = rtb_hCmd_f0mpth4u0h;
+  controllerMain_Y.gcs_fb.mr_altrate_sp = rtb_hRateCmd_n0d5yq2y1h;
+  controllerMain_Y.gcs_fb.mr_altrate_intg_reset = rtb_init_reset_hdot_lay4g5k1gs;
+  controllerMain_Y.gcs_fb.mr_alt_hold = rtb_hHold_kkfp1ixkpi;
+  controllerMain_Y.gcs_fb.mr_vel_sp_X = rtb_velCmdH_x_plbsly3dk1;
+  controllerMain_Y.gcs_fb.mr_vel_sp_Y = rtb_velCmdH_y_fn5sqdulrh;
+  controllerMain_Y.gcs_fb.mr_vel_intg_reset = rtb_init_reset_vel_oyuizswpb3;
+  controllerMain_Y.gcs_fb.mr_pos_sp_lat =
+    rtb_BusConversion_InsertedFor_Model3_at_inport_0_BusCreator1.posLLA[0];
+  controllerMain_Y.gcs_fb.mr_pos_sp_lon =
+    rtb_BusConversion_InsertedFor_Model3_at_inport_0_BusCreator1.posLLA[1];
+  controllerMain_Y.gcs_fb.mr_thrust_cmd = rtb_altCtrl_ref.forceDes;
+  controllerMain_Y.gcs_fb.h_rel_takeoff = controllerMain_B.dCapturedAlt_m;
+  controllerMain_Y.gcs_fb.voter = controllerMain_B.BusAssignment;
+
+  /* Saturate: '<S24>/Saturation' incorporates:
    *  BusAssignment: '<S27>/Bus Assignment1'
+   *  BusAssignment: '<S28>/Bus Assignment1'
    */
   if (rtb_BusAssignment1_ads_1_aspd_cas > 40.0) {
     rtb_RateLimiter_kbd0fqq3vq = 40.0;
@@ -1440,9 +1460,9 @@ void controllerMain_step(void)
     rtb_RateLimiter_kbd0fqq3vq = rtb_BusAssignment1_ads_1_aspd_cas;
   }
 
-  /* End of Saturate: '<S23>/Saturation' */
+  /* End of Saturate: '<S24>/Saturation' */
 
-  /* RateLimiter: '<S23>/Rate Limiter' */
+  /* RateLimiter: '<S24>/Rate Limiter' */
   rtb_RateLimiter = rtb_RateLimiter_kbd0fqq3vq -
     controllerMain_DW.PrevY_fbnop0txyt;
   if (rtb_RateLimiter > 0.05) {
@@ -1455,70 +1475,70 @@ void controllerMain_step(void)
 
   controllerMain_DW.PrevY_fbnop0txyt = rtb_RateLimiter_kbd0fqq3vq;
 
-  /* End of RateLimiter: '<S23>/Rate Limiter' */
+  /* End of RateLimiter: '<S24>/Rate Limiter' */
 
-  /* Update for DiscreteFilter: '<S26>/notch0_gyro' */
+  /* Update for DiscreteFilter: '<S27>/notch0_gyro' */
   controllerMain_DW.notch0_gyro_states[1] =
     controllerMain_DW.notch0_gyro_states[0];
   controllerMain_DW.notch0_gyro_states[0] = notch0_gyro_tmp[0];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_acc' */
+  /* Update for DiscreteFilter: '<S27>/notch0_acc' */
   controllerMain_DW.notch0_acc_states[1] = controllerMain_DW.notch0_acc_states[0];
   controllerMain_DW.notch0_acc_states[0] = notch0_acc_tmp[0];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_gyro1' */
+  /* Update for DiscreteFilter: '<S27>/notch0_gyro1' */
   controllerMain_DW.notch0_gyro1_states[1] =
     controllerMain_DW.notch0_gyro1_states[0];
   controllerMain_DW.notch0_gyro1_states[0] = notch0_gyro1_tmp[0];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_acc1' */
+  /* Update for DiscreteFilter: '<S27>/notch0_acc1' */
   controllerMain_DW.notch0_acc1_states[1] =
     controllerMain_DW.notch0_acc1_states[0];
   controllerMain_DW.notch0_acc1_states[0] = notch0_acc1_tmp[0];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_gyro' */
+  /* Update for DiscreteFilter: '<S27>/notch0_gyro' */
   controllerMain_DW.notch0_gyro_states[3] =
     controllerMain_DW.notch0_gyro_states[2];
   controllerMain_DW.notch0_gyro_states[2] = notch0_gyro_tmp[1];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_acc' */
+  /* Update for DiscreteFilter: '<S27>/notch0_acc' */
   controllerMain_DW.notch0_acc_states[3] = controllerMain_DW.notch0_acc_states[2];
   controllerMain_DW.notch0_acc_states[2] = notch0_acc_tmp[1];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_gyro1' */
+  /* Update for DiscreteFilter: '<S27>/notch0_gyro1' */
   controllerMain_DW.notch0_gyro1_states[3] =
     controllerMain_DW.notch0_gyro1_states[2];
   controllerMain_DW.notch0_gyro1_states[2] = notch0_gyro1_tmp[1];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_acc1' */
+  /* Update for DiscreteFilter: '<S27>/notch0_acc1' */
   controllerMain_DW.notch0_acc1_states[3] =
     controllerMain_DW.notch0_acc1_states[2];
   controllerMain_DW.notch0_acc1_states[2] = notch0_acc1_tmp[1];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_gyro' */
+  /* Update for DiscreteFilter: '<S27>/notch0_gyro' */
   controllerMain_DW.notch0_gyro_states[5] =
     controllerMain_DW.notch0_gyro_states[4];
   controllerMain_DW.notch0_gyro_states[4] = notch0_gyro_tmp[2];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_acc' */
+  /* Update for DiscreteFilter: '<S27>/notch0_acc' */
   controllerMain_DW.notch0_acc_states[5] = controllerMain_DW.notch0_acc_states[4];
   controllerMain_DW.notch0_acc_states[4] = notch0_acc_tmp[2];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_gyro1' */
+  /* Update for DiscreteFilter: '<S27>/notch0_gyro1' */
   controllerMain_DW.notch0_gyro1_states[5] =
     controllerMain_DW.notch0_gyro1_states[4];
   controllerMain_DW.notch0_gyro1_states[4] = notch0_gyro1_tmp[2];
 
-  /* Update for DiscreteFilter: '<S26>/notch0_acc1' */
+  /* Update for DiscreteFilter: '<S27>/notch0_acc1' */
   controllerMain_DW.notch0_acc1_states[5] =
     controllerMain_DW.notch0_acc1_states[4];
   controllerMain_DW.notch0_acc1_states[4] = notch0_acc1_tmp[2];
 
-  /* Update for Memory: '<S23>/Memory' incorporates:
-   *  Constant: '<S23>/Constant1'
-   *  Product: '<S23>/Product'
-   *  Product: '<S23>/Product1'
-   *  Sum: '<S23>/Sum'
+  /* Update for Memory: '<S24>/Memory' incorporates:
+   *  Constant: '<S24>/Constant1'
+   *  Product: '<S24>/Product'
+   *  Product: '<S24>/Product1'
+   *  Sum: '<S24>/Sum'
    */
   controllerMain_DW.Memory_PreviousInput = (rtb_RateLimiter_kbd0fqq3vq *
     controllerMain_ConstB.Sum1) + (0.985 * rtb_va_filt);
@@ -1529,42 +1549,42 @@ void controllerMain_step(void)
   /* Update for UnitDelay: '<Root>/Unit Delay2' */
   controllerMain_DW.UnitDelay2_DSTATE = controllerMain_B.pic_status;
 
-  /* Update for UnitDelay generated from: '<S15>/ud' */
+  /* Update for UnitDelay generated from: '<S16>/ud' */
   controllerMain_DW.ud_1_DSTATE = rtb_roll_ch;
 
-  /* Update for UnitDelay generated from: '<S15>/ud' */
+  /* Update for UnitDelay generated from: '<S16>/ud' */
   controllerMain_DW.ud_2_DSTATE = rtb_pitch_ch;
 
-  /* Update for UnitDelay generated from: '<S15>/ud' */
+  /* Update for UnitDelay generated from: '<S16>/ud' */
   controllerMain_DW.ud_3_DSTATE = rtb_yaw_ch;
 
-  /* Update for UnitDelay generated from: '<S15>/ud' */
+  /* Update for UnitDelay generated from: '<S16>/ud' */
   controllerMain_DW.ud_4_DSTATE = rtb_throttle_ch;
 
-  /* Update for UnitDelay generated from: '<S15>/ud' */
+  /* Update for UnitDelay generated from: '<S16>/ud' */
   controllerMain_DW.ud_5_DSTATE = rtb_engine_ch;
 
-  /* Update for UnitDelay: '<S19>/FixPt Unit Delay2' incorporates:
-   *  Constant: '<S19>/FixPt Constant'
+  /* Update for UnitDelay: '<S20>/FixPt Unit Delay2' incorporates:
+   *  Constant: '<S20>/FixPt Constant'
    */
   controllerMain_DW.FixPtUnitDelay2_DSTATE = 0U;
 
-  /* Update for UnitDelay: '<S19>/FixPt Unit Delay1' */
+  /* Update for UnitDelay: '<S20>/FixPt Unit Delay1' */
   controllerMain_DW.FixPtUnitDelay1_DSTATE = rtb_UkYk1;
 
-  /* Update for UnitDelay generated from: '<S15>/ud1' */
+  /* Update for UnitDelay generated from: '<S16>/ud1' */
   controllerMain_DW.ud1_1_DSTATE = rtb_deltafalllimit;
 
-  /* Update for UnitDelay generated from: '<S15>/ud1' */
+  /* Update for UnitDelay generated from: '<S16>/ud1' */
   controllerMain_DW.ud1_2_DSTATE = rtb_pitch_ch_i1x0haaskm;
 
-  /* Update for UnitDelay generated from: '<S15>/ud1' */
+  /* Update for UnitDelay generated from: '<S16>/ud1' */
   controllerMain_DW.ud1_3_DSTATE = rtb_yaw_ch_jthfpygiuk;
 
-  /* Update for UnitDelay generated from: '<S15>/ud1' */
+  /* Update for UnitDelay generated from: '<S16>/ud1' */
   controllerMain_DW.ud1_4_DSTATE = rtb_throttle_ch_oryunzuyq0;
 
-  /* Update for UnitDelay generated from: '<S15>/ud1' */
+  /* Update for UnitDelay generated from: '<S16>/ud1' */
   controllerMain_DW.ud1_5_DSTATE = rtb_engine_ch_bjavj5sodg;
 
   /* Update for UnitDelay: '<Root>/Unit Delay' */
@@ -1627,16 +1647,16 @@ void controllerMain_step(void)
   /* Update for Delay: '<Root>/Delay2' */
   controllerMain_DW.Delay2_DSTATE = rtb_Model12.pusher_cmd;
 
-  /* Update for DiscreteIntegrator: '<S25>/omega' incorporates:
-   *  Constant: '<S25>/Constant3'
-   *  Product: '<S25>/Product'
-   *  Sum: '<S25>/Sum'
+  /* Update for DiscreteIntegrator: '<S26>/omega' incorporates:
+   *  Constant: '<S26>/Constant3'
+   *  Product: '<S26>/Product'
+   *  Sum: '<S26>/Sum'
    */
   controllerMain_DW.omega_IC_LOADING = 0U;
   controllerMain_DW.omega_DSTATE += 0.01 * (20.0 * (rtb_approach_ang -
     rtb_omega_jjutubfppl));
 
-  /* Update for DiscreteIntegrator: '<S24>/omega' */
+  /* Update for DiscreteIntegrator: '<S25>/omega' */
   controllerMain_DW.omega_IC_LOADING_bb503dutix = 0U;
   controllerMain_DW.omega_DSTATE_l5hd10dn0e += 0.01 * rtb_cur_leg_heading;
 
@@ -1686,8 +1706,8 @@ void controllerMain_initialize(void)
 
   {
     controllerMain_B.mode_data = controllerMain_rtZbusMode_data;
-    controllerMain_B.vom_status = INVALID;
-    controllerMain_B.safety_state = DISARMED;
+    controllerMain_B.vom_status = VOM_INVALID;
+    controllerMain_B.safety_state = AC_DISARMED;
     controllerMain_B.pic_status = EXTERNAL;
     controllerMain_B.lifter_state = ON;
   }
@@ -1698,7 +1718,6 @@ void controllerMain_initialize(void)
 
   /* external inputs */
   (void)memset(&controllerMain_U, 0, sizeof(controllerMain_csevfv4opo_T));
-  controllerMain_U.extd_cmd = controllerMain_rtZext_command_t;
 
   /* external outputs */
   (void)memset(&controllerMain_Y, 0, sizeof(controllerMain_jzldyrnxon_T));
@@ -1749,21 +1768,21 @@ void controllerMain_initialize(void)
   controllerMain_DW.PrevY = 0.0;
 
   /* InitializeConditions for UnitDelay: '<Root>/Unit Delay1' */
-  controllerMain_DW.UnitDelay1_DSTATE = READY;
+  controllerMain_DW.UnitDelay1_DSTATE = VOM_READY;
 
-  /* InitializeConditions for UnitDelay: '<S19>/FixPt Unit Delay2' */
+  /* InitializeConditions for UnitDelay: '<S20>/FixPt Unit Delay2' */
   controllerMain_DW.FixPtUnitDelay2_DSTATE = 1U;
 
   /* InitializeConditions for Delay: '<Root>/Delay2' */
   controllerMain_DW.Delay2_DSTATE = 1000.0;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S25>/omega' */
+  /* InitializeConditions for DiscreteIntegrator: '<S26>/omega' */
   controllerMain_DW.omega_IC_LOADING = 1U;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S24>/omega' */
+  /* InitializeConditions for DiscreteIntegrator: '<S25>/omega' */
   controllerMain_DW.omega_IC_LOADING_bb503dutix = 1U;
 
-  /* InitializeConditions for RateLimiter: '<S23>/Rate Limiter' */
+  /* InitializeConditions for RateLimiter: '<S24>/Rate Limiter' */
   controllerMain_DW.PrevY_fbnop0txyt = 0.0;
 
   /* SystemInitialize for ModelReference generated from: '<Root>/system_state_machine' incorporates:

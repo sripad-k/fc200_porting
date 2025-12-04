@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: FW_TECS_switcher.c
  *
  * Code generated for Simulink model 'FW_TECS_switcher'.
  *
- * Model version                  : 2.176
+ * Model version                  : 2.179
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:50:56 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:05:02 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -675,10 +671,10 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
     (FW_TECS_switcher_ConstB.TrigonometricFunction1 * Vg));
 
   /* Sum: '<S75>/Add1' incorporates:
-   *  Constant: '<S5>/ADSAC_RTH_land'
+   *  Constant: '<S5>/AlAin_RTH_land'
    */
   rtb_VectorConcatenate1[1] = rtb_VectorConcatenate1_oigmvxpsrq_idx_0 +
-    0.95705178402328117;
+    0.97080864372042563;
 
   /* SignalConversion generated from: '<S44>/Vector Concatenate1' */
   rtb_VectorConcatenate1[2] = *rtu_mode_data_fwrth_data_alt_sp;
@@ -721,21 +717,21 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
   rtb_Sum_imgtnbczew_idx_1 = cos(rtb_VectorConcatenate1[0]);
 
   /* Trigonometry: '<S59>/Trigonometric Function3' incorporates:
-   *  Constant: '<S5>/ADSAC_RTH_land'
+   *  Constant: '<S5>/AlAin_RTH_land'
    *  Sum: '<S75>/Add1'
    *  Trigonometry: '<S49>/Trigonometric Function3'
    *  Trigonometry: '<S75>/Trigonometric Function6'
    */
   rtb_TrigonometricFunction6_onwcg4eh52 = cos
-    (rtb_VectorConcatenate1_oigmvxpsrq_idx_0 + 0.95705178402328117);
+    (rtb_VectorConcatenate1_oigmvxpsrq_idx_0 + 0.97080864372042563);
 
   /* Trigonometry: '<S59>/Trigonometric Function2' incorporates:
-   *  Constant: '<S5>/ADSAC_RTH_land'
+   *  Constant: '<S5>/AlAin_RTH_land'
    *  Sum: '<S75>/Add1'
    *  Trigonometry: '<S49>/Trigonometric Function2'
    *  Trigonometry: '<S75>/Trigonometric Function6'
    */
-  Vg_0 = sin(rtb_VectorConcatenate1_oigmvxpsrq_idx_0 + 0.95705178402328117);
+  Vg_0 = sin(rtb_VectorConcatenate1_oigmvxpsrq_idx_0 + 0.97080864372042563);
 
   /* MATLAB Function: '<S58>/MATLAB Function1' */
   rtb_C_pex2miccv0[0] = (-curvature) * rtb_Sum_imgtnbczew_tmp;
@@ -791,12 +787,12 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
   /* End of Product: '<S58>/Product' */
 
   /* Sum: '<S68>/Add' incorporates:
-   *  Constant: '<S5>/ADSAC_RTH_land'
+   *  Constant: '<S5>/AlAin_RTH_land'
    *  Sum: '<S75>/Add1'
    *  Trigonometry: '<S75>/Trigonometric Function6'
    */
   AC_norm = rtu_Sensor_pos_lla[1] - (rtb_VectorConcatenate1_oigmvxpsrq_idx_0 +
-    0.95705178402328117);
+    0.97080864372042563);
 
   /* Trigonometry: '<S68>/Trigonometric Function6' incorporates:
    *  Product: '<S68>/Product'
@@ -1113,15 +1109,15 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
 
   /* SignalConversion generated from: '<Root>/FWRTH_SM_in' incorporates:
    *  BusAssignment: '<S5>/Bus Assignment'
-   *  Constant: '<S5>/ADSAC_RTH_land'
+   *  Constant: '<S5>/AlAin_RTH_land'
    */
-  *rty_FWRTH_SM_in_land_lat = 0.43151857274853433;
+  *rty_FWRTH_SM_in_land_lat = 0.42700150356474043;
 
   /* SignalConversion generated from: '<Root>/FWRTH_SM_in' incorporates:
    *  BusAssignment: '<S5>/Bus Assignment'
-   *  Constant: '<S5>/ADSAC_RTH_land'
+   *  Constant: '<S5>/AlAin_RTH_land'
    */
-  *rty_FWRTH_SM_in_land_lon = 0.95705178402328117;
+  *rty_FWRTH_SM_in_land_lon = 0.97080864372042563;
 
   /* SignalConversion generated from: '<Root>/FWRTH_SM_in' incorporates:
    *  BusAssignment: '<S5>/Bus Assignment'
@@ -1132,7 +1128,7 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
    *  Memory: '<S106>/Memory2'
    */
   FW_TECS_switcher_DW.icLoad = (((FW_TECS_switcher_DW.Memory2_PreviousInput) &&
-    (((uint32_T)FW_TECS_switcher_PrevZCX.cur_pos_sp_Reset_ZCE) != POS_ZCSIG)) ||
+    (FW_TECS_switcher_PrevZCX.cur_pos_sp_Reset_ZCE != ((uint8_T)POS_ZCSIG))) ||
     (FW_TECS_switcher_DW.icLoad));
   FW_TECS_switcher_PrevZCX.cur_pos_sp_Reset_ZCE =
     FW_TECS_switcher_DW.Memory2_PreviousInput ? ((ZCSigState)1) : ((ZCSigState)0);
@@ -1161,7 +1157,7 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
   /* RelationalOperator: '<S102>/Compare' incorporates:
    *  Constant: '<S102>/Constant'
    */
-  rtb_Compare_ag4sp0vjdy = ((*rtu_vom_status) == WAYPNT);
+  rtb_Compare_ag4sp0vjdy = ((*rtu_vom_status) == VOM_WAYPNT);
 
   /* Memory: '<S8>/Memory' */
   rtb_Memory_mouojdlutb = FW_TECS_switcher_DW.Memory_PreviousInput_frepmgenr3;
@@ -1191,8 +1187,8 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
     : 0)))) || rtb_FixPtRelationalOperator_h1ymkdiv2b);
 
   /* Delay: '<S106>/prev_pos_sp' */
-  FW_TECS_switcher_DW.icLoad_jveizoqakw = ((rtb_OR && (((uint32_T)
-    FW_TECS_switcher_PrevZCX.prev_pos_sp_Reset_ZCE) != POS_ZCSIG)) ||
+  FW_TECS_switcher_DW.icLoad_jveizoqakw = ((rtb_OR &&
+    (FW_TECS_switcher_PrevZCX.prev_pos_sp_Reset_ZCE != ((uint8_T)POS_ZCSIG))) ||
     (FW_TECS_switcher_DW.icLoad_jveizoqakw));
   FW_TECS_switcher_PrevZCX.prev_pos_sp_Reset_ZCE = rtb_OR ? ((ZCSigState)1) :
     ((ZCSigState)0);
@@ -1646,8 +1642,8 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
 
   /* Delay: '<S8>/Delay1' */
   FW_TECS_switcher_DW.icLoad_ncnilzog2z =
-    ((rtb_FixPtRelationalOperator_lyd2dqurri && (((uint32_T)
-        FW_TECS_switcher_PrevZCX.Delay1_Reset_ZCE) != POS_ZCSIG)) ||
+    ((rtb_FixPtRelationalOperator_lyd2dqurri &&
+      (FW_TECS_switcher_PrevZCX.Delay1_Reset_ZCE != ((uint8_T)POS_ZCSIG))) ||
      (FW_TECS_switcher_DW.icLoad_ncnilzog2z));
   FW_TECS_switcher_PrevZCX.Delay1_Reset_ZCE =
     rtb_FixPtRelationalOperator_lyd2dqurri ? ((ZCSigState)1) : ((ZCSigState)0);
@@ -1666,8 +1662,8 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
    *  Delay: '<S8>/Delay1'
    */
   FW_TECS_switcher_DW.icLoad_fj3gi4q45w =
-    ((rtb_FixPtRelationalOperator_lyd2dqurri && (((uint32_T)
-        FW_TECS_switcher_PrevZCX.Delay2_Reset_ZCE) != POS_ZCSIG)) ||
+    ((rtb_FixPtRelationalOperator_lyd2dqurri &&
+      (FW_TECS_switcher_PrevZCX.Delay2_Reset_ZCE != ((uint8_T)POS_ZCSIG))) ||
      (FW_TECS_switcher_DW.icLoad_fj3gi4q45w));
   FW_TECS_switcher_PrevZCX.Delay2_Reset_ZCE =
     rtb_FixPtRelationalOperator_lyd2dqurri ? ((ZCSigState)1) : ((ZCSigState)0);
@@ -1762,8 +1758,8 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
 
   /* Delay: '<S23>/Delay1' */
   FW_TECS_switcher_DW.icLoad_ogna325jjd = ((rtb_Compare_i5bisll1rb &&
-    (((uint32_T)FW_TECS_switcher_PrevZCX.Delay1_Reset_ZCE_pzkzowkb1n) !=
-     POS_ZCSIG)) || (FW_TECS_switcher_DW.icLoad_ogna325jjd));
+    (FW_TECS_switcher_PrevZCX.Delay1_Reset_ZCE_pzkzowkb1n != ((uint8_T)POS_ZCSIG)))
+    || (FW_TECS_switcher_DW.icLoad_ogna325jjd));
   FW_TECS_switcher_PrevZCX.Delay1_Reset_ZCE_pzkzowkb1n = rtb_Compare_i5bisll1rb ?
     ((ZCSigState)1) : ((ZCSigState)0);
   if (FW_TECS_switcher_DW.icLoad_ogna325jjd) {
@@ -1822,7 +1818,7 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
    *  Sum: '<S22>/Sum2'
    *  Trigonometry: '<S22>/Trigonometric Function1'
    */
-  if (rtb_Compare_i5bisll1rb || ((*rtu_vom_status) != FLTDIR)) {
+  if (rtb_Compare_i5bisll1rb || ((*rtu_vom_status) != VOM_FLTDIR)) {
     rtb_Sqrt_jug5wuieqd = (2.0 * ((tan(rtu_Sensor_eul_ang[0]) * 9.80665) /
       rtb_TrigonometricFunction_paar0fmbpe)) + (*rtu_Sensor_chi);
   } else {
@@ -2481,11 +2477,11 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
   /* End of Switch: '<S6>/Switch2' */
 
   /* Delay: '<S90>/Delay1' */
-  FW_TECS_switcher_DW.icLoad_kbyaompepr = ((((*rtu_TECS_mode) > 0U) &&
-    (((uint32_T)FW_TECS_switcher_PrevZCX.Delay1_Reset_ZCE_okp35hdmnj) !=
-     POS_ZCSIG)) || (FW_TECS_switcher_DW.icLoad_kbyaompepr));
+  FW_TECS_switcher_DW.icLoad_kbyaompepr = ((((*rtu_TECS_mode) > ((uint8_T)0)) &&
+    (FW_TECS_switcher_PrevZCX.Delay1_Reset_ZCE_okp35hdmnj != ((uint8_T)POS_ZCSIG)))
+    || (FW_TECS_switcher_DW.icLoad_kbyaompepr));
   FW_TECS_switcher_PrevZCX.Delay1_Reset_ZCE_okp35hdmnj = (ZCSigState)
-    (((*rtu_TECS_mode) > 0U) ? ((int32_T)1) : ((int32_T)0));
+    (((*rtu_TECS_mode) > ((uint8_T)0)) ? ((int32_T)1) : ((int32_T)0));
   if (FW_TECS_switcher_DW.icLoad_kbyaompepr) {
     FW_TECS_switcher_DW.Delay1_DSTATE_g1oevxsf0d = rtu_Sensor_pos_lla[2];
   }
@@ -2535,15 +2531,15 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
   AC_norm = 6.378137E+6 / AC_norm;
 
   /* MATLAB Function: '<S93>/MATLAB Function1' */
-  rtb_C_pex2miccv0[0] = -0.24088103093692706;
-  rtb_C_pex2miccv0[3] = -0.34193153916516583;
-  rtb_C_pex2miccv0[6] = 0.90832766745206206;
-  rtb_C_pex2miccv0[1] = -0.81751089051303827;
-  rtb_C_pex2miccv0[4] = 0.57591313919078047;
+  rtb_C_pex2miccv0[0] = -0.23381853358350183;
+  rtb_C_pex2miccv0[3] = -0.34181934761104993;
+  rtb_C_pex2miccv0[6] = 0.91021339638109977;
+  rtb_C_pex2miccv0[1] = -0.82537236894794752;
+  rtb_C_pex2miccv0[4] = 0.5645887464139302;
   rtb_C_pex2miccv0[7] = 0.0;
-  rtb_C_pex2miccv0[2] = -0.52311783837615633;
-  rtb_C_pex2miccv0[5] = -0.74256776029636617;
-  rtb_C_pex2miccv0[8] = -0.41825930777580567;
+  rtb_C_pex2miccv0[2] = -0.51389624043197091;
+  rtb_C_pex2miccv0[5] = -0.75126498721922552;
+  rtb_C_pex2miccv0[8] = -0.414139557454227;
 
   /* Product: '<S94>/Product' incorporates:
    *  Product: '<S94>/Product1'
@@ -2785,7 +2781,7 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
    *  RelationalOperator: '<S9>/Compare'
    */
   switch (*rtu_vom_status) {
-   case UMAN:
+   case VOM_UMAN:
     rty_busFW_TECS_switcher->h_dot_cmd = 3.0 * (*rtu_Pilot_throttle_ch);
     rty_busFW_TECS_switcher->h_cmd = absxk;
     rty_busFW_TECS_switcher->V_cmd = *rtu_std_command_airspeed_cas_cmd;
@@ -2819,11 +2815,11 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
     }
 
     /* End of Saturate: '<S7>/Saturation2' */
-    rty_busFW_TECS_switcher->TECS_reset = ((*rtu_TECS_mode) == 0U);
+    rty_busFW_TECS_switcher->TECS_reset = ((*rtu_TECS_mode) == ((uint8_T)0));
     rty_busFW_TECS_switcher->h_hold = rtb_FixPtRelationalOperator_fishi4l242_tmp;
     break;
 
-   case F_TRANS:
+   case VOM_F_TRANS:
     rty_busFW_TECS_switcher->h_dot_cmd = 0.0;
     rty_busFW_TECS_switcher->h_cmd = *rtu_mode_data_ft_data_FT_Altitude;
     rty_busFW_TECS_switcher->V_cmd = *rtu_mode_data_ft_data_FT_AirspeedRef;
@@ -2832,7 +2828,7 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
     rty_busFW_TECS_switcher->h_hold = true;
     break;
 
-   case B_TRANS:
+   case VOM_B_TRANS:
     rty_busFW_TECS_switcher->h_dot_cmd = 0.0;
     rty_busFW_TECS_switcher->h_cmd = *rtu_mode_data_bt_data_BT_Altitude;
     rty_busFW_TECS_switcher->V_cmd = 18.0;
@@ -2841,7 +2837,7 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
     rty_busFW_TECS_switcher->h_hold = true;
     break;
 
-   case FLTDIR:
+   case VOM_FLTDIR:
     rty_busFW_TECS_switcher->h_dot_cmd = 3.0 * (*rtu_Pilot_throttle_ch);
     rty_busFW_TECS_switcher->h_cmd = rtb_TrigonometricFunction6_onwcg4eh52;
 
@@ -2863,7 +2859,7 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
     rty_busFW_TECS_switcher->h_hold = rtb_FixPtRelationalOperator_lyd2dqurri;
     break;
 
-   case LOITER:
+   case VOM_LOITER:
     rty_busFW_TECS_switcher->h_dot_cmd = 0.0;
     rty_busFW_TECS_switcher->h_cmd = *rtu_mode_data_loiter_data_loiter_altitude;
 
@@ -2885,7 +2881,7 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
     rty_busFW_TECS_switcher->h_hold = true;
     break;
 
-   case WAYPNT:
+   case VOM_WAYPNT:
     rty_busFW_TECS_switcher->h_dot_cmd = 0.0;
 
     /* Switch: '<S8>/Switch5' incorporates:
@@ -2909,7 +2905,7 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
     rty_busFW_TECS_switcher->h_hold = true;
     break;
 
-   case FW_RTH:
+   case VOM_FW_RTH:
     rty_busFW_TECS_switcher->h_dot_cmd = 0.0;
     rty_busFW_TECS_switcher->h_cmd = *rtu_mode_data_fwrth_data_alt_sp;
 
@@ -2951,8 +2947,8 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
     FW_TECS_switcher_DW.Memory_PreviousInput));
 
   /* Delay: '<S106>/cur_idx' */
-  FW_TECS_switcher_DW.icLoad_hfgm0d2zgp = ((rtb_Equal_bb4ze044et && (((uint32_T)
-    FW_TECS_switcher_PrevZCX.cur_idx_Reset_ZCE) != POS_ZCSIG)) ||
+  FW_TECS_switcher_DW.icLoad_hfgm0d2zgp = ((rtb_Equal_bb4ze044et &&
+    (FW_TECS_switcher_PrevZCX.cur_idx_Reset_ZCE != ((uint8_T)POS_ZCSIG))) ||
     (FW_TECS_switcher_DW.icLoad_hfgm0d2zgp));
   FW_TECS_switcher_PrevZCX.cur_idx_Reset_ZCE = rtb_Equal_bb4ze044et ?
     ((ZCSigState)1) : ((ZCSigState)0);
@@ -3303,7 +3299,8 @@ void FW_TECS_switcher(const vom_t *rtu_vom_status, const real_T
    *  RelationalOperator: '<S103>/Compare'
    */
   FW_TECS_switcher_DW.Delay3_DSTATE[0] = FW_TECS_switcher_DW.Delay3_DSTATE[1];
-  FW_TECS_switcher_DW.Delay3_DSTATE[1] = ((*rtu_std_command_vom_cmd) == WAYPNT);
+  FW_TECS_switcher_DW.Delay3_DSTATE[1] = ((*rtu_std_command_vom_cmd) ==
+    VOM_WAYPNT);
 
   /* Update for UnitDelay: '<S104>/Delay Input1'
    *

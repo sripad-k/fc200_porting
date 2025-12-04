@@ -14,13 +14,13 @@ typedef enum
     INPUT
 } gpio_direction_t;
 
-#define GPIO_PUSHER (0)
-#define POSITION_LIGHTS (1)
-#define WHITE_STROBE_LIGHT (2)
-#define RED_STROBE_LIGHT (3)
-#define FTS_IN_SIGNAL (4)
+#define GPIO_PUSHER_PWM (0)
+#define GPIO_POSITION_LIGHT (1)
+#define GPIO_STROBE_LIGHT (2)
+#define GPIO_BEACON_LIGHT (3)
+#define GPIO_FTS_IN_SIGNAL (4)
 #define GPIO_PRECHARGE (5)
 
-#define PWM_AF_FREQ 50
+#define PWM_AF_FREQ 200
 
 #endif /*!defined(H_TYPES_GPIO)*/

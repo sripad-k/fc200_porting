@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: FW_CA.c
  *
  * Code generated for Simulink model 'FW_CA'.
  *
- * Model version                  : 2.106
+ * Model version                  : 2.108
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:50:05 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:04:17 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -229,9 +225,10 @@ void FW_CA(const vom_t *rtu_vom_status, const real_T *rtu_elevator, const real_T
    *  RelationalOperator: '<S29>/Compare'
    *  RelationalOperator: '<S30>/Compare'
    */
-  rtb_OR2 = (((((((*rtu_vom_status) == F_TRANS) || ((*rtu_vom_status) == B_TRANS))
-                || ((*rtu_vom_status) == FLTDIR)) || ((*rtu_vom_status) ==
-    LOITER)) || ((*rtu_vom_status) == WAYPNT)) || ((*rtu_vom_status) == FW_RTH));
+  rtb_OR2 = (((((((*rtu_vom_status) == VOM_F_TRANS) || ((*rtu_vom_status) ==
+    VOM_B_TRANS)) || ((*rtu_vom_status) == VOM_FLTDIR)) || ((*rtu_vom_status) ==
+    VOM_LOITER)) || ((*rtu_vom_status) == VOM_WAYPNT)) || ((*rtu_vom_status) ==
+              VOM_FW_RTH));
 
   /* Logic: '<S8>/OR' incorporates:
    *  Constant: '<S19>/Constant'
@@ -239,7 +236,7 @@ void FW_CA(const vom_t *rtu_vom_status, const real_T *rtu_elevator, const real_T
    *  RelationalOperator: '<S19>/Compare'
    *  RelationalOperator: '<S20>/Compare'
    */
-  rtb_OR = (((*rtu_vom_status) == UMAN) || ((*rtu_vom_status) == STARTUP));
+  rtb_OR = (((*rtu_vom_status) == VOM_UMAN) || ((*rtu_vom_status) == VOM_STARTUP));
 
   /* Saturate: '<S10>/Saturation1' */
   if ((*rtu_pilot_engine_ch) > 0.2) {
@@ -270,7 +267,7 @@ void FW_CA(const vom_t *rtu_vom_status, const real_T *rtu_elevator, const real_T
   /* RelationalOperator: '<S17>/Compare' incorporates:
    *  Constant: '<S17>/Constant'
    */
-  rtb_OR1 = ((*rtu_vom_status) == STARTUP);
+  rtb_OR1 = ((*rtu_vom_status) == VOM_STARTUP);
 
   /* Switch: '<S4>/Switch' */
   if (!rtb_OR1) {
@@ -299,7 +296,7 @@ void FW_CA(const vom_t *rtu_vom_status, const real_T *rtu_elevator, const real_T
    *  Constant: '<S18>/Constant'
    *  RelationalOperator: '<S18>/Compare'
    */
-  rtb_OR1 = (((*rtu_vom_status) == READY) || rtb_OR1);
+  rtb_OR1 = (((*rtu_vom_status) == VOM_READY) || rtb_OR1);
 
   /* Switch: '<S2>/Switch' incorporates:
    *  Constant: '<S2>/Constant4'
@@ -401,7 +398,7 @@ void FW_CA(const vom_t *rtu_vom_status, const real_T *rtu_elevator, const real_T
    *  Constant: '<S5>/Constant2'
    *  Constant: '<S5>/Constant3'
    */
-  FW_CA_i10nsmykqz(rtb_Switch, FW_CA_ConstP.pooled3, FW_CA_ConstP.pooled4,
+  FW_CA_i10nsmykqz(rtb_Switch, FW_CA_ConstP.pooled4, FW_CA_ConstP.pooled5,
                    rtb_Product, rtb_Product1_lwaim5ixbq, rtb_u_out,
                    &rtb_sat_flag);
 
@@ -461,8 +458,8 @@ void FW_CA(const vom_t *rtu_vom_status, const real_T *rtu_elevator, const real_T
    *  Constant: '<S3>/Constant3'
    *  Switch: '<S3>/Switch'
    */
-  FW_CA_i10nsmykqz(rtb_DiscreteTimeIntegrator_k5rcxc0xuj, FW_CA_ConstP.pooled3,
-                   FW_CA_ConstP.pooled4, rtb_Product, rtb_Product1_lwaim5ixbq,
+  FW_CA_i10nsmykqz(rtb_DiscreteTimeIntegrator_k5rcxc0xuj, FW_CA_ConstP.pooled4,
+                   FW_CA_ConstP.pooled5, rtb_Product, rtb_Product1_lwaim5ixbq,
                    rtb_u_out_cuqvwmtzjx, &rtb_sat_flag_owj3wsswku);
 
   /* Logic: '<S8>/OR1' incorporates:
@@ -473,8 +470,9 @@ void FW_CA(const vom_t *rtu_vom_status, const real_T *rtu_elevator, const real_T
    *  RelationalOperator: '<S22>/Compare'
    *  RelationalOperator: '<S23>/Compare'
    */
-  rtb_OR1 = ((((rtb_OR2 || ((*rtu_vom_status) == MR_RTH)) || rtb_OR) ||
-              ((*rtu_vom_status) == HOVER)) || ((*rtu_vom_status) == READY));
+  rtb_OR1 = ((((rtb_OR2 || ((*rtu_vom_status) == VOM_MR_RTH)) || rtb_OR) ||
+              ((*rtu_vom_status) == VOM_HOVER)) || ((*rtu_vom_status) ==
+              VOM_READY));
 
   /* Product: '<S11>/Product' incorporates:
    *  Constant: '<S11>/FLAPS'
@@ -516,23 +514,23 @@ void FW_CA(const vom_t *rtu_vom_status, const real_T *rtu_elevator, const real_T
 
   /* End of Outputs for SubSystem: '<Root>/Filter_forEach' */
 
-  /* Gain: '<S11>/Gain' incorporates:
-   *  Bias: '<S11>/Bias'
+  /* Bias: '<S11>/Bias' incorporates:
    *  DataTypeConversion: '<S8>/Data Type Conversion1'
+   *  Gain: '<S11>/Gain'
    *  Logic: '<S8>/OR2'
    *  Product: '<S11>/Product1'
    *  Switch: '<S4>/Switch'
    */
-  rtb_CastToDouble_g5aahf3td0 = 1000.0 * ((((real_T)((rtb_OR2 || rtb_OR) ?
-    ((int32_T)1) : ((int32_T)0))) * rtb_CastToDouble_g5aahf3td0) + 1.0);
+  rtb_CastToDouble_g5aahf3td0 = (840.0 * (((real_T)((rtb_OR2 || rtb_OR) ?
+    ((int32_T)1) : ((int32_T)0))) * rtb_CastToDouble_g5aahf3td0)) + 1100.0;
 
   /* Saturate: '<S11>/Saturation' */
-  if (rtb_CastToDouble_g5aahf3td0 > 2000.0) {
+  if (rtb_CastToDouble_g5aahf3td0 > 1940.0) {
     /* BusAssignment: '<Root>/Bus Assignment2' */
-    rtb_BusAssignment2.pusher_pwm_cmd = 2000.0;
-  } else if (rtb_CastToDouble_g5aahf3td0 < 1000.0) {
+    rtb_BusAssignment2.pusher_pwm_cmd = 1940.0;
+  } else if (rtb_CastToDouble_g5aahf3td0 < 1100.0) {
     /* BusAssignment: '<Root>/Bus Assignment2' */
-    rtb_BusAssignment2.pusher_pwm_cmd = 1000.0;
+    rtb_BusAssignment2.pusher_pwm_cmd = 1100.0;
   } else {
     /* BusAssignment: '<Root>/Bus Assignment2' */
     rtb_BusAssignment2.pusher_pwm_cmd = rtb_CastToDouble_g5aahf3td0;

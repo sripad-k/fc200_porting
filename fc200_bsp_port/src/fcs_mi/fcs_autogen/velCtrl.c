@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: velCtrl.c
  *
  * Code generated for Simulink model 'velCtrl'.
  *
  * Model version                  : 2.9
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:52:58 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:07:20 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -173,7 +169,7 @@ void velCtrl(const std_sensor_t *rtu_Sensor, const real_T
 
   /* DiscreteIntegrator: '<S1>/Discrete-Time Integrator1' */
   if ((*rtu_ctrlIF_vel_init_reset_vel) ||
-      (velCtrl_DW.DiscreteTimeIntegrator1_PrevResetState != 0)) {
+      (velCtrl_DW.DiscreteTimeIntegrator1_PrevResetState != ((int8_T)0))) {
     velCtrl_DW.DiscreteTimeIntegrator1_DSTATE[0] = 0.0;
     velCtrl_DW.DiscreteTimeIntegrator1_DSTATE[1] = 0.0;
   }
@@ -188,9 +184,9 @@ void velCtrl(const std_sensor_t *rtu_Sensor, const real_T
    *  Sum: '<S1>/Sum1'
    *  Sum: '<S1>/Sum2'
    */
-  rtb_Switch_hsy2p5dif5_idx_0 = (0.8 * ((0.75 * cps) - rtu_Sensor->vel_ned[0]))
-    + velCtrl_DW.DiscreteTimeIntegrator1_DSTATE[0];
-  rtb_Sum1_idx_0 = (0.8 * ((0.75 * rtb_Sum1_idx_1) - rtu_Sensor->vel_ned[1])) +
+  rtb_Switch_hsy2p5dif5_idx_0 = (0.8 * ((0.7 * cps) - rtu_Sensor->vel_ned[0])) +
+    velCtrl_DW.DiscreteTimeIntegrator1_DSTATE[0];
+  rtb_Sum1_idx_0 = (0.8 * ((0.7 * rtb_Sum1_idx_1) - rtu_Sensor->vel_ned[1])) +
     velCtrl_DW.DiscreteTimeIntegrator1_DSTATE[1];
 
   /* Product: '<S1>/Product2' incorporates:
@@ -308,8 +304,8 @@ void velCtrl(const std_sensor_t *rtu_Sensor, const real_T
    *  Sum: '<S1>/Sum1'
    */
   velCtrl_DW.DiscreteTimeIntegrator1_DSTATE[0] += 0.01 * ((0.15 * rtb_Sum1_idx_0)
-    * ((real_T)((DiscreteTimeIntegrator1_DSTATE_tmp || (tmp <= 0)) ? ((int32_T)1)
-                : ((int32_T)0))));
+    * ((real_T)((DiscreteTimeIntegrator1_DSTATE_tmp || (tmp <= ((int32_T)
+    ((int8_T)0)))) ? ((int32_T)1) : ((int32_T)0))));
 
   /* Signum: '<S5>/Sign' incorporates:
    *  DiscreteIntegrator: '<S1>/Discrete-Time Integrator1'
@@ -335,8 +331,8 @@ void velCtrl(const std_sensor_t *rtu_Sensor, const real_T
    *  Sum: '<S1>/Sum1'
    */
   velCtrl_DW.DiscreteTimeIntegrator1_DSTATE[1] += 0.01 * ((0.15 * rtb_Sum1_idx_1)
-    * ((real_T)((DiscreteTimeIntegrator1_DSTATE_tmp || (tmp <= 0)) ? ((int32_T)1)
-                : ((int32_T)0))));
+    * ((real_T)((DiscreteTimeIntegrator1_DSTATE_tmp || (tmp <= ((int32_T)
+    ((int8_T)0)))) ? ((int32_T)1) : ((int32_T)0))));
   velCtrl_DW.DiscreteTimeIntegrator1_PrevResetState = (int8_T)
     ((*rtu_ctrlIF_vel_init_reset_vel) ? 1 : 0);
 }

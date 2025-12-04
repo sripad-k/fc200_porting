@@ -15,7 +15,6 @@
 void ach_init(void);
 void ach_read_periodic(void);
 void ach_cmd_periodic(void);
-void ach_powerup_test(void);
 
 /*--------------------------Servo Interface Functions---------------------------------*/
 /* Servo Position Command Interface Functions */

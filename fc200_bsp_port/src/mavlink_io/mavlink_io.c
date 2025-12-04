@@ -31,17 +31,16 @@
 #define RATE_HEARTBEAT (LOOP_RATE / 1U)
 #define RATE_ATTITUDE (LOOP_RATE / 5U)
 #define RATE_GLOBAL_POS (LOOP_RATE / 4U)
-#define RATE_AIR_DATA (LOOP_RATE / 5U)
+#define RATE_AIR_DATA (LOOP_RATE / 4U)
 #define RATE_PILOT_INPUT (LOOP_RATE / 2U)
 #define RATE_INS_DATA (LOOP_RATE / 2U)
-
+#define RATE_TR_DATA (LOOP_RATE / 5U)
 #define RATE_ADC_DATA (LOOP_RATE / 2U)
 #define RATE_ACT_DATA (LOOP_RATE / 2U)
 #define RATE_ACT_CMD_DATA (LOOP_RATE / 3U)
 #define RATE_EPU_DATA (LOOP_RATE / 2U)
 #define RATE_BATT_DATA (LOOP_RATE / 2U)
 #define RATE_ECBU_DATA (LOOP_RATE / 2U)
-#define RATE_PIL_CTRL (LOOP_RATE / 100U)
 #define MSG_RX_BUF_LEN (10 * MAVLINK_MAX_PACKET_LEN)
 
 #define SLOT1 (0U)
@@ -62,10 +61,8 @@
 #define DEG2RAD_F 0.017453f
 #define RAD2DEG_F 57.2957f
 
-
 #define INTERNAL_PILOT_TIMEOUT (500) /* Half a second timeout for GCS internal pilot */
 #define GCS_HEARTBEAT_TIMEOUT (4000) /* Four second timeout for GCS heartbeat */
-
 
 static s_timer_data_t InternalPilotMonitor;
 static s_timer_data_t GcsHeartbeatMonitor;
@@ -105,7 +102,7 @@ static void send_gcs_air_data(const mavio_in_t *mavio_in);
 static void send_gcs_pilot_input(const mavio_in_t *mavio_in);
 static void send_gcs_ins_il_data(const mavio_in_t *mavio_in);
 static void send_gcs_act_cmd(const mavio_in_t *mavio_in);
-
+static void send_gcs_tr_data(const mavio_in_t *mavio_in);
 // static void send_gcs_adc_9_data(const mavio_in_t *mavio_in);
 static void send_gcs_act_kst_data(const mavio_in_t *mavio_in);
 static void send_gcs_epu_tmotor_data(const mavio_in_t *mavio_in);
@@ -114,14 +111,6 @@ static void send_gcs_epu_tmotor_data(const mavio_in_t *mavio_in);
 static void send_gcs_wp_info(mavio_in_t *mavio_in, mavio_out_t *mavio_out);
 static void send_msg_over_gcs_link(const mavlink_message_t *msg);
 static void check_gcs_comm_timer_expiry(void);
-
-// PIL message handling
-#ifdef PIL_BUILD_ENABLED
-static void handle_pil_message(const mavlink_message_t *msg);
-static void send_mavlink_msg_pil(void);
-static void send_pil_ctrl_msg(void);
-static void send_msg_over_pil_link(const mavlink_message_t *msg);
-#endif // PIL_BUILD_ENABLED
 
 // RPI logger message handling
 
@@ -166,9 +155,6 @@ void mavlink_io_recv_periodic_uart(void)
 
     // handle mission items at fcs loop rate to account for timeout
     handle_mission_items(&gcs_msg, &MavioOut.wp_list);
-
-    // check periodically expiry of timer
-    check_gcs_comm_timer_expiry();
 }
 
 void mavlink_io_recv_periodic(void)
@@ -185,7 +171,7 @@ void mavlink_io_recv_periodic(void)
         // printf(" Message Length = %d : UDP Source: %d\r\n", msg_len, udp_src);
         if (msg_len > 0)
         {
-            for (int gcd_idx = 0; gcd_idx < msg_len; gcd_idx++)
+            for (uint32_t gcd_idx = 0; gcd_idx < msg_len; gcd_idx++)
             {
                 if (mavlink_parse_char(MAVLINK_COMM_0, msg_rx_buffer[gcd_idx], &gcs_msg, &status))
                 {
@@ -198,8 +184,8 @@ void mavlink_io_recv_periodic(void)
     // handle mission items at fcs loop rate to account for timeout
     // handle_mission_items(&gcs_msg, &MavioOut.wp_list);
 
-    /* check periodically expiry of timer */
-    // check_gcs_comm_timer_expiry();
+    // check periodically expiry of timer
+    check_gcs_comm_timer_expiry();
 
     /* If Armed */
     if (MavioIn.safety_status == 1)
@@ -234,10 +220,6 @@ void mavlink_io_send_periodic(void)
 
     send_mavlink_msg_gcs();
 
-#ifdef PIL_BUILD_ENABLED
-    send_mavlink_msg_pil();
-#endif // PIL_BUILD_ENABLED
-
     send_log_data();
 }
 
@@ -269,34 +251,35 @@ void send_log_data(void)
     SerdesLog.fcs_aspd_cas = MavioIn.aspd_cas;
 
     // FCS FB Controller Data
-    fcs_mi_fbctrl_data_t fbctrl_data = {0};
-    fcs_mi_get_fbctrl(&fbctrl_data);
     for (int i = 0; i < 3; i++)
     {
-        SerdesLog.fcs_mr_eul_rpy_d[i] = (int16_t)(wrap_pif(fbctrl_data.fcs_mr_eul_rpy_d[i]) * RAD2DEG_F * 100.0f); // deg * 100, [-180.00, 180.00]
+        SerdesLog.fcs_mr_eul_rpy_d[i] = (int16_t)(wrap_pif(MavioIn.fbctrl_data.fcs_mr_eul_rpy_d[i]) * RAD2DEG_F * 100.0f); // deg * 100, [-180.00, 180.00]
     }
-    SerdesLog.fcs_mr_yawrate_d = fbctrl_data.fcs_mr_yawrate_d; // rad/s
-    SerdesLog.fcs_mr_yaw_hold = fbctrl_data.fcs_mr_yaw_hold;
+    SerdesLog.fcs_mr_yawrate_d = MavioIn.fbctrl_data.fcs_mr_yawrate_d; // rad/s
+    SerdesLog.fcs_mr_yaw_hold = MavioIn.fbctrl_data.fcs_mr_yaw_hold;
     for (int i = 0; i < 4; i++)
     {
-        SerdesLog.fcs_ca_nu_des[i] = fbctrl_data.fcs_ca_nu_des[i];     // thrust, Mx, My, Mz
-        SerdesLog.fcs_ca_nu_alloc[i] = fbctrl_data.fcs_ca_nu_alloc[i]; // thrust, Mx, My, Mz
+        SerdesLog.fcs_ca_nu_des[i] = MavioIn.fbctrl_data.fcs_ca_nu_des[i];     // thrust, Mx, My, Mz
+        SerdesLog.fcs_ca_nu_alloc[i] = MavioIn.fbctrl_data.fcs_ca_nu_alloc[i]; // thrust, Mx, My, Mz
     }
     for (int i = 0; i < 3; i++)
     {
-        SerdesLog.fcs_ca_cerp[i] = (uint16_t)(fbctrl_data.fcs_ca_cerp[i] * 1000.0f); // Mx, My, Mz *1000
+        SerdesLog.fcs_ca_cerp[i] = (uint16_t)(MavioIn.fbctrl_data.fcs_ca_cerp[i] * 1000.0f); // Mx, My, Mz *1000
     }
-    SerdesLog.fcs_mr_h_d = fbctrl_data.fcs_mr_h_d;       // m
-    SerdesLog.fcs_mr_hdot_d = fbctrl_data.fcs_mr_hdot_d; // m/s
-    SerdesLog.fcs_mr_h_hold = fbctrl_data.fcs_mr_h_hold;
-    SerdesLog.fcs_fw_roll_d = (int16_t)(fbctrl_data.fcs_fw_roll_d * RAD2DEG_F * 100.0f);   // deg * 100, [-180.00, 180.00]
-    SerdesLog.fcs_fw_pitch_d = (int16_t)(fbctrl_data.fcs_fw_pitch_d * RAD2DEG_F * 100.0f); // deg * 100, [-180.00, 180.00]
-    SerdesLog.fcs_fw_h_d = fbctrl_data.fcs_fw_h_d;                                         // m
-    SerdesLog.fcs_fw_cas_d = (uint16_t)(fbctrl_data.fcs_fw_cas_d * 100.0f);                // m/s * 100
-    SerdesLog.fcs_mr_pit_intg = fbctrl_data.fcs_mr_pit_intg;                               // crossfeed
-    SerdesLog.fcs_mr_pit_intg_sat = fbctrl_data.fcs_mr_pit_intg_sat;                       // crossfeed
-    SerdesLog.fcs_fw_pit_intg = fbctrl_data.fcs_fw_pit_intg;                               // crossfeed
-    SerdesLog.fcs_fw_pit_intg_sat = fbctrl_data.fcs_fw_pit_intg_sat;                       // crossfeed
+    SerdesLog.fcs_mr_h_d = MavioIn.fbctrl_data.fcs_mr_h_d;       // m
+    SerdesLog.fcs_mr_hdot_d = MavioIn.fbctrl_data.fcs_mr_hdot_d; // m/s
+    SerdesLog.fcs_mr_h_hold = MavioIn.fbctrl_data.fcs_mr_h_hold;
+    SerdesLog.fcs_mr_vel_ne_d[0] = (int16_t)(MavioIn.fbctrl_data.fcs_mr_vel_ne_d[0] * 100.0f); // m/s * 100
+    SerdesLog.fcs_mr_vel_ne_d[1] = (int16_t)(MavioIn.fbctrl_data.fcs_mr_vel_ne_d[1] * 100.0f); // m/s * 100
+
+    SerdesLog.fcs_fw_roll_d = (int16_t)(MavioIn.fbctrl_data.fcs_fw_roll_d * RAD2DEG_F * 100.0f);   // deg * 100, [-180.00, 180.00]
+    SerdesLog.fcs_fw_pitch_d = (int16_t)(MavioIn.fbctrl_data.fcs_fw_pitch_d * RAD2DEG_F * 100.0f); // deg * 100, [-180.00, 180.00]
+    SerdesLog.fcs_fw_h_d = MavioIn.fbctrl_data.fcs_fw_h_d;                                         // m
+    SerdesLog.fcs_fw_cas_d = (uint16_t)(MavioIn.fbctrl_data.fcs_fw_cas_d * 100.0f);                // m/s * 100
+    SerdesLog.fcs_mr_pit_intg = MavioIn.fbctrl_data.fcs_mr_pit_intg;                               // crossfeed
+    SerdesLog.fcs_mr_pit_intg_sat = MavioIn.fbctrl_data.fcs_mr_pit_intg_sat;                       // crossfeed
+    SerdesLog.fcs_fw_pit_intg = MavioIn.fbctrl_data.fcs_fw_pit_intg;                               // crossfeed
+    SerdesLog.fcs_fw_pit_intg_sat = MavioIn.fbctrl_data.fcs_fw_pit_intg_sat;                       // crossfeed
 
     // Actuator Commands
     for (int i = 0; i < MAVIO_NUM_MOTORS; i++)
@@ -362,9 +345,9 @@ void send_log_data(void)
 
     // Radalt data
     SerdesLog.radalt_time_ms = timer_get_system_time_ms();
-    SerdesLog.radalt_alt_raw = MavioIn.alt_radalt_raw;
-    SerdesLog.radalt_snr = 0;   // TODO
-    SerdesLog.radalt_flags = 0; // TODO
+    SerdesLog.radalt_alt_raw = MavioIn.radalt_agl;
+    SerdesLog.radalt_snr = MavioIn.radalt_snr;
+    SerdesLog.radalt_flags = MavioIn.radalt_timeout;
 
     // Pilot Input (EP:0 IP:1) data
     SerdesLog.pilot_time_ms = timer_get_system_time_ms();
@@ -419,7 +402,7 @@ GCS
 
 static void mav_io_gather_data(mavio_in_t *mavio_in)
 {
-    /* Update INS data */
+    /* Update FCS data */
     float eul_ang[3];
     float omg[3];
     float acc[3];
@@ -439,7 +422,10 @@ static void mav_io_gather_data(mavio_in_t *mavio_in)
         &mavio_in->gnss_loss,
         &mavio_in->ins_selection,
         &mavio_in->adc_selection,
-        &mavio_in->current_waypoint_idx);
+        &mavio_in->current_waypoint_idx,
+        &mavio_in->tecs_on,
+        &mavio_in->loiter_on,
+        &mavio_in->cog_track_on);
 
     fcs_mi_get_fcs_cont(
         mavio_in->euler_rpy,
@@ -452,6 +438,8 @@ static void mav_io_gather_data(mavio_in_t *mavio_in)
         &mavio_in->aspd_cas,
         &mavio_in->alt_radalt_filt);
 
+    fcs_mi_get_fbctrl(&mavio_in->fbctrl_data);
+
     fcs_mi_get_act_cmd(
         mavio_in->motor_cmd,   // Motor commands in RPM (PoC) or normalized [0,1] (SS)
         mavio_in->servo_cmd,   // Servo commands in degrees
@@ -459,9 +447,12 @@ static void mav_io_gather_data(mavio_in_t *mavio_in)
         MAVIO_NUM_MOTORS,
         MAVIO_NUM_SERVOS);
 
+    /* Update EP data */
     da_get_ep_data(&mavio_in->rc_input);
 
-    da_get_radalt_data(&mavio_in->alt_radalt_raw);
+    /* Update Radalt data */
+    da_get_radalt_data(&mavio_in->radalt_agl, &mavio_in->radalt_snr);
+    mavio_in->radalt_timeout = da_get_radalt_timeout();
 
     /* Update INSD data */
     da_get_ins_il_euler_angles(&eul_ang[0], &eul_ang[1], &eul_ang[2]);
@@ -545,6 +536,14 @@ static void mav_io_gather_data(mavio_in_t *mavio_in)
     mavio_in->ins_data[1].longitude = (int32_t)(lon * POS_LAT_LONG_SCALING);
     mavio_in->ins_data[1].alt_amsl = alt;
 
+    mavio_in->ins_data[1].att_invalid = 1;
+    mavio_in->ins_data[1].pos_invalid = 1;
+    mavio_in->ins_data[1].data_timeout = 1;
+
+    mavio_in->ins_data[1].gnss_sat_used = 0;
+    mavio_in->ins_data[1].gnss_h_accuracy = 0;
+    mavio_in->ins_data[1].gnss_v_accuracy = 0;
+
     /* Update ADS-9 data*/
     float tmp;
     bool valid = da_get_adc_9_cas(&tmp);
@@ -557,6 +556,17 @@ static void mav_io_gather_data(mavio_in_t *mavio_in)
 
     da_get_adc_9_alt(&tmp);
     mavio_in->adc_data[0].alt_baro_amsl = tmp;
+
+    da_get_adc_9_aoa(&tmp);
+    mavio_in->adc_data[0].aoa = tmp;
+
+    da_get_adc_9_aos(&tmp);
+    mavio_in->adc_data[0].aos = tmp;
+
+    /* Update Second ADC data*/
+    mavio_in->adc_data[1].aspd_cas = 0;
+    mavio_in->adc_data[1].aspd_cas_invalid = 1;
+    mavio_in->adc_data[1].data_timeout = 1;
 
     /* Update KST servo data*/
     uint16_t lv_alarm = 0;
@@ -631,6 +641,11 @@ static void send_mavlink_msg_gcs(void)
         send_gcs_ins_il_data(&MavioIn);
     }
 
+    if ((counter + SLOT7) % (RATE_TR_DATA) == 0)
+    {
+        send_gcs_tr_data(&MavioIn);
+    }
+
     if ((counter + SLOT8) % (RATE_ACT_DATA) == 0)
     {
         send_gcs_act_kst_data(&MavioIn);
@@ -665,6 +680,9 @@ static void send_gcs_hb(const mavio_in_t *mavio_in)
         base_mode |= MAV_MODE_FLAG_SAFETY_ARMED; // Armed state
     }
 
+    bool fts_state = false;
+    gpio_read(4, &fts_state);
+
     union lodd_custom_mode_t custom_mode;
     custom_mode.data = 0;
     custom_mode.main_mode = mavio_in->vom_status;
@@ -674,6 +692,7 @@ static void send_gcs_hb(const mavio_in_t *mavio_in)
     custom_mode.flags |= (mavio_in->ep_data_loss == 1) ? LDE_STATUS_RC_LINK_LOSS : 0;
     custom_mode.flags |= (mavio_in->ip_data_loss == 1) ? LDE_STATUS_IP_LINK_LOSS : 0;
     custom_mode.flags |= (mavio_in->gnss_loss == 1) ? LDE_STATUS_GPS_LOSS : 0;
+    custom_mode.flags |= (fts_state == true) ? LDE_STATUS_FTS_ACTIVE : 0;
 
     uint8_t system_status = MAV_STATE_ACTIVE; // System status can be set as per requirement
     mavlink_msg_heartbeat_pack(MavioSystem.sys_id, MavioSystem.comp_id, &send_msg,
@@ -705,14 +724,14 @@ static void send_gcs_gps_pos(const mavio_in_t *mavio_in)
     gps.lat = mavio_in->latitude;                                         // Latitude in degE7
     gps.lon = mavio_in->longitude;                                        // Longitude in degE7
     gps.alt = (int32_t)(mavio_in->alt_gps_amsl * 1000);                   // Altitude in mm
-    gps.eph = (uint16_t)mavio_in->ins_data[0].gnss_hdop * 100;            // hdop
+    gps.eph = (uint16_t)(mavio_in->ins_data[0].gnss_hdop * 100);          // hdop
     gps.epv = 0;                                                          // vdop
     gps.h_acc = (uint32_t)(mavio_in->ins_data[0].gnss_h_accuracy * 1000); // Horizontal accuracy in mm
     gps.v_acc = (uint32_t)(mavio_in->ins_data[0].gnss_v_accuracy * 1000); // Vertical accuracy in mm
     const float *tmp = mavio_in->vel_ned;
-    gps.vel = (int32_t)sqrtf(tmp[0] * tmp[0] + tmp[1] * tmp[1]) * 100; // Velocity in cm/s
-    gps.cog = atan2f(tmp[1], tmp[0]) * RAD2DEG_F * 100;                // Course over ground in centi-degrees
-    gps.satellites_visible = mavio_in->ins_data[0].gnss_sat_used;      // Number
+    gps.vel = (int32_t)(sqrtf(tmp[0] * tmp[0] + tmp[1] * tmp[1]) * 100); // Velocity in cm/s
+    gps.cog = (atan2f(tmp[1], tmp[0]) * RAD2DEG_F + 360.0f) * 100;       // Course over ground in centi-degrees
+    gps.satellites_visible = mavio_in->ins_data[0].gnss_sat_used;        // Number
 
     mavlink_msg_gps_raw_int_encode(MavioSystem.sys_id, MavioSystem.comp_id, &send_msg, &gps);
 
@@ -728,16 +747,23 @@ static void send_gcs_air_data(const mavio_in_t *mavio_in)
     tmp_valid = mavio_in->adc_data[0].data_timeout ? LDE_AIRDATA_ADS9_TIMEOUT : 0;
     validity |= tmp_valid;
 
+    tmp_valid = mavio_in->adc_data[1].aspd_cas_invalid ? 0 : 1;
+    validity |= tmp_valid;
+
+    uint8_t radalt_validity = mavio_in->radalt_timeout ? LDE_RADALT_TIMEOUT : 0;
+
     mavlink_msg_ldm_airdata_pack(MavioSystem.sys_id, MavioSystem.comp_id, &send_msg,
                                  (uint32_t)timer_get_system_time_ms(),       // time_boot_ms
                                  validity,                                   // validity flag
                                  mavio_in->adc_data[0].aspd_cas * 100,       // airspeed in cm/s
                                  mavio_in->adc_data[0].alt_baro_amsl * 1000, // altitude in mm
                                  mavio_in->adc_data[0].oat_celsius,
-                                 mavio_in->adc_data[1].aspd_cas * 100,
-                                 0,
-                                 0,
-                                 mavio_in->alt_radalt_raw * 100); // radalt altitude in cm
+                                 0 * 100,
+                                 0 * 100,
+                                 0 * 100,
+                                 mavio_in->radalt_agl * 100, // radalt altitude in cm
+                                 mavio_in->radalt_snr,       // radalt signal-to-noise ratio in dB
+                                 radalt_validity);           // radalt timeout flag
 
     send_msg_over_gcs_link(&send_msg);
 }
@@ -844,9 +870,33 @@ static void send_gcs_ins_il_data(const mavio_in_t *mavio_in)
     uint8_t ins_sol_status;
     da_get_ins_il_ins_sol_status(&ins_sol_status);
     ins_il.ins_sol_status = ins_sol_status;
+    ins_il.validity = mavio_in->ins_data[0].data_timeout ? LDE_INS_TIMEOUT : 0;
 
     mavlink_msg_ldm_ins_il_encode(MavioSystem.sys_id, MavioSystem.comp_id,
                                   &send_msg, &ins_il);
+
+    send_msg_over_gcs_link(&send_msg);
+}
+
+static void send_gcs_tr_data(const mavio_in_t *mavio_in)
+{
+    mavlink_ldm_tr_t tr = {0};
+
+    tr.msg_seq += 1;
+    tr.thr_alloc = mavio_in->fbctrl_data.fcs_ca_nu_alloc[0];
+    tr.ele = -mavio_in->servo_cmd[11] * 100.0f;
+    tr.ail = mavio_in->servo_cmd[1] * 100.0f;
+    tr.rud = -mavio_in->servo_cmd[8] * 100.0f;
+    tr.pusher = mavio_in->pusher_cmd;
+    tr.roll_err = (mavio_in->fbctrl_data.fcs_fw_roll_d - mavio_in->euler_rpy[0]) * RAD2DEG_F * 100;
+    tr.pitch_err = (mavio_in->fbctrl_data.fcs_fw_pitch_d - mavio_in->euler_rpy[1]) * RAD2DEG_F * 100;
+    tr.ctrl_flags = 0;
+    tr.ctrl_flags |= (mavio_in->tecs_on ? LDE_TR_TECS_MODE : 0);
+    tr.ctrl_flags |= (mavio_in->loiter_on ? LDE_TR_LOITER_MODE : 0);
+    tr.ctrl_flags |= (mavio_in->cog_track_on ? LDE_TR_COG_TRACKING : 0);
+
+    mavlink_msg_ldm_tr_encode(MavioSystem.sys_id, MavioSystem.comp_id,
+                              &send_msg, &tr);
 
     send_msg_over_gcs_link(&send_msg);
 }
@@ -942,8 +992,8 @@ static void handle_gcs_message(const mavlink_message_t *msg, mavio_out_t *mavio_
         /* Reset the timer for GCS heartbeat */
         timer_reload(&GcsHeartbeatMonitor);
         // Process heartbeat message
-        // printf("Received Heartbeat: System ID %d, Component ID %d\r\n",
-        //        msg->sysid, msg->compid);
+//        printf("Received Heartbeat: System ID %d, Component ID %d\r\n",
+//               msg->sysid, msg->compid);
         break;
     }
     case MAVLINK_MSG_ID_COMMAND_INT:
@@ -973,7 +1023,7 @@ static void handle_gcs_message(const mavlink_message_t *msg, mavio_out_t *mavio_
         mavio_out->ip_input.pitch = ip_control.pitch / 1000.0f;
         mavio_out->ip_input.yaw = ip_control.yaw / 1000.0f;
         mavio_out->ip_input.thrust = (ip_control.thrust / 1000.0f) * 2.0f - 1.0f; // thrust channel from GCS comes in [0,1000] range
-        mavio_out->ip_input.pusher = ip_control.pusher / 1000.0f;
+        mavio_out->ip_input.pusher = -ip_control.pusher / 1000.0f;
 
         break;
     }
@@ -1106,21 +1156,25 @@ static void handle_cmd_long(mavlink_command_long_t *cmd_long, mavio_out_t *mavio
         {
             // Disable Loiter
             mavio_out->loiter_on = 0;
+            mavio_out->loiter_on_cnt += 1;
         }
         else if (umm_cmd == 2)
         {
             // Enable Loiter
             mavio_out->loiter_on = 1;
+            mavio_out->loiter_on_cnt += 1;
         }
         else if (umm_cmd == 3)
         {
             // Disable TECS
             mavio_out->tecs_on = 0;
+            mavio_out->tecs_on_cnt += 1;
         }
         else if (umm_cmd == 4)
         {
             // Enable TECS
             mavio_out->tecs_on = 1;
+            mavio_out->tecs_on_cnt += 1;
         }
         break;
     }
@@ -1180,152 +1234,6 @@ static void check_gcs_comm_timer_expiry(void)
         MavioOut.gcs_link_lost = false;
     }
 }
-
-/************************************************************
-*************************************************************
-PIL
-*************************************************************
-*************************************************************/
-#ifdef PIL_BUILD_ENABLED
-static void handle_pil_message(const mavlink_message_t *msg)
-{
-    switch (msg->msgid)
-    {
-    case MAVLINK_MSG_ID_HEARTBEAT:
-    {
-        // Process heartbeat message
-        printf("Received Heartbeat: System ID %d, Component ID %d\r\n",
-               msg->sysid, msg->compid);
-        break;
-    }
-    case MAVLINK_MSG_ID_LDM_PIL_SENSOR:
-    {
-        // Process command int
-        mavlink_ldm_pil_sensor_t pil_sensor;
-        mavlink_msg_ldm_pil_sensor_decode(msg, &pil_sensor);
-
-        // printf("PIL Sensor: RPY: [%.2f, %.2f, %.2f] omg: [%.2f, %.2f, %.2f], acc: [%.2f, %.2f, %.2f]\r\n",
-        //        pil_sensor.ins1_eul_rpy[0], pil_sensor.ins1_eul_rpy[1], pil_sensor.ins1_eul_rpy[2],
-        //        pil_sensor.ins1_omg[0], pil_sensor.ins1_omg[1], pil_sensor.ins1_omg[2],
-        //        pil_sensor.ins1_acc[0], pil_sensor.ins1_acc[1], pil_sensor.ins1_acc[2]);
-
-        /*INS data*/
-        int i;
-        for (i = 0; i < 3; i++)
-        {
-            PilIn.ins_data[0].euler_rpy[i] = pil_sensor.ins1_eul_rpy[i];
-            PilIn.ins_data[0].omg[i] = pil_sensor.ins1_omg[i];
-            PilIn.ins_data[0].acc[i] = pil_sensor.ins1_acc[i];
-            PilIn.ins_data[0].vel_ned[i] = pil_sensor.ins1_vel_ned[i];
-
-            PilIn.ins_data[1].euler_rpy[i] = pil_sensor.ins2_eul_rpy[i];
-            PilIn.ins_data[1].omg[i] = pil_sensor.ins2_omg[i];
-            PilIn.ins_data[1].acc[i] = pil_sensor.ins2_acc[i];
-            PilIn.ins_data[1].vel_ned[i] = pil_sensor.ins2_vel_ned[i];
-        }
-        PilIn.ins_data[0].latitude = pil_sensor.ins1_lat;
-        PilIn.ins_data[0].longitude = pil_sensor.ins1_lon;
-        PilIn.ins_data[0].alt_amsl = pil_sensor.ins1_alt_amsl;
-
-        PilIn.ins_data[1].latitude = pil_sensor.ins2_lat;
-        PilIn.ins_data[1].longitude = pil_sensor.ins2_lon;
-        PilIn.ins_data[1].alt_amsl = pil_sensor.ins2_alt_amsl;
-
-        /*ADC data*/
-        PilIn.adc_data[0].aspd_cas = pil_sensor.adc1_cas;
-        PilIn.adc_data[0].aoa = pil_sensor.adc1_aoa;
-        PilIn.adc_data[0].aos = pil_sensor.adc1_aos;
-        PilIn.adc_data[0].alt_baro_amsl = pil_sensor.adc1_alt_baro;
-
-        PilIn.adc_data[1].aspd_cas = pil_sensor.adc2_cas;
-        PilIn.adc_data[1].aoa = pil_sensor.adc2_aoa;
-        PilIn.adc_data[1].aos = pil_sensor.adc2_aos;
-        PilIn.adc_data[1].alt_baro_amsl = pil_sensor.adc2_alt_baro;
-
-        PilIn.radalt_agl = pil_sensor.radalt;
-
-        PilIn.wow[0] = pil_sensor.wow;
-        PilIn.wow[1] = pil_sensor.wow;
-        PilIn.wow[2] = pil_sensor.wow;
-
-        PilIn.pusher_rpm = pil_sensor.pusher_rpm;
-        for (i = 0; i < 8; i++)
-        {
-            PilIn.rotor_rpm[i] = pil_sensor.rotor_rpm[i];
-        }
-
-        for (i = 0; i < 12; i++)
-        {
-            PilIn.servo_def[i] = pil_sensor.servo_def[i];
-        }
-
-        PilIn.ins_data[0].gyro_healthy = (pil_sensor.ins1_validity & LDE_PIL_INS_OMG_VALID) > 0;
-        PilIn.ins_data[0].acc_healthy = (pil_sensor.ins1_validity & LDE_PIL_INS_ACC_VALID) > 0;
-        PilIn.ins_data[0].pos_invalid = (pil_sensor.ins1_validity & LDE_PIL_INS_POS_VALID) == 0;
-
-        PilIn.ins_data[1].gyro_healthy = (pil_sensor.ins2_validity & LDE_PIL_INS_OMG_VALID) > 0;
-        PilIn.ins_data[1].acc_healthy = (pil_sensor.ins2_validity & LDE_PIL_INS_ACC_VALID) > 0;
-        PilIn.ins_data[1].pos_invalid = (pil_sensor.ins2_validity & LDE_PIL_INS_POS_VALID) == 0;
-
-        PilIn.adc_data[0].aspd_cas_invalid = (pil_sensor.adc1_validity & LDE_PIL_ADC_CAS_VALID) == 0;
-        PilIn.adc_data[0].aoa_invalid = (pil_sensor.adc1_validity & LDE_PIL_ADC_AOA_VALID) == 0;
-        PilIn.adc_data[0].aos_invalid = (pil_sensor.adc1_validity & LDE_PIL_ADC_AOS_VALID) == 0;
-        PilIn.adc_data[0].alt_baro_invalid = (pil_sensor.adc1_validity & LDE_PIL_ADC_ALT_VALID) == 0;
-
-        PilIn.adc_data[1].aspd_cas_invalid = (pil_sensor.adc2_validity & LDE_PIL_ADC_CAS_VALID) == 0;
-        PilIn.adc_data[1].aoa_invalid = (pil_sensor.adc2_validity & LDE_PIL_ADC_AOA_VALID) == 0;
-        PilIn.adc_data[1].aos_invalid = (pil_sensor.adc2_validity & LDE_PIL_ADC_AOS_VALID) == 0;
-        PilIn.adc_data[1].alt_baro_invalid = (pil_sensor.adc2_validity & LDE_PIL_ADC_ALT_VALID) == 0;
-        break;
-    }
-    // Add more cases for other messages as needed
-    default:
-        break;
-    }
-}
-
-static void send_pil_ctrl_msg(void)
-{
-    mavlink_ldm_pil_ctrl_t pil_msg;
-
-    int i = 0;
-    for (i = 0; i < 8; i++)
-    {
-        pil_msg.rotor_cmd_cval[i] = PilOut.rotor_cmd_cval[i];
-    }
-
-    for (i = 0; i < 12; i++)
-    {
-        pil_msg.servo_cmd_deg[i] = PilOut.servo_cmd_deg[i];
-    }
-
-    pil_msg.pusher_pwm = PilOut.pusher_cmd_pwm;
-
-    mavlink_message_t pil_send_msg;
-    mavlink_msg_ldm_pil_ctrl_encode(MavioSystem.sys_id, MavioSystem.comp_id, &pil_send_msg, &pil_msg);
-    send_msg_over_pil_link(&pil_send_msg);
-}
-
-static void send_mavlink_msg_pil(void)
-{
-    // This function is called periodically to send a MAVLink message.
-    static uint32_t counter = 0;
-    // Send PIL CONTROLLER OUTPUT @100 Hz
-    if (counter % RATE_PIL_CTRL == 0)
-    {
-        send_pil_ctrl_msg();
-    }
-    counter++;
-}
-
-static void send_msg_over_pil_link(const mavlink_message_t *msg)
-{
-    const int len = mavlink_msg_to_send_buffer(msg_tx_buffer, msg);
-
-    udp_send_pil(&msg_tx_buffer[0], len);
-}
-
-#endif // PIL_BUILD_ENABLED
 
 /************************************************************
 *************************************************************

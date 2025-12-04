@@ -774,8 +774,6 @@ static void da_ins_il_parse_data(const uint8_t *ptr_byte)
     static uint8_t payload_index = 0;
     bool valid_msg_id = false;
 
-    // printf(" Byte = 0x%02X\r\n", *ptr_byte);
-
     if (ptr_byte != NULL)
     {
 
@@ -949,7 +947,7 @@ static void da_ins_il_parse_data(const uint8_t *ptr_byte)
             {
                 /* Set the message flag to indicate failure */
                 imu_msg.flag = IL_DCODE_FAILED_CRC;
-                printf("INS fail\r\n");
+                printf(" INS FAil\r\n");
             }
             /* Proceed to the first state in any case */
             state = STAGE1_HEADER0;
@@ -1079,7 +1077,7 @@ static void da_ins_il_decode(void)
 
         /* ----------------------------------- Extraction ------------------------------ */
 
-        /* Table 6.29. Payload of the â€œUser Defined Dataâ€� */
+        /* Table 6.29. Payload of the “User Defined Data” */
         /*
         Field           Offset in payload,      Size,            Value
                              bytes               bytes

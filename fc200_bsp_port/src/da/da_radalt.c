@@ -76,7 +76,7 @@ static uint8_t radalt_recv_packet[RADALT_BUFFER_SIZE] = {0};
  * @param agl Pointer to a float variable where the altitude above ground level (AGL) will be stored.
  * @return true if the SNR value is within threshold, false otherwise.
  */
-bool da_get_radalt_data(float *agl)
+bool da_get_radalt_data(float *agl, float *snr)
 {
     bool status = false;
     /* Validate the message if Checksum is verified OK,
@@ -85,6 +85,7 @@ bool da_get_radalt_data(float *agl)
     {
         /* Updated values are copied */
         *agl = radalt.agl;
+        *snr = radalt.snr;
         status = true;
     }
     return status;
@@ -117,7 +118,6 @@ bool da_get_radalt_timeout(void)
 bool da_radalt_init(void)
 {
     /* SyncableUserCode{6DDE5974-58DF-47fa-85E7-57F176257FB5}:Nbrlk8aPUZ */
-	bool radalt_init_success = false ;
 
     /* Set the RADALT Offset */
     radalt.offset = RADALT_OFFSET;
@@ -129,18 +129,8 @@ bool da_radalt_init(void)
 
     /* Start the Message Rate Timer */
     timer_start(&RadaltDataRateMon, ONE_SECOND_MS);
-
     /* Initialise the UART RADALT Channel */
-    radalt_init_success = uart_init(UART_RADALT);
-
-	/* If successful */
-	if(true == radalt_init_success)
-	{
-		/* Send a message indicating ONLINE from the same channel */
-		uart_write(UART_RADALT, (uint8_t *)"RADALT ONLINE\r\n", 18);
-	}
-
-	return radalt_init_success;
+    return (uart_init(UART_RADALT));
 
     /* SyncableUserCode{6DDE5974-58DF-47fa-85E7-57F176257FB5} */
 }
@@ -203,8 +193,6 @@ static void da_radalt_process_data(void)
 
                 // Reset radalt status counter
                 radalt.counter = 0;
-
-                return;
             }
             else
             {

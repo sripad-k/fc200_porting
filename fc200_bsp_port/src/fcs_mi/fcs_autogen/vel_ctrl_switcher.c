@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: vel_ctrl_switcher.c
  *
  * Code generated for Simulink model 'vel_ctrl_switcher'.
  *
- * Model version                  : 2.83
+ * Model version                  : 2.87
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:53:03 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:07:25 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -72,7 +68,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
   boolean_T rtb_Compare_jiqna0fsyg;
   boolean_T rtb_Compare_llexjvrf4j;
   boolean_T rtb_OR1;
-  boolean_T rtb_OR_tmp;
+  boolean_T rtb_OR_pnrfzsg14w_tmp;
   boolean_T tmp;
 
   /* RateLimiter: '<S3>/Rate Limiter' incorporates:
@@ -97,17 +93,17 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
    *  RelationalOperator: '<S16>/Lower Test'
    *  RelationalOperator: '<S16>/Upper Test'
    */
-  rtb_OR_tmp = ((rtu_Pilot->throttle_ch >= -0.1) && (rtu_Pilot->throttle_ch <=
-    0.1));
+  rtb_OR_pnrfzsg14w_tmp = ((rtu_Pilot->throttle_ch >= -0.1) &&
+    (rtu_Pilot->throttle_ch <= 0.1));
 
   /* RelationalOperator: '<S15>/Compare' incorporates:
    *  Constant: '<S15>/Constant'
    */
-  rtb_Compare_jiqna0fsyg = ((*rtu_vom_status) == MANUAL);
+  rtb_Compare_jiqna0fsyg = ((*rtu_vom_status) == VOM_MANUAL);
 
   /* Delay: '<S14>/Delay' */
-  vel_ctrl_switcher_DW.icLoad = ((rtb_Compare_jiqna0fsyg && (((uint32_T)
-    vel_ctrl_switcher_PrevZCX.Delay_Reset_ZCE) != POS_ZCSIG)) ||
+  vel_ctrl_switcher_DW.icLoad = ((rtb_Compare_jiqna0fsyg &&
+    (vel_ctrl_switcher_PrevZCX.Delay_Reset_ZCE != ((uint8_T)POS_ZCSIG))) ||
     (vel_ctrl_switcher_DW.icLoad));
   vel_ctrl_switcher_PrevZCX.Delay_Reset_ZCE = rtb_Compare_jiqna0fsyg ?
     ((ZCSigState)1) : ((ZCSigState)0);
@@ -119,7 +115,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
    *  Logic: '<S16>/AND'
    *  Logic: '<S19>/Logical Operator2'
    */
-  tmp = !rtb_OR_tmp;
+  tmp = !rtb_OR_pnrfzsg14w_tmp;
 
   /* Switch: '<S14>/Switch' incorporates:
    *  Delay: '<S14>/Delay'
@@ -150,12 +146,12 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
   /* RelationalOperator: '<S20>/Compare' incorporates:
    *  Constant: '<S20>/Constant'
    */
-  rtb_Compare_jiqna0fsyg = ((*rtu_vom_status) == UMAN);
+  rtb_Compare_jiqna0fsyg = ((*rtu_vom_status) == VOM_UMAN);
 
   /* RelationalOperator: '<S24>/Compare' incorporates:
    *  Constant: '<S24>/Constant'
    */
-  rtb_Compare_llexjvrf4j = ((*rtu_TECS_mode) == 0U);
+  rtb_Compare_llexjvrf4j = ((*rtu_TECS_mode) == ((uint8_T)0));
 
   /* Logic: '<S19>/OR1' incorporates:
    *  RelationalOperator: '<S21>/FixPt Relational Operator'
@@ -176,9 +172,9 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
                  vel_ctrl_switcher_DW.DelayInput1_DSTATE_jqcqpgbfgg));
 
   /* Delay: '<S19>/Delay' */
-  vel_ctrl_switcher_DW.icLoad_k1hpx4rg1s = ((rtb_OR1 && (((uint32_T)
-    vel_ctrl_switcher_PrevZCX.Delay_Reset_ZCE_fbmawcfj04) != POS_ZCSIG)) ||
-    (vel_ctrl_switcher_DW.icLoad_k1hpx4rg1s));
+  vel_ctrl_switcher_DW.icLoad_k1hpx4rg1s = ((rtb_OR1 &&
+    (vel_ctrl_switcher_PrevZCX.Delay_Reset_ZCE_fbmawcfj04 != ((uint8_T)POS_ZCSIG)))
+    || (vel_ctrl_switcher_DW.icLoad_k1hpx4rg1s));
   vel_ctrl_switcher_PrevZCX.Delay_Reset_ZCE_fbmawcfj04 = rtb_OR1 ? ((ZCSigState)
     1) : ((ZCSigState)0);
   if (vel_ctrl_switcher_DW.icLoad_k1hpx4rg1s) {
@@ -202,7 +198,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
 
   /* MultiPortSwitch: '<Root>/Multiport Switch' */
   switch (*rtu_vom_status) {
-   case READY:
+   case VOM_READY:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_velCmdH_x = *rtu_ctrlIF_vel_velCmdH_x;
 
@@ -235,7 +231,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     *rty_busControllerIF_vel_init_reset_hdot = true;
     break;
 
-   case STARTUP:
+   case VOM_STARTUP:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_velCmdH_x = *rtu_ctrlIF_vel_velCmdH_x;
 
@@ -268,7 +264,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     *rty_busControllerIF_vel_init_reset_hdot = true;
     break;
 
-   case TAKEOFF:
+   case VOM_TAKEOFF:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_velCmdH_x = *rtu_ctrlIF_vel_velCmdH_x;
 
@@ -296,8 +292,11 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_hHold = !(*rtu_sFlags_bGPSLoss);
 
-    /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
-    *rty_busControllerIF_vel_init_reset_vel = !(*rtu_bInAirFlag);
+    /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
+     *  Logic: '<S3>/OR'
+     */
+    *rty_busControllerIF_vel_init_reset_vel = ((!(*rtu_bInAirFlag)) &&
+      (*rtu_sFlags_bGPSLoss));
 
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  BusAssignment: '<S3>/Bus Assignment1'
@@ -306,7 +305,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     *rty_busControllerIF_vel_init_reset_hdot = false;
     break;
 
-   case HOVER:
+   case VOM_HOVER:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_velCmdH_x = *rtu_ctrlIF_vel_velCmdH_x;
 
@@ -325,11 +324,8 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_hHold = !(*rtu_sFlags_bGPSLoss10sec);
 
-    /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
-     *  BusAssignment: '<S6>/Bus Assignment1'
-     *  Constant: '<S6>/Constant2'
-     */
-    *rty_busControllerIF_vel_init_reset_vel = false;
+    /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
+    *rty_busControllerIF_vel_init_reset_vel = *rtu_sFlags_bGPSLoss;
 
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  BusAssignment: '<S6>/Bus Assignment1'
@@ -338,7 +334,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     *rty_busControllerIF_vel_init_reset_hdot = false;
     break;
 
-   case MANUAL:
+   case VOM_MANUAL:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  Constant: '<S7>/Constant1'
      *  Product: '<S7>/Product1'
@@ -365,7 +361,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  Logic: '<S16>/AND'
      */
-    *rty_busControllerIF_vel_hHold = rtb_OR_tmp;
+    *rty_busControllerIF_vel_hHold = rtb_OR_pnrfzsg14w_tmp;
 
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  BusAssignment: '<S7>/Bus Assignment1'
@@ -380,7 +376,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     *rty_busControllerIF_vel_init_reset_hdot = false;
     break;
 
-   case LAND:
+   case VOM_LAND:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_velCmdH_x = *rtu_ctrlIF_vel_velCmdH_x;
 
@@ -416,8 +412,11 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
      */
     *rty_busControllerIF_vel_hHold = false;
 
-    /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
-    *rty_busControllerIF_vel_init_reset_vel = !(*rtu_bInAirFlag);
+    /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
+     *  Logic: '<S2>/OR'
+     */
+    *rty_busControllerIF_vel_init_reset_vel = ((!(*rtu_bInAirFlag)) &&
+      (*rtu_sFlags_bGPSLoss));
 
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  BusAssignment: '<S2>/Bus Assignment1'
@@ -426,7 +425,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     *rty_busControllerIF_vel_init_reset_hdot = false;
     break;
 
-   case MR_RTH:
+   case VOM_MR_RTH:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  BusAssignment: '<S9>/Bus Assignment1'
      *  Constant: '<S9>/Constant1'
@@ -439,11 +438,8 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_hHold = !(*rtu_sFlags_bGPSLoss10sec);
 
-    /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
-     *  BusAssignment: '<S9>/Bus Assignment1'
-     *  Constant: '<S9>/Constant'
-     */
-    *rty_busControllerIF_vel_init_reset_vel = false;
+    /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
+    *rty_busControllerIF_vel_init_reset_vel = *rtu_sFlags_bGPSLoss;
 
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  BusAssignment: '<S9>/Bus Assignment1'
@@ -452,7 +448,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     *rty_busControllerIF_vel_init_reset_hdot = false;
     break;
 
-   case UMAN:
+   case VOM_UMAN:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  BusAssignment: '<S11>/Bus Assignment1'
      *  Constant: '<S11>/Constant'
@@ -477,7 +473,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     *rty_busControllerIF_vel_hCmd = rtb_h_cmd_dqcftz1lhn;
 
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
-    *rty_busControllerIF_vel_hHold = rtb_OR_tmp;
+    *rty_busControllerIF_vel_hHold = rtb_OR_pnrfzsg14w_tmp;
 
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' incorporates:
      *  BusAssignment: '<S11>/Bus Assignment1'
@@ -493,10 +489,10 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
      *  RelationalOperator: '<S18>/Compare'
      */
     *rty_busControllerIF_vel_init_reset_hdot = (((*rtu_lifter_state) == OFF) ||
-      ((*rtu_TECS_mode) == 1U));
+      ((*rtu_TECS_mode) == ((uint8_T)1)));
     break;
 
-   case F_TRANS:
+   case VOM_F_TRANS:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_velCmdH_x = *rtu_ctrlIF_vel_velCmdH_x;
 
@@ -528,7 +524,7 @@ void vel_ctrl_switcher(const real_T rtu_Sensor_pos_lla[3], const real_T
     *rty_busControllerIF_vel_init_reset_hdot = false;
     break;
 
-   case B_TRANS:
+   case VOM_B_TRANS:
     /* SignalConversion generated from: '<Root>/busControllerIF_vel' */
     *rty_busControllerIF_vel_velCmdH_x = *rtu_ctrlIF_vel_velCmdH_x;
 

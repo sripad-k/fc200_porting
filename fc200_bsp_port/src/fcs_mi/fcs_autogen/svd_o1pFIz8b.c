@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: svd_o1pFIz8b.c
  *
  * Code generated for Simulink model 'MR_CA'.
  *
- * Model version                  : 2.72
+ * Model version                  : 2.80
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:51:44 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:06:00 2025
  */
 
 #include "rtwtypes.h"
@@ -61,7 +57,7 @@ void svd_o1pFIz8b(const real_T A[32], real_T U[32], real_T s[4], real_T V[16])
   boolean_T apply_transform;
   boolean_T doscale;
   boolean_T exitg2;
-  (void)memcpy(&b_A[0], &A[0], (sizeof(real_T)) << 5U);
+  (void)memcpy(&b_A[0], &A[0], (sizeof(real_T)) << ((uint32_T)5U));
   b_s[0] = 0.0;
   e[0] = 0.0;
   b_s[1] = 0.0;
@@ -70,9 +66,9 @@ void svd_o1pFIz8b(const real_T A[32], real_T U[32], real_T s[4], real_T V[16])
   e[2] = 0.0;
   b_s[3] = 0.0;
   e[3] = 0.0;
-  (void)memset(&work[0], 0, (sizeof(real_T)) << 3U);
-  (void)memset(&U[0], 0, (sizeof(real_T)) << 5U);
-  (void)memset(&Vf[0], 0, (sizeof(real_T)) << 4U);
+  (void)memset(&work[0], 0, (sizeof(real_T)) << ((uint32_T)3U));
+  (void)memset(&U[0], 0, (sizeof(real_T)) << ((uint32_T)5U));
+  (void)memset(&Vf[0], 0, (sizeof(real_T)) << ((uint32_T)4U));
   doscale = false;
   anrm = xzlangeM_j4zAURqV(A);
   cscale = anrm;
@@ -135,7 +131,7 @@ void svd_o1pFIz8b(const real_T A[32], real_T U[32], real_T s[4], real_T V[16])
       U[qp1jj] = b_A[qp1jj];
     }
 
-    if ((i + 1) <= 2) {
+    if ((i + 1) <= ((int32_T)((int8_T)2))) {
       nrm = xnrm2_pMnkSmXQ(3 - i, e, i + 2);
       if (nrm == 0.0) {
         e[i] = 0.0;
@@ -203,13 +199,13 @@ void svd_o1pFIz8b(const real_T A[32], real_T U[32], real_T s[4], real_T V[16])
         U[qq + (8 * qp1)] = 0.0;
       }
     } else {
-      (void)memset(&U[qp1 * 8], 0, (sizeof(real_T)) << 3U);
+      (void)memset(&U[qp1 * 8], 0, (sizeof(real_T)) << ((uint32_T)3U));
       U[qq] = 1.0;
     }
   }
 
   for (qp1 = 3; qp1 >= 0; qp1--) {
-    if (((qp1 + 1) <= 2) && (e[qp1] != 0.0)) {
+    if (((qp1 + 1) <= ((int32_T)((int8_T)2))) && (e[qp1] != 0.0)) {
       qq = (qp1 + (4 * qp1)) + 2;
       for (qjj = qp1 + 2; qjj < 5; qjj++) {
         qp1jj = (qp1 + (4 * (qjj - 1))) + 2;
@@ -231,7 +227,7 @@ void svd_o1pFIz8b(const real_T A[32], real_T U[32], real_T s[4], real_T V[16])
       rt = fabs(nrm);
       nrm /= rt;
       b_s[qp1] = rt;
-      if ((qp1 + 1) < 4) {
+      if ((qp1 + 1) < ((int32_T)((int8_T)4))) {
         e[qp1] /= nrm;
       }
 
@@ -241,7 +237,7 @@ void svd_o1pFIz8b(const real_T A[32], real_T U[32], real_T s[4], real_T V[16])
       }
     }
 
-    if ((qp1 + 1) < 4) {
+    if ((qp1 + 1) < ((int32_T)((int8_T)4))) {
       smm1 = e[qp1];
       if (smm1 != 0.0) {
         rt = fabs(smm1);
@@ -298,12 +294,13 @@ void svd_o1pFIz8b(const real_T A[32], real_T U[32], real_T s[4], real_T V[16])
     nrm = rt;
   }
 
-  while (((i + 2) > 0) && (qp1 < 75)) {
+  while (((i + 2) > ((int32_T)((int8_T)0))) && (qp1 < ((int32_T)((int8_T)75))))
+  {
     qp1jj = i + 1;
     do {
       exitg1 = 0;
       qq = qp1jj;
-      if (qp1jj == 0) {
+      if (qp1jj == ((int32_T)((int8_T)0))) {
         exitg1 = 1;
       } else {
         rt = fabs(e[qp1jj - 1]);
@@ -311,8 +308,8 @@ void svd_o1pFIz8b(const real_T A[32], real_T U[32], real_T s[4], real_T V[16])
               (b_s[qp1jj])))) {
           e[qp1jj - 1] = 0.0;
           exitg1 = 1;
-        } else if ((rt <= 1.0020841800044864E-292) || ((qp1 > 20) && (rt <=
-                     (2.2204460492503131E-16 * nrm)))) {
+        } else if ((rt <= 1.0020841800044864E-292) || ((qp1 > ((int32_T)((int8_T)
+            20))) && (rt <= (2.2204460492503131E-16 * nrm)))) {
           e[qp1jj - 1] = 0.0;
           exitg1 = 1;
         } else {
@@ -470,7 +467,7 @@ void svd_o1pFIz8b(const real_T A[32], real_T U[32], real_T s[4], real_T V[16])
       }
 
       qp1 = qq + 1;
-      while (((qq + 1) < 4) && (b_s[qq] < b_s[qp1])) {
+      while (((qq + 1) < ((int32_T)((int8_T)4))) && (b_s[qq] < b_s[qp1])) {
         rt = b_s[qq];
         b_s[qq] = b_s[qp1];
         b_s[qp1] = rt;

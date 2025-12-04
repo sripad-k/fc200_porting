@@ -23,15 +23,16 @@ typedef struct __mavlink_ldm_ins_il_t {
  uint8_t gnss_fix_type; /*<  GNSS fix type (0: no fix, 1: 2D fix, 2: 3D fix, 3: RTK float, 4: RTK fixed)*/
  uint8_t gnss_pdop; /*<  GNSS pdop*10*/
  int8_t temp; /*< [deg C] ins temperature*/
+ int8_t validity; /*<  Ind data validity flags*/
 } mavlink_ldm_ins_il_t;
 
-#define MAVLINK_MSG_ID_LDM_INS_IL_LEN 71
-#define MAVLINK_MSG_ID_LDM_INS_IL_MIN_LEN 71
-#define MAVLINK_MSG_ID_52021_LEN 71
-#define MAVLINK_MSG_ID_52021_MIN_LEN 71
+#define MAVLINK_MSG_ID_LDM_INS_IL_LEN 72
+#define MAVLINK_MSG_ID_LDM_INS_IL_MIN_LEN 72
+#define MAVLINK_MSG_ID_52021_LEN 72
+#define MAVLINK_MSG_ID_52021_MIN_LEN 72
 
-#define MAVLINK_MSG_ID_LDM_INS_IL_CRC 54
-#define MAVLINK_MSG_ID_52021_CRC 54
+#define MAVLINK_MSG_ID_LDM_INS_IL_CRC 92
+#define MAVLINK_MSG_ID_52021_CRC 92
 
 #define MAVLINK_MSG_LDM_INS_IL_FIELD_OMG_LEN 3
 #define MAVLINK_MSG_LDM_INS_IL_FIELD_ACC_LEN 3
@@ -44,7 +45,7 @@ typedef struct __mavlink_ldm_ins_il_t {
 #define MAVLINK_MESSAGE_INFO_LDM_INS_IL { \
     52021, \
     "LDM_INS_IL", \
-    18, \
+    19, \
     {  { "time_ms", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_ldm_ins_il_t, time_ms) }, \
          { "eul_rpy", NULL, MAVLINK_TYPE_INT16_T, 3, 44, offsetof(mavlink_ldm_ins_il_t, eul_rpy) }, \
          { "omg", NULL, MAVLINK_TYPE_FLOAT, 3, 4, offsetof(mavlink_ldm_ins_il_t, omg) }, \
@@ -63,12 +64,13 @@ typedef struct __mavlink_ldm_ins_il_t {
          { "gnss_pdop", NULL, MAVLINK_TYPE_UINT8_T, 0, 69, offsetof(mavlink_ldm_ins_il_t, gnss_pdop) }, \
          { "alt_baro", NULL, MAVLINK_TYPE_FLOAT, 0, 40, offsetof(mavlink_ldm_ins_il_t, alt_baro) }, \
          { "temp", NULL, MAVLINK_TYPE_INT8_T, 0, 70, offsetof(mavlink_ldm_ins_il_t, temp) }, \
+         { "validity", NULL, MAVLINK_TYPE_INT8_T, 0, 71, offsetof(mavlink_ldm_ins_il_t, validity) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_LDM_INS_IL { \
     "LDM_INS_IL", \
-    18, \
+    19, \
     {  { "time_ms", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_ldm_ins_il_t, time_ms) }, \
          { "eul_rpy", NULL, MAVLINK_TYPE_INT16_T, 3, 44, offsetof(mavlink_ldm_ins_il_t, eul_rpy) }, \
          { "omg", NULL, MAVLINK_TYPE_FLOAT, 3, 4, offsetof(mavlink_ldm_ins_il_t, omg) }, \
@@ -87,6 +89,7 @@ typedef struct __mavlink_ldm_ins_il_t {
          { "gnss_pdop", NULL, MAVLINK_TYPE_UINT8_T, 0, 69, offsetof(mavlink_ldm_ins_il_t, gnss_pdop) }, \
          { "alt_baro", NULL, MAVLINK_TYPE_FLOAT, 0, 40, offsetof(mavlink_ldm_ins_il_t, alt_baro) }, \
          { "temp", NULL, MAVLINK_TYPE_INT8_T, 0, 70, offsetof(mavlink_ldm_ins_il_t, temp) }, \
+         { "validity", NULL, MAVLINK_TYPE_INT8_T, 0, 71, offsetof(mavlink_ldm_ins_il_t, validity) }, \
          } \
 }
 #endif
@@ -115,10 +118,11 @@ typedef struct __mavlink_ldm_ins_il_t {
  * @param gnss_pdop  GNSS pdop*10
  * @param alt_baro  baro alt m
  * @param temp [deg C] ins temperature
+ * @param validity  Ind data validity flags
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ldm_ins_il_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint32_t time_ms, const int16_t *eul_rpy, const float *omg, const float *acc, const int16_t *vel_ned, int32_t lat, int32_t lon, float alt_amsl, const uint8_t *kf_pos_cov_lla, const uint8_t *kf_vel_cov_ned, uint8_t ins_sol_status, uint8_t gnss_n_sat, uint8_t gnss_fix_type, uint16_t gnss_h_acc, uint16_t gnss_v_acc, uint8_t gnss_pdop, float alt_baro, int8_t temp)
+                               uint32_t time_ms, const int16_t *eul_rpy, const float *omg, const float *acc, const int16_t *vel_ned, int32_t lat, int32_t lon, float alt_amsl, const uint8_t *kf_pos_cov_lla, const uint8_t *kf_vel_cov_ned, uint8_t ins_sol_status, uint8_t gnss_n_sat, uint8_t gnss_fix_type, uint16_t gnss_h_acc, uint16_t gnss_v_acc, uint8_t gnss_pdop, float alt_baro, int8_t temp, int8_t validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LDM_INS_IL_LEN];
@@ -134,6 +138,7 @@ static inline uint16_t mavlink_msg_ldm_ins_il_pack(uint8_t system_id, uint8_t co
     _mav_put_uint8_t(buf, 68, gnss_fix_type);
     _mav_put_uint8_t(buf, 69, gnss_pdop);
     _mav_put_int8_t(buf, 70, temp);
+    _mav_put_int8_t(buf, 71, validity);
     _mav_put_float_array(buf, 4, omg, 3);
     _mav_put_float_array(buf, 16, acc, 3);
     _mav_put_int16_t_array(buf, 44, eul_rpy, 3);
@@ -155,6 +160,7 @@ static inline uint16_t mavlink_msg_ldm_ins_il_pack(uint8_t system_id, uint8_t co
     packet.gnss_fix_type = gnss_fix_type;
     packet.gnss_pdop = gnss_pdop;
     packet.temp = temp;
+    packet.validity = validity;
     mav_array_memcpy(packet.omg, omg, sizeof(float)*3);
     mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet.eul_rpy, eul_rpy, sizeof(int16_t)*3);
@@ -193,10 +199,11 @@ static inline uint16_t mavlink_msg_ldm_ins_il_pack(uint8_t system_id, uint8_t co
  * @param gnss_pdop  GNSS pdop*10
  * @param alt_baro  baro alt m
  * @param temp [deg C] ins temperature
+ * @param validity  Ind data validity flags
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ldm_ins_il_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
-                               uint32_t time_ms, const int16_t *eul_rpy, const float *omg, const float *acc, const int16_t *vel_ned, int32_t lat, int32_t lon, float alt_amsl, const uint8_t *kf_pos_cov_lla, const uint8_t *kf_vel_cov_ned, uint8_t ins_sol_status, uint8_t gnss_n_sat, uint8_t gnss_fix_type, uint16_t gnss_h_acc, uint16_t gnss_v_acc, uint8_t gnss_pdop, float alt_baro, int8_t temp)
+                               uint32_t time_ms, const int16_t *eul_rpy, const float *omg, const float *acc, const int16_t *vel_ned, int32_t lat, int32_t lon, float alt_amsl, const uint8_t *kf_pos_cov_lla, const uint8_t *kf_vel_cov_ned, uint8_t ins_sol_status, uint8_t gnss_n_sat, uint8_t gnss_fix_type, uint16_t gnss_h_acc, uint16_t gnss_v_acc, uint8_t gnss_pdop, float alt_baro, int8_t temp, int8_t validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LDM_INS_IL_LEN];
@@ -212,6 +219,7 @@ static inline uint16_t mavlink_msg_ldm_ins_il_pack_status(uint8_t system_id, uin
     _mav_put_uint8_t(buf, 68, gnss_fix_type);
     _mav_put_uint8_t(buf, 69, gnss_pdop);
     _mav_put_int8_t(buf, 70, temp);
+    _mav_put_int8_t(buf, 71, validity);
     _mav_put_float_array(buf, 4, omg, 3);
     _mav_put_float_array(buf, 16, acc, 3);
     _mav_put_int16_t_array(buf, 44, eul_rpy, 3);
@@ -233,6 +241,7 @@ static inline uint16_t mavlink_msg_ldm_ins_il_pack_status(uint8_t system_id, uin
     packet.gnss_fix_type = gnss_fix_type;
     packet.gnss_pdop = gnss_pdop;
     packet.temp = temp;
+    packet.validity = validity;
     mav_array_memcpy(packet.omg, omg, sizeof(float)*3);
     mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet.eul_rpy, eul_rpy, sizeof(int16_t)*3);
@@ -274,11 +283,12 @@ static inline uint16_t mavlink_msg_ldm_ins_il_pack_status(uint8_t system_id, uin
  * @param gnss_pdop  GNSS pdop*10
  * @param alt_baro  baro alt m
  * @param temp [deg C] ins temperature
+ * @param validity  Ind data validity flags
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ldm_ins_il_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint32_t time_ms,const int16_t *eul_rpy,const float *omg,const float *acc,const int16_t *vel_ned,int32_t lat,int32_t lon,float alt_amsl,const uint8_t *kf_pos_cov_lla,const uint8_t *kf_vel_cov_ned,uint8_t ins_sol_status,uint8_t gnss_n_sat,uint8_t gnss_fix_type,uint16_t gnss_h_acc,uint16_t gnss_v_acc,uint8_t gnss_pdop,float alt_baro,int8_t temp)
+                                   uint32_t time_ms,const int16_t *eul_rpy,const float *omg,const float *acc,const int16_t *vel_ned,int32_t lat,int32_t lon,float alt_amsl,const uint8_t *kf_pos_cov_lla,const uint8_t *kf_vel_cov_ned,uint8_t ins_sol_status,uint8_t gnss_n_sat,uint8_t gnss_fix_type,uint16_t gnss_h_acc,uint16_t gnss_v_acc,uint8_t gnss_pdop,float alt_baro,int8_t temp,int8_t validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LDM_INS_IL_LEN];
@@ -294,6 +304,7 @@ static inline uint16_t mavlink_msg_ldm_ins_il_pack_chan(uint8_t system_id, uint8
     _mav_put_uint8_t(buf, 68, gnss_fix_type);
     _mav_put_uint8_t(buf, 69, gnss_pdop);
     _mav_put_int8_t(buf, 70, temp);
+    _mav_put_int8_t(buf, 71, validity);
     _mav_put_float_array(buf, 4, omg, 3);
     _mav_put_float_array(buf, 16, acc, 3);
     _mav_put_int16_t_array(buf, 44, eul_rpy, 3);
@@ -315,6 +326,7 @@ static inline uint16_t mavlink_msg_ldm_ins_il_pack_chan(uint8_t system_id, uint8
     packet.gnss_fix_type = gnss_fix_type;
     packet.gnss_pdop = gnss_pdop;
     packet.temp = temp;
+    packet.validity = validity;
     mav_array_memcpy(packet.omg, omg, sizeof(float)*3);
     mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet.eul_rpy, eul_rpy, sizeof(int16_t)*3);
@@ -338,7 +350,7 @@ static inline uint16_t mavlink_msg_ldm_ins_il_pack_chan(uint8_t system_id, uint8
  */
 static inline uint16_t mavlink_msg_ldm_ins_il_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_ldm_ins_il_t* ldm_ins_il)
 {
-    return mavlink_msg_ldm_ins_il_pack(system_id, component_id, msg, ldm_ins_il->time_ms, ldm_ins_il->eul_rpy, ldm_ins_il->omg, ldm_ins_il->acc, ldm_ins_il->vel_ned, ldm_ins_il->lat, ldm_ins_il->lon, ldm_ins_il->alt_amsl, ldm_ins_il->kf_pos_cov_lla, ldm_ins_il->kf_vel_cov_ned, ldm_ins_il->ins_sol_status, ldm_ins_il->gnss_n_sat, ldm_ins_il->gnss_fix_type, ldm_ins_il->gnss_h_acc, ldm_ins_il->gnss_v_acc, ldm_ins_il->gnss_pdop, ldm_ins_il->alt_baro, ldm_ins_il->temp);
+    return mavlink_msg_ldm_ins_il_pack(system_id, component_id, msg, ldm_ins_il->time_ms, ldm_ins_il->eul_rpy, ldm_ins_il->omg, ldm_ins_il->acc, ldm_ins_il->vel_ned, ldm_ins_il->lat, ldm_ins_il->lon, ldm_ins_il->alt_amsl, ldm_ins_il->kf_pos_cov_lla, ldm_ins_il->kf_vel_cov_ned, ldm_ins_il->ins_sol_status, ldm_ins_il->gnss_n_sat, ldm_ins_il->gnss_fix_type, ldm_ins_il->gnss_h_acc, ldm_ins_il->gnss_v_acc, ldm_ins_il->gnss_pdop, ldm_ins_il->alt_baro, ldm_ins_il->temp, ldm_ins_il->validity);
 }
 
 /**
@@ -352,7 +364,7 @@ static inline uint16_t mavlink_msg_ldm_ins_il_encode(uint8_t system_id, uint8_t 
  */
 static inline uint16_t mavlink_msg_ldm_ins_il_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_ldm_ins_il_t* ldm_ins_il)
 {
-    return mavlink_msg_ldm_ins_il_pack_chan(system_id, component_id, chan, msg, ldm_ins_il->time_ms, ldm_ins_il->eul_rpy, ldm_ins_il->omg, ldm_ins_il->acc, ldm_ins_il->vel_ned, ldm_ins_il->lat, ldm_ins_il->lon, ldm_ins_il->alt_amsl, ldm_ins_il->kf_pos_cov_lla, ldm_ins_il->kf_vel_cov_ned, ldm_ins_il->ins_sol_status, ldm_ins_il->gnss_n_sat, ldm_ins_il->gnss_fix_type, ldm_ins_il->gnss_h_acc, ldm_ins_il->gnss_v_acc, ldm_ins_il->gnss_pdop, ldm_ins_il->alt_baro, ldm_ins_il->temp);
+    return mavlink_msg_ldm_ins_il_pack_chan(system_id, component_id, chan, msg, ldm_ins_il->time_ms, ldm_ins_il->eul_rpy, ldm_ins_il->omg, ldm_ins_il->acc, ldm_ins_il->vel_ned, ldm_ins_il->lat, ldm_ins_il->lon, ldm_ins_il->alt_amsl, ldm_ins_il->kf_pos_cov_lla, ldm_ins_il->kf_vel_cov_ned, ldm_ins_il->ins_sol_status, ldm_ins_il->gnss_n_sat, ldm_ins_il->gnss_fix_type, ldm_ins_il->gnss_h_acc, ldm_ins_il->gnss_v_acc, ldm_ins_il->gnss_pdop, ldm_ins_il->alt_baro, ldm_ins_il->temp, ldm_ins_il->validity);
 }
 
 /**
@@ -366,7 +378,7 @@ static inline uint16_t mavlink_msg_ldm_ins_il_encode_chan(uint8_t system_id, uin
  */
 static inline uint16_t mavlink_msg_ldm_ins_il_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_ldm_ins_il_t* ldm_ins_il)
 {
-    return mavlink_msg_ldm_ins_il_pack_status(system_id, component_id, _status, msg,  ldm_ins_il->time_ms, ldm_ins_il->eul_rpy, ldm_ins_il->omg, ldm_ins_il->acc, ldm_ins_il->vel_ned, ldm_ins_il->lat, ldm_ins_il->lon, ldm_ins_il->alt_amsl, ldm_ins_il->kf_pos_cov_lla, ldm_ins_il->kf_vel_cov_ned, ldm_ins_il->ins_sol_status, ldm_ins_il->gnss_n_sat, ldm_ins_il->gnss_fix_type, ldm_ins_il->gnss_h_acc, ldm_ins_il->gnss_v_acc, ldm_ins_il->gnss_pdop, ldm_ins_il->alt_baro, ldm_ins_il->temp);
+    return mavlink_msg_ldm_ins_il_pack_status(system_id, component_id, _status, msg,  ldm_ins_il->time_ms, ldm_ins_il->eul_rpy, ldm_ins_il->omg, ldm_ins_il->acc, ldm_ins_il->vel_ned, ldm_ins_il->lat, ldm_ins_il->lon, ldm_ins_il->alt_amsl, ldm_ins_il->kf_pos_cov_lla, ldm_ins_il->kf_vel_cov_ned, ldm_ins_il->ins_sol_status, ldm_ins_il->gnss_n_sat, ldm_ins_il->gnss_fix_type, ldm_ins_il->gnss_h_acc, ldm_ins_il->gnss_v_acc, ldm_ins_il->gnss_pdop, ldm_ins_il->alt_baro, ldm_ins_il->temp, ldm_ins_il->validity);
 }
 
 /**
@@ -391,10 +403,11 @@ static inline uint16_t mavlink_msg_ldm_ins_il_encode_status(uint8_t system_id, u
  * @param gnss_pdop  GNSS pdop*10
  * @param alt_baro  baro alt m
  * @param temp [deg C] ins temperature
+ * @param validity  Ind data validity flags
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_ldm_ins_il_send(mavlink_channel_t chan, uint32_t time_ms, const int16_t *eul_rpy, const float *omg, const float *acc, const int16_t *vel_ned, int32_t lat, int32_t lon, float alt_amsl, const uint8_t *kf_pos_cov_lla, const uint8_t *kf_vel_cov_ned, uint8_t ins_sol_status, uint8_t gnss_n_sat, uint8_t gnss_fix_type, uint16_t gnss_h_acc, uint16_t gnss_v_acc, uint8_t gnss_pdop, float alt_baro, int8_t temp)
+static inline void mavlink_msg_ldm_ins_il_send(mavlink_channel_t chan, uint32_t time_ms, const int16_t *eul_rpy, const float *omg, const float *acc, const int16_t *vel_ned, int32_t lat, int32_t lon, float alt_amsl, const uint8_t *kf_pos_cov_lla, const uint8_t *kf_vel_cov_ned, uint8_t ins_sol_status, uint8_t gnss_n_sat, uint8_t gnss_fix_type, uint16_t gnss_h_acc, uint16_t gnss_v_acc, uint8_t gnss_pdop, float alt_baro, int8_t temp, int8_t validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LDM_INS_IL_LEN];
@@ -410,6 +423,7 @@ static inline void mavlink_msg_ldm_ins_il_send(mavlink_channel_t chan, uint32_t 
     _mav_put_uint8_t(buf, 68, gnss_fix_type);
     _mav_put_uint8_t(buf, 69, gnss_pdop);
     _mav_put_int8_t(buf, 70, temp);
+    _mav_put_int8_t(buf, 71, validity);
     _mav_put_float_array(buf, 4, omg, 3);
     _mav_put_float_array(buf, 16, acc, 3);
     _mav_put_int16_t_array(buf, 44, eul_rpy, 3);
@@ -431,6 +445,7 @@ static inline void mavlink_msg_ldm_ins_il_send(mavlink_channel_t chan, uint32_t 
     packet.gnss_fix_type = gnss_fix_type;
     packet.gnss_pdop = gnss_pdop;
     packet.temp = temp;
+    packet.validity = validity;
     mav_array_memcpy(packet.omg, omg, sizeof(float)*3);
     mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet.eul_rpy, eul_rpy, sizeof(int16_t)*3);
@@ -449,7 +464,7 @@ static inline void mavlink_msg_ldm_ins_il_send(mavlink_channel_t chan, uint32_t 
 static inline void mavlink_msg_ldm_ins_il_send_struct(mavlink_channel_t chan, const mavlink_ldm_ins_il_t* ldm_ins_il)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_ldm_ins_il_send(chan, ldm_ins_il->time_ms, ldm_ins_il->eul_rpy, ldm_ins_il->omg, ldm_ins_il->acc, ldm_ins_il->vel_ned, ldm_ins_il->lat, ldm_ins_il->lon, ldm_ins_il->alt_amsl, ldm_ins_il->kf_pos_cov_lla, ldm_ins_il->kf_vel_cov_ned, ldm_ins_il->ins_sol_status, ldm_ins_il->gnss_n_sat, ldm_ins_il->gnss_fix_type, ldm_ins_il->gnss_h_acc, ldm_ins_il->gnss_v_acc, ldm_ins_il->gnss_pdop, ldm_ins_il->alt_baro, ldm_ins_il->temp);
+    mavlink_msg_ldm_ins_il_send(chan, ldm_ins_il->time_ms, ldm_ins_il->eul_rpy, ldm_ins_il->omg, ldm_ins_il->acc, ldm_ins_il->vel_ned, ldm_ins_il->lat, ldm_ins_il->lon, ldm_ins_il->alt_amsl, ldm_ins_il->kf_pos_cov_lla, ldm_ins_il->kf_vel_cov_ned, ldm_ins_il->ins_sol_status, ldm_ins_il->gnss_n_sat, ldm_ins_il->gnss_fix_type, ldm_ins_il->gnss_h_acc, ldm_ins_il->gnss_v_acc, ldm_ins_il->gnss_pdop, ldm_ins_il->alt_baro, ldm_ins_il->temp, ldm_ins_il->validity);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LDM_INS_IL, (const char *)ldm_ins_il, MAVLINK_MSG_ID_LDM_INS_IL_MIN_LEN, MAVLINK_MSG_ID_LDM_INS_IL_LEN, MAVLINK_MSG_ID_LDM_INS_IL_CRC);
 #endif
@@ -463,7 +478,7 @@ static inline void mavlink_msg_ldm_ins_il_send_struct(mavlink_channel_t chan, co
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_ldm_ins_il_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time_ms, const int16_t *eul_rpy, const float *omg, const float *acc, const int16_t *vel_ned, int32_t lat, int32_t lon, float alt_amsl, const uint8_t *kf_pos_cov_lla, const uint8_t *kf_vel_cov_ned, uint8_t ins_sol_status, uint8_t gnss_n_sat, uint8_t gnss_fix_type, uint16_t gnss_h_acc, uint16_t gnss_v_acc, uint8_t gnss_pdop, float alt_baro, int8_t temp)
+static inline void mavlink_msg_ldm_ins_il_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time_ms, const int16_t *eul_rpy, const float *omg, const float *acc, const int16_t *vel_ned, int32_t lat, int32_t lon, float alt_amsl, const uint8_t *kf_pos_cov_lla, const uint8_t *kf_vel_cov_ned, uint8_t ins_sol_status, uint8_t gnss_n_sat, uint8_t gnss_fix_type, uint16_t gnss_h_acc, uint16_t gnss_v_acc, uint8_t gnss_pdop, float alt_baro, int8_t temp, int8_t validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -479,6 +494,7 @@ static inline void mavlink_msg_ldm_ins_il_send_buf(mavlink_message_t *msgbuf, ma
     _mav_put_uint8_t(buf, 68, gnss_fix_type);
     _mav_put_uint8_t(buf, 69, gnss_pdop);
     _mav_put_int8_t(buf, 70, temp);
+    _mav_put_int8_t(buf, 71, validity);
     _mav_put_float_array(buf, 4, omg, 3);
     _mav_put_float_array(buf, 16, acc, 3);
     _mav_put_int16_t_array(buf, 44, eul_rpy, 3);
@@ -500,6 +516,7 @@ static inline void mavlink_msg_ldm_ins_il_send_buf(mavlink_message_t *msgbuf, ma
     packet->gnss_fix_type = gnss_fix_type;
     packet->gnss_pdop = gnss_pdop;
     packet->temp = temp;
+    packet->validity = validity;
     mav_array_memcpy(packet->omg, omg, sizeof(float)*3);
     mav_array_memcpy(packet->acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet->eul_rpy, eul_rpy, sizeof(int16_t)*3);
@@ -697,6 +714,16 @@ static inline int8_t mavlink_msg_ldm_ins_il_get_temp(const mavlink_message_t* ms
 }
 
 /**
+ * @brief Get field validity from ldm_ins_il message
+ *
+ * @return  Ind data validity flags
+ */
+static inline int8_t mavlink_msg_ldm_ins_il_get_validity(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_int8_t(msg,  71);
+}
+
+/**
  * @brief Decode a ldm_ins_il message into a struct
  *
  * @param msg The message to decode
@@ -723,6 +750,7 @@ static inline void mavlink_msg_ldm_ins_il_decode(const mavlink_message_t* msg, m
     ldm_ins_il->gnss_fix_type = mavlink_msg_ldm_ins_il_get_gnss_fix_type(msg);
     ldm_ins_il->gnss_pdop = mavlink_msg_ldm_ins_il_get_gnss_pdop(msg);
     ldm_ins_il->temp = mavlink_msg_ldm_ins_il_get_temp(msg);
+    ldm_ins_il->validity = mavlink_msg_ldm_ins_il_get_validity(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_LDM_INS_IL_LEN? msg->len : MAVLINK_MSG_ID_LDM_INS_IL_LEN;
         memset(ldm_ins_il, 0, MAVLINK_MSG_ID_LDM_INS_IL_LEN);

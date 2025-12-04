@@ -10,7 +10,7 @@
     #error Wrong include order: MAVLINK_LODD_PX4_NAV.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
 #endif
 
-#define MAVLINK_LODD_PX4_NAV_XML_HASH 5467255406127524952
+#define MAVLINK_LODD_PX4_NAV_XML_HASH -8248312700323572959
 
 #ifdef __cplusplus
 extern "C" {

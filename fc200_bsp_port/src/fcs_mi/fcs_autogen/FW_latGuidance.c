@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: FW_latGuidance.c
  *
  * Code generated for Simulink model 'FW_latGuidance'.
  *
- * Model version                  : 2.79
+ * Model version                  : 2.81
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:51:22 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:05:32 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -80,15 +76,15 @@ void FW_latGuidance(const real_T *rtu_FW_TECS_switcher_roll_cmd, const
   rtb_Sqrt = 6.378137E+6 / rtb_Sqrt;
 
   /* MATLAB Function: '<S7>/MATLAB Function1' */
-  sin_lat[0] = -0.24088103093692706;
-  sin_lat[3] = -0.34193153916516583;
-  sin_lat[6] = 0.90832766745206206;
-  sin_lat[1] = -0.81751089051303827;
-  sin_lat[4] = 0.57591313919078047;
+  sin_lat[0] = -0.23381853358350183;
+  sin_lat[3] = -0.34181934761104993;
+  sin_lat[6] = 0.91021339638109977;
+  sin_lat[1] = -0.82537236894794752;
+  sin_lat[4] = 0.5645887464139302;
   sin_lat[7] = 0.0;
-  sin_lat[2] = -0.52311783837615633;
-  sin_lat[5] = -0.74256776029636617;
-  sin_lat[8] = -0.41825930777580567;
+  sin_lat[2] = -0.51389624043197091;
+  sin_lat[5] = -0.75126498721922552;
+  sin_lat[8] = -0.414139557454227;
 
   /* Product: '<S8>/Product' incorporates:
    *  Product: '<S8>/Product1'

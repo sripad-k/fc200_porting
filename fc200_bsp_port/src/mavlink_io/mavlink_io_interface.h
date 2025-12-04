@@ -24,7 +24,7 @@ bool mav_io_get_vom_cmd(uint8_t *vom_cmd, uint16_t *vom_cmd_cnt);
 
 bool mav_io_get_pic_cmd(uint8_t *pic_cmd, uint16_t *pic_cmd_cnt);
 
-bool mav_io_get_umm_cmd(uint8_t *loiter_on, uint8_t *tecs_on);
+bool mav_io_get_umm_cmd(uint8_t *loiter_on, uint8_t *loiter_on_cnt, uint8_t *tecs_on, uint8_t *tecs_on_cnt);
 
 bool mav_io_get_wp_list(mavio_wp_list_t *wp_list);
 

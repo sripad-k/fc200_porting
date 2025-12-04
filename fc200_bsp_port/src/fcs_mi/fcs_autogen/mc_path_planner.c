@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: mc_path_planner.c
  *
  * Code generated for Simulink model 'mc_path_planner'.
  *
- * Model version                  : 2.23
+ * Model version                  : 2.24
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:52:16 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:06:32 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -63,7 +59,7 @@ void mc_path_planner(const real_T rtu_sensor_pos_lla[3], const vom_t
 
   /* MultiPortSwitch: '<Root>/Multiport Switch' */
   switch (*rtu_vom_status) {
-   case READY:
+   case VOM_READY:
     /* SignalConversion generated from: '<Root>/busWaypointManager' incorporates:
      *  BusAssignment: '<S8>/Bus Assignment2'
      */
@@ -78,7 +74,7 @@ void mc_path_planner(const real_T rtu_sensor_pos_lla[3], const vom_t
     *rty_busWaypointManager_yawCmd = 0.0;
     break;
 
-   case STARTUP:
+   case VOM_STARTUP:
     /* SignalConversion generated from: '<Root>/busWaypointManager' incorporates:
      *  BusAssignment: '<S10>/Bus Assignment2'
      */
@@ -93,13 +89,13 @@ void mc_path_planner(const real_T rtu_sensor_pos_lla[3], const vom_t
     *rty_busWaypointManager_yawCmd = 0.0;
     break;
 
-   case TAKEOFF:
+   case VOM_TAKEOFF:
     /* SignalConversion generated from: '<Root>/busWaypointManager' */
     *rty_busWaypointManager_yawCmd =
       *rtu_mode_data_autotakeoff_data_takeoff_yaw_ref;
     break;
 
-   case HOVER:
+   case VOM_HOVER:
     /* SignalConversion generated from: '<Root>/busWaypointManager' */
     rty_busWaypointManager_posLLA[0] = *rtu_mode_data_hover_data_hover_x;
     rty_busWaypointManager_posLLA[1] = *rtu_mode_data_hover_data_hover_y;
@@ -109,7 +105,7 @@ void mc_path_planner(const real_T rtu_sensor_pos_lla[3], const vom_t
     *rty_busWaypointManager_yawCmd = *rtu_mode_data_hover_data_hover_yaw_ref;
     break;
 
-   case MANUAL:
+   case VOM_MANUAL:
     /* SignalConversion generated from: '<Root>/busWaypointManager' incorporates:
      *  BusAssignment: '<S7>/Bus Assignment2'
      */
@@ -124,7 +120,7 @@ void mc_path_planner(const real_T rtu_sensor_pos_lla[3], const vom_t
     *rty_busWaypointManager_yawCmd = 0.0;
     break;
 
-   case LAND:
+   case VOM_LAND:
     /* SignalConversion generated from: '<Root>/busWaypointManager' incorporates:
      *  BusAssignment: '<S2>/Bus Assignment1'
      *  Concatenate: '<S2>/Vector Concatenate'
@@ -137,7 +133,7 @@ void mc_path_planner(const real_T rtu_sensor_pos_lla[3], const vom_t
     *rty_busWaypointManager_yawCmd = *rtu_mode_data_autoland_data_land_yaw_ref;
     break;
 
-   case MR_RTH:
+   case VOM_MR_RTH:
     /* SignalConversion generated from: '<Root>/busWaypointManager' */
     rty_busWaypointManager_posLLA[0] = *rtu_mode_data_rth_data_rth_x;
     rty_busWaypointManager_posLLA[1] = *rtu_mode_data_rth_data_rth_y;
@@ -147,7 +143,7 @@ void mc_path_planner(const real_T rtu_sensor_pos_lla[3], const vom_t
     *rty_busWaypointManager_yawCmd = *rtu_mode_data_rth_data_rth_yaw_ref;
     break;
 
-   case UMAN:
+   case VOM_UMAN:
     /* SignalConversion generated from: '<Root>/busWaypointManager' incorporates:
      *  BusAssignment: '<S11>/Bus Assignment2'
      */
@@ -162,7 +158,7 @@ void mc_path_planner(const real_T rtu_sensor_pos_lla[3], const vom_t
     *rty_busWaypointManager_yawCmd = 0.0;
     break;
 
-   case F_TRANS:
+   case VOM_F_TRANS:
     /* SignalConversion generated from: '<Root>/busWaypointManager' */
     rty_busWaypointManager_posLLA[0] = *rtu_mode_data_ft_data_FT_x;
     rty_busWaypointManager_posLLA[1] = *rtu_mode_data_ft_data_FT_y;
@@ -172,7 +168,7 @@ void mc_path_planner(const real_T rtu_sensor_pos_lla[3], const vom_t
     *rty_busWaypointManager_yawCmd = *rtu_mode_data_ft_data_FT_Heading;
     break;
 
-   case B_TRANS:
+   case VOM_B_TRANS:
     /* SignalConversion generated from: '<Root>/busWaypointManager' */
     rty_busWaypointManager_posLLA[0] = *rtu_mode_data_bt_data_BT_Hover_Lat;
     rty_busWaypointManager_posLLA[1] = *rtu_mode_data_bt_data_BT_Hover_Lon;

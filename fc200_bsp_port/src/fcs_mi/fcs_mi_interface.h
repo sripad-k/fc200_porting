@@ -37,7 +37,10 @@ void fcs_mi_get_fcs_dscr(
     uint8_t *gnss_loss,
     uint8_t *ins_selection,
     uint8_t *adc_selection,
-    uint16_t *current_waypoint_idx);
+    uint16_t *current_waypoint_idx,
+    uint8_t *tecs_on,
+    uint8_t *loiter_on,
+    uint8_t *cog_track_on);
 
 void fcs_mi_get_fbctrl(
     fcs_mi_fbctrl_data_t *fbctrl_data // Feedback control data

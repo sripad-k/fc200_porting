@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: controllerMain_types.h
  *
  * Code generated for Simulink model 'controllerMain'.
  *
- * Model version                  : 3.599
+ * Model version                  : 3.618
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:53:18 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:07:43 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -36,8 +32,8 @@ typedef enum {
 #define DEFINED_TYPEDEF_FOR_safety_state_t_
 
 typedef enum {
-  DISARMED = 0,                        /* Default value */
-  ARMED
+  AC_DISARMED = 0,                     /* Default value */
+  AC_ARMED
 } safety_state_t;
 
 #endif
@@ -46,25 +42,26 @@ typedef enum {
 #define DEFINED_TYPEDEF_FOR_vom_t_
 
 typedef enum {
-  INVALID = 0,                         /* Default value */
-  INIT = 1,
-  READY = 2,
-  TAXI = 3,
-  PFBIT = 4,
-  GNDOPS = 5,
-  STARTUP = 10,
-  TAKEOFF = 20,
-  HOVER = 30,
-  MANUAL = 40,
-  LAND = 50,
-  MR_RTH = 60,
-  UMAN = 70,
-  F_TRANS = 80,
-  B_TRANS = 90,
-  WAYPNT = 100,
-  FLTDIR = 110,
-  LOITER = 120,
-  FW_RTH = 130
+  VOM_INVALID = 0,                     /* Default value */
+  VOM_INIT = 1,
+  VOM_READY = 2,
+  VOM_TAXI = 3,
+  VOM_PFBIT = 4,
+  VOM_GNDOPS = 5,
+  VOM_ZEROG = 6,
+  VOM_STARTUP = 10,
+  VOM_TAKEOFF = 20,
+  VOM_HOVER = 30,
+  VOM_MANUAL = 40,
+  VOM_LAND = 50,
+  VOM_MR_RTH = 60,
+  VOM_UMAN = 70,
+  VOM_F_TRANS = 80,
+  VOM_B_TRANS = 90,
+  VOM_WAYPNT = 100,
+  VOM_FLTDIR = 110,
+  VOM_LOITER = 120,
+  VOM_FW_RTH = 130
 } vom_t;
 
 #endif
@@ -181,23 +178,14 @@ typedef struct {
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_lifter_state_t_
-#define DEFINED_TYPEDEF_FOR_lifter_state_t_
-
-typedef enum {
-  OFF = 0,
-  ON                                   /* Default value */
-} lifter_state_t;
-
-#endif
-
 #ifndef DEFINED_TYPEDEF_FOR_ext_command_t_
 #define DEFINED_TYPEDEF_FOR_ext_command_t_
 
 typedef struct {
   uint8_T loiter_cmd;
-  lifter_state_t lifter_cmd;
+  uint8_T loiter_cmd_cnt;
   uint8_T tecs_cmd;
+  uint8_T tecs_cmd_cnt;
 } ext_command_t;
 
 #endif
@@ -358,6 +346,16 @@ typedef struct {
   boolean_T bRTH_PosModeFlag;
   boolean_T bBreaking;
 } busRTH_data;
+
+#endif
+
+#ifndef DEFINED_TYPEDEF_FOR_lifter_state_t_
+#define DEFINED_TYPEDEF_FOR_lifter_state_t_
+
+typedef enum {
+  OFF = 0,
+  ON                                   /* Default value */
+} lifter_state_t;
 
 #endif
 
@@ -688,6 +686,33 @@ typedef struct {
   boolean_T pitch_reset;
   boolean_T yaw_reset;
 } busFW_Controller_att;
+
+#endif
+
+#ifndef DEFINED_TYPEDEF_FOR_gcs_fb_t_
+#define DEFINED_TYPEDEF_FOR_gcs_fb_t_
+
+/* AC altitude relative to takeoff location as meansured by GNSS. */
+typedef struct {
+  real_T mr_roll_sp;
+  real_T mr_pitch_sp;
+  real_T mr_yaw_sp;
+  real_T mr_yawrate_sp;
+  boolean_T mr_yaw_hold;
+  boolean_T mr_att_intg_reset;
+  real_T mr_alt_sp;
+  real_T mr_altrate_sp;
+  boolean_T mr_altrate_intg_reset;
+  boolean_T mr_alt_hold;
+  real_T mr_vel_sp_X;
+  real_T mr_vel_sp_Y;
+  boolean_T mr_vel_intg_reset;
+  real_T mr_pos_sp_lat;
+  real_T mr_pos_sp_lon;
+  real_T mr_thrust_cmd;
+  real_T h_rel_takeoff;
+  std_sensor_t voter;
+} gcs_fb_t;
 
 #endif
 #endif                                 /* controllerMain_types_h_ */

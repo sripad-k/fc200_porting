@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: FW_TECS_switcher_types.h
  *
  * Code generated for Simulink model 'FW_TECS_switcher'.
  *
- * Model version                  : 2.176
+ * Model version                  : 2.179
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:50:56 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:05:02 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -47,25 +43,26 @@ typedef enum {
 #define DEFINED_TYPEDEF_FOR_vom_t_
 
 typedef enum {
-  INVALID = 0,                         /* Default value */
-  INIT = 1,
-  READY = 2,
-  TAXI = 3,
-  PFBIT = 4,
-  GNDOPS = 5,
-  STARTUP = 10,
-  TAKEOFF = 20,
-  HOVER = 30,
-  MANUAL = 40,
-  LAND = 50,
-  MR_RTH = 60,
-  UMAN = 70,
-  F_TRANS = 80,
-  B_TRANS = 90,
-  WAYPNT = 100,
-  FLTDIR = 110,
-  LOITER = 120,
-  FW_RTH = 130
+  VOM_INVALID = 0,                     /* Default value */
+  VOM_INIT = 1,
+  VOM_READY = 2,
+  VOM_TAXI = 3,
+  VOM_PFBIT = 4,
+  VOM_GNDOPS = 5,
+  VOM_ZEROG = 6,
+  VOM_STARTUP = 10,
+  VOM_TAKEOFF = 20,
+  VOM_HOVER = 30,
+  VOM_MANUAL = 40,
+  VOM_LAND = 50,
+  VOM_MR_RTH = 60,
+  VOM_UMAN = 70,
+  VOM_F_TRANS = 80,
+  VOM_B_TRANS = 90,
+  VOM_WAYPNT = 100,
+  VOM_FLTDIR = 110,
+  VOM_LOITER = 120,
+  VOM_FW_RTH = 130
 } vom_t;
 
 #endif

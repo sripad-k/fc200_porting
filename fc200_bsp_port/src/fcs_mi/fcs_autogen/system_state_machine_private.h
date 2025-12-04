@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: system_state_machine_private.h
  *
  * Code generated for Simulink model 'system_state_machine'.
  *
- * Model version                  : 3.584
+ * Model version                  : 3.635
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:52:45 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:07:05 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -32,13 +28,14 @@ typedef struct {
     BusConversion_InsertedFor_fcs_state_machine_stateflow_eygehnvcfe;
   failure_flag_t
     BusConversion_InsertedFor_fcs_state_machine_stateflow_nqsisctbxb;
-  real_T Add;                          /* '<S2>/Add' */
   real_T Max;                          /* '<S9>/Max' */
   real_T sLLA[3];                      /* '<S1>/Reshape1' */
-  real_T Add4;                         /* '<S14>/Add4' */
-  vom_t Switch_d533txexjk;             /* '<S13>/Switch' */
-  pic_t Switch_po1f1vqhhu;             /* '<S12>/Switch' */
+  real_T TrigonometricFunction6;       /* '<S10>/Trigonometric Function6' */
+  real_T Add4;                         /* '<S15>/Add4' */
+  vom_t Switch_d533txexjk;             /* '<S14>/Switch' */
+  pic_t Switch_po1f1vqhhu;             /* '<S13>/Switch' */
   boolean_T bInAirFlag;                /* '<S1>/Unit Delay' */
+  boolean_T Switch1;                   /* '<S5>/Switch1' */
 } system_state_machine_TB;
 
 /* Block states (default storage) for model 'system_state_machine' */
@@ -56,19 +53,21 @@ typedef struct {
   real_T bRecoverGPS;                  /* '<S1>/fcs_state_machine_stateflow' */
   real_T currentLLA[3];                /* '<S1>/fcs_state_machine_stateflow' */
   real_T bL2RTH_LinkLossFlag;          /* '<S1>/fcs_state_machine_stateflow' */
+  real_T TimerEPIPLoss;                /* '<S1>/fcs_state_machine_stateflow' */
   vom_t UnitDelay1_DSTATE_jsa3d2gsdq;  /* '<S1>/Unit Delay1' */
   uint32_T exit_port_index_FW_Modes;   /* '<S1>/fcs_state_machine_stateflow' */
   uint32_T exit_port_index_BackTransition;/* '<S1>/fcs_state_machine_stateflow' */
   uint32_T exit_port_index_FTransition;/* '<S1>/fcs_state_machine_stateflow' */
   uint32_T exit_port_index_FW_RTH;     /* '<S1>/fcs_state_machine_stateflow' */
-  uint16_T DelayInput1_DSTATE;         /* '<S68>/Delay Input1' */
-  uint16_T DelayInput1_DSTATE_citpu4sg5i;/* '<S69>/Delay Input1' */
+  uint16_T DelayInput1_DSTATE;         /* '<S70>/Delay Input1' */
+  uint16_T DelayInput1_DSTATE_citpu4sg5i;/* '<S71>/Delay Input1' */
   uint16_T temporalCounter_i1;         /* '<S1>/fcs_state_machine_stateflow' */
-  uint8_T DelayInput1_DSTATE_fuh11wooih;/* '<S67>/Delay Input1' */
+  uint8_T DelayInput1_DSTATE_lufocpaa5h;/* '<S68>/Delay Input1' */
+  uint8_T DelayInput1_DSTATE_brq5z3xipc;/* '<S69>/Delay Input1' */
   boolean_T UnitDelay_DSTATE;          /* '<S1>/Unit Delay' */
-  boolean_T DelayInput1_DSTATE_es42msgisa;/* '<S34>/Delay Input1' */
+  boolean_T DelayInput1_DSTATE_es42msgisa;/* '<S35>/Delay Input1' */
   boolean_T DelayInput1_DSTATE_bgpgka0occ;/* '<S4>/Delay Input1' */
-  boolean_T DelayInput1_DSTATE_hdp33oolxt;/* '<S37>/Delay Input1' */
+  boolean_T DelayInput1_DSTATE_hdp33oolxt;/* '<S38>/Delay Input1' */
   uint8_T is_active_c4_system_state_machine;/* '<S1>/fcs_state_machine_stateflow' */
   uint8_T is_FMM;                      /* '<S1>/fcs_state_machine_stateflow' */
   uint8_T is_FW_Modes;                 /* '<S1>/fcs_state_machine_stateflow' */
@@ -84,6 +83,7 @@ typedef struct {
   uint8_T is_HoverTimer;               /* '<S1>/fcs_state_machine_stateflow' */
   uint8_T is_GPS_Loss;                 /* '<S1>/fcs_state_machine_stateflow' */
   uint8_T is_ip_loss;                  /* '<S1>/fcs_state_machine_stateflow' */
+  uint8_T is_EP_IP_Loss_5sec;          /* '<S1>/fcs_state_machine_stateflow' */
   uint8_T is_Safety_SM;                /* '<S1>/fcs_state_machine_stateflow' */
   uint8_T is_Loiter_SM;                /* '<S1>/fcs_state_machine_stateflow' */
   uint8_T is_TECS_SM;                  /* '<S1>/fcs_state_machine_stateflow' */
@@ -110,6 +110,7 @@ typedef struct {
   boolean_T startup2manual;            /* '<S1>/fcs_state_machine_stateflow' */
   boolean_T startup2takeoff;           /* '<S1>/fcs_state_machine_stateflow' */
   boolean_T startup2uman;              /* '<S1>/fcs_state_machine_stateflow' */
+  boolean_T bEPIPLossFlag;             /* '<S1>/fcs_state_machine_stateflow' */
 } system_state_machine_TDW;
 
 /* Zero-crossing (trigger) state for model 'system_state_machine' */
@@ -119,13 +120,13 @@ typedef struct {
 
 /* Invariant block signals for system '<S8>/FlightManagement.FMM.HOVER.wraptopi' */
 typedef struct {
-  const real_T Sum1;                   /* '<S65>/Sum1' */
+  const real_T Sum1;                   /* '<S66>/Sum1' */
 } system_state_machine_mxmu1gefao_TConstB;
 
 /* Invariant block signals for model 'system_state_machine' */
 typedef struct {
   const real_T Tan;                    /* '<S5>/Tan' */
-  const real_T Sum1;                   /* '<S14>/Sum1' */
+  const real_T Sum1;                   /* '<S15>/Sum1' */
   system_state_machine_mxmu1gefao_TConstB FlightManagementFMMRTHwraptopi;
                                   /* '<S8>/FlightManagement.FMM.RTH.wraptopi' */
   system_state_machine_mxmu1gefao_TConstB FlightManagementFMMHOVERwraptopi;

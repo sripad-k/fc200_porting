@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: look1_plinlc.c
  *
  * Code generated for Simulink model 'FW_CA'.
  *
- * Model version                  : 2.106
+ * Model version                  : 2.108
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:50:05 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:04:17 2025
  */
 
 #include "look1_plinlc.h"

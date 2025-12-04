@@ -11,18 +11,20 @@ typedef struct __mavlink_ldm_airdata_t {
  int16_t px4_cas; /*< [cm/s] voted airspeed data from PX4*/
  int16_t px4_cas_1; /*< [cm/s] airspeed data from PX4 sensor 1*/
  int16_t px4_cas_2; /*< [cm/s] airspeed data from PX4 sensor 2*/
- uint16_t radalt; /*< [cm] radalt data*/
+ uint16_t radalt; /*< [cm] radalt altitude*/
  uint8_t validity; /*<  validity flags*/
  int8_t ads9_oat; /*< [deg C] outside air temperature ADS9*/
+ uint8_t radalt_snr; /*< [dB] radalt signal-to-noise ratio*/
+ uint8_t radalt_validity; /*<  radalt timeout flag*/
 } mavlink_ldm_airdata_t;
 
-#define MAVLINK_MSG_ID_LDM_AIRDATA_LEN 20
-#define MAVLINK_MSG_ID_LDM_AIRDATA_MIN_LEN 20
-#define MAVLINK_MSG_ID_52004_LEN 20
-#define MAVLINK_MSG_ID_52004_MIN_LEN 20
+#define MAVLINK_MSG_ID_LDM_AIRDATA_LEN 22
+#define MAVLINK_MSG_ID_LDM_AIRDATA_MIN_LEN 22
+#define MAVLINK_MSG_ID_52004_LEN 22
+#define MAVLINK_MSG_ID_52004_MIN_LEN 22
 
-#define MAVLINK_MSG_ID_LDM_AIRDATA_CRC 110
-#define MAVLINK_MSG_ID_52004_CRC 110
+#define MAVLINK_MSG_ID_LDM_AIRDATA_CRC 19
+#define MAVLINK_MSG_ID_52004_CRC 19
 
 
 
@@ -30,7 +32,7 @@ typedef struct __mavlink_ldm_airdata_t {
 #define MAVLINK_MESSAGE_INFO_LDM_AIRDATA { \
     52004, \
     "LDM_AIRDATA", \
-    9, \
+    11, \
     {  { "time_ms", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_ldm_airdata_t, time_ms) }, \
          { "validity", NULL, MAVLINK_TYPE_UINT8_T, 0, 18, offsetof(mavlink_ldm_airdata_t, validity) }, \
          { "ads9_cas", NULL, MAVLINK_TYPE_INT16_T, 0, 8, offsetof(mavlink_ldm_airdata_t, ads9_cas) }, \
@@ -40,12 +42,14 @@ typedef struct __mavlink_ldm_airdata_t {
          { "px4_cas_1", NULL, MAVLINK_TYPE_INT16_T, 0, 12, offsetof(mavlink_ldm_airdata_t, px4_cas_1) }, \
          { "px4_cas_2", NULL, MAVLINK_TYPE_INT16_T, 0, 14, offsetof(mavlink_ldm_airdata_t, px4_cas_2) }, \
          { "radalt", NULL, MAVLINK_TYPE_UINT16_T, 0, 16, offsetof(mavlink_ldm_airdata_t, radalt) }, \
+         { "radalt_snr", NULL, MAVLINK_TYPE_UINT8_T, 0, 20, offsetof(mavlink_ldm_airdata_t, radalt_snr) }, \
+         { "radalt_validity", NULL, MAVLINK_TYPE_UINT8_T, 0, 21, offsetof(mavlink_ldm_airdata_t, radalt_validity) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_LDM_AIRDATA { \
     "LDM_AIRDATA", \
-    9, \
+    11, \
     {  { "time_ms", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_ldm_airdata_t, time_ms) }, \
          { "validity", NULL, MAVLINK_TYPE_UINT8_T, 0, 18, offsetof(mavlink_ldm_airdata_t, validity) }, \
          { "ads9_cas", NULL, MAVLINK_TYPE_INT16_T, 0, 8, offsetof(mavlink_ldm_airdata_t, ads9_cas) }, \
@@ -55,6 +59,8 @@ typedef struct __mavlink_ldm_airdata_t {
          { "px4_cas_1", NULL, MAVLINK_TYPE_INT16_T, 0, 12, offsetof(mavlink_ldm_airdata_t, px4_cas_1) }, \
          { "px4_cas_2", NULL, MAVLINK_TYPE_INT16_T, 0, 14, offsetof(mavlink_ldm_airdata_t, px4_cas_2) }, \
          { "radalt", NULL, MAVLINK_TYPE_UINT16_T, 0, 16, offsetof(mavlink_ldm_airdata_t, radalt) }, \
+         { "radalt_snr", NULL, MAVLINK_TYPE_UINT8_T, 0, 20, offsetof(mavlink_ldm_airdata_t, radalt_snr) }, \
+         { "radalt_validity", NULL, MAVLINK_TYPE_UINT8_T, 0, 21, offsetof(mavlink_ldm_airdata_t, radalt_validity) }, \
          } \
 }
 #endif
@@ -73,11 +79,13 @@ typedef struct __mavlink_ldm_airdata_t {
  * @param px4_cas [cm/s] voted airspeed data from PX4
  * @param px4_cas_1 [cm/s] airspeed data from PX4 sensor 1
  * @param px4_cas_2 [cm/s] airspeed data from PX4 sensor 2
- * @param radalt [cm] radalt data
+ * @param radalt [cm] radalt altitude
+ * @param radalt_snr [dB] radalt signal-to-noise ratio
+ * @param radalt_validity  radalt timeout flag
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ldm_airdata_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint32_t time_ms, uint8_t validity, int16_t ads9_cas, int32_t ads9_alt_baro, int8_t ads9_oat, int16_t px4_cas, int16_t px4_cas_1, int16_t px4_cas_2, uint16_t radalt)
+                               uint32_t time_ms, uint8_t validity, int16_t ads9_cas, int32_t ads9_alt_baro, int8_t ads9_oat, int16_t px4_cas, int16_t px4_cas_1, int16_t px4_cas_2, uint16_t radalt, uint8_t radalt_snr, uint8_t radalt_validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LDM_AIRDATA_LEN];
@@ -90,6 +98,8 @@ static inline uint16_t mavlink_msg_ldm_airdata_pack(uint8_t system_id, uint8_t c
     _mav_put_uint16_t(buf, 16, radalt);
     _mav_put_uint8_t(buf, 18, validity);
     _mav_put_int8_t(buf, 19, ads9_oat);
+    _mav_put_uint8_t(buf, 20, radalt_snr);
+    _mav_put_uint8_t(buf, 21, radalt_validity);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_LDM_AIRDATA_LEN);
 #else
@@ -103,6 +113,8 @@ static inline uint16_t mavlink_msg_ldm_airdata_pack(uint8_t system_id, uint8_t c
     packet.radalt = radalt;
     packet.validity = validity;
     packet.ads9_oat = ads9_oat;
+    packet.radalt_snr = radalt_snr;
+    packet.radalt_validity = radalt_validity;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_LDM_AIRDATA_LEN);
 #endif
@@ -126,11 +138,13 @@ static inline uint16_t mavlink_msg_ldm_airdata_pack(uint8_t system_id, uint8_t c
  * @param px4_cas [cm/s] voted airspeed data from PX4
  * @param px4_cas_1 [cm/s] airspeed data from PX4 sensor 1
  * @param px4_cas_2 [cm/s] airspeed data from PX4 sensor 2
- * @param radalt [cm] radalt data
+ * @param radalt [cm] radalt altitude
+ * @param radalt_snr [dB] radalt signal-to-noise ratio
+ * @param radalt_validity  radalt timeout flag
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ldm_airdata_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
-                               uint32_t time_ms, uint8_t validity, int16_t ads9_cas, int32_t ads9_alt_baro, int8_t ads9_oat, int16_t px4_cas, int16_t px4_cas_1, int16_t px4_cas_2, uint16_t radalt)
+                               uint32_t time_ms, uint8_t validity, int16_t ads9_cas, int32_t ads9_alt_baro, int8_t ads9_oat, int16_t px4_cas, int16_t px4_cas_1, int16_t px4_cas_2, uint16_t radalt, uint8_t radalt_snr, uint8_t radalt_validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LDM_AIRDATA_LEN];
@@ -143,6 +157,8 @@ static inline uint16_t mavlink_msg_ldm_airdata_pack_status(uint8_t system_id, ui
     _mav_put_uint16_t(buf, 16, radalt);
     _mav_put_uint8_t(buf, 18, validity);
     _mav_put_int8_t(buf, 19, ads9_oat);
+    _mav_put_uint8_t(buf, 20, radalt_snr);
+    _mav_put_uint8_t(buf, 21, radalt_validity);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_LDM_AIRDATA_LEN);
 #else
@@ -156,6 +172,8 @@ static inline uint16_t mavlink_msg_ldm_airdata_pack_status(uint8_t system_id, ui
     packet.radalt = radalt;
     packet.validity = validity;
     packet.ads9_oat = ads9_oat;
+    packet.radalt_snr = radalt_snr;
+    packet.radalt_validity = radalt_validity;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_LDM_AIRDATA_LEN);
 #endif
@@ -182,12 +200,14 @@ static inline uint16_t mavlink_msg_ldm_airdata_pack_status(uint8_t system_id, ui
  * @param px4_cas [cm/s] voted airspeed data from PX4
  * @param px4_cas_1 [cm/s] airspeed data from PX4 sensor 1
  * @param px4_cas_2 [cm/s] airspeed data from PX4 sensor 2
- * @param radalt [cm] radalt data
+ * @param radalt [cm] radalt altitude
+ * @param radalt_snr [dB] radalt signal-to-noise ratio
+ * @param radalt_validity  radalt timeout flag
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ldm_airdata_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint32_t time_ms,uint8_t validity,int16_t ads9_cas,int32_t ads9_alt_baro,int8_t ads9_oat,int16_t px4_cas,int16_t px4_cas_1,int16_t px4_cas_2,uint16_t radalt)
+                                   uint32_t time_ms,uint8_t validity,int16_t ads9_cas,int32_t ads9_alt_baro,int8_t ads9_oat,int16_t px4_cas,int16_t px4_cas_1,int16_t px4_cas_2,uint16_t radalt,uint8_t radalt_snr,uint8_t radalt_validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LDM_AIRDATA_LEN];
@@ -200,6 +220,8 @@ static inline uint16_t mavlink_msg_ldm_airdata_pack_chan(uint8_t system_id, uint
     _mav_put_uint16_t(buf, 16, radalt);
     _mav_put_uint8_t(buf, 18, validity);
     _mav_put_int8_t(buf, 19, ads9_oat);
+    _mav_put_uint8_t(buf, 20, radalt_snr);
+    _mav_put_uint8_t(buf, 21, radalt_validity);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_LDM_AIRDATA_LEN);
 #else
@@ -213,6 +235,8 @@ static inline uint16_t mavlink_msg_ldm_airdata_pack_chan(uint8_t system_id, uint
     packet.radalt = radalt;
     packet.validity = validity;
     packet.ads9_oat = ads9_oat;
+    packet.radalt_snr = radalt_snr;
+    packet.radalt_validity = radalt_validity;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_LDM_AIRDATA_LEN);
 #endif
@@ -231,7 +255,7 @@ static inline uint16_t mavlink_msg_ldm_airdata_pack_chan(uint8_t system_id, uint
  */
 static inline uint16_t mavlink_msg_ldm_airdata_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_ldm_airdata_t* ldm_airdata)
 {
-    return mavlink_msg_ldm_airdata_pack(system_id, component_id, msg, ldm_airdata->time_ms, ldm_airdata->validity, ldm_airdata->ads9_cas, ldm_airdata->ads9_alt_baro, ldm_airdata->ads9_oat, ldm_airdata->px4_cas, ldm_airdata->px4_cas_1, ldm_airdata->px4_cas_2, ldm_airdata->radalt);
+    return mavlink_msg_ldm_airdata_pack(system_id, component_id, msg, ldm_airdata->time_ms, ldm_airdata->validity, ldm_airdata->ads9_cas, ldm_airdata->ads9_alt_baro, ldm_airdata->ads9_oat, ldm_airdata->px4_cas, ldm_airdata->px4_cas_1, ldm_airdata->px4_cas_2, ldm_airdata->radalt, ldm_airdata->radalt_snr, ldm_airdata->radalt_validity);
 }
 
 /**
@@ -245,7 +269,7 @@ static inline uint16_t mavlink_msg_ldm_airdata_encode(uint8_t system_id, uint8_t
  */
 static inline uint16_t mavlink_msg_ldm_airdata_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_ldm_airdata_t* ldm_airdata)
 {
-    return mavlink_msg_ldm_airdata_pack_chan(system_id, component_id, chan, msg, ldm_airdata->time_ms, ldm_airdata->validity, ldm_airdata->ads9_cas, ldm_airdata->ads9_alt_baro, ldm_airdata->ads9_oat, ldm_airdata->px4_cas, ldm_airdata->px4_cas_1, ldm_airdata->px4_cas_2, ldm_airdata->radalt);
+    return mavlink_msg_ldm_airdata_pack_chan(system_id, component_id, chan, msg, ldm_airdata->time_ms, ldm_airdata->validity, ldm_airdata->ads9_cas, ldm_airdata->ads9_alt_baro, ldm_airdata->ads9_oat, ldm_airdata->px4_cas, ldm_airdata->px4_cas_1, ldm_airdata->px4_cas_2, ldm_airdata->radalt, ldm_airdata->radalt_snr, ldm_airdata->radalt_validity);
 }
 
 /**
@@ -259,7 +283,7 @@ static inline uint16_t mavlink_msg_ldm_airdata_encode_chan(uint8_t system_id, ui
  */
 static inline uint16_t mavlink_msg_ldm_airdata_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_ldm_airdata_t* ldm_airdata)
 {
-    return mavlink_msg_ldm_airdata_pack_status(system_id, component_id, _status, msg,  ldm_airdata->time_ms, ldm_airdata->validity, ldm_airdata->ads9_cas, ldm_airdata->ads9_alt_baro, ldm_airdata->ads9_oat, ldm_airdata->px4_cas, ldm_airdata->px4_cas_1, ldm_airdata->px4_cas_2, ldm_airdata->radalt);
+    return mavlink_msg_ldm_airdata_pack_status(system_id, component_id, _status, msg,  ldm_airdata->time_ms, ldm_airdata->validity, ldm_airdata->ads9_cas, ldm_airdata->ads9_alt_baro, ldm_airdata->ads9_oat, ldm_airdata->px4_cas, ldm_airdata->px4_cas_1, ldm_airdata->px4_cas_2, ldm_airdata->radalt, ldm_airdata->radalt_snr, ldm_airdata->radalt_validity);
 }
 
 /**
@@ -274,11 +298,13 @@ static inline uint16_t mavlink_msg_ldm_airdata_encode_status(uint8_t system_id, 
  * @param px4_cas [cm/s] voted airspeed data from PX4
  * @param px4_cas_1 [cm/s] airspeed data from PX4 sensor 1
  * @param px4_cas_2 [cm/s] airspeed data from PX4 sensor 2
- * @param radalt [cm] radalt data
+ * @param radalt [cm] radalt altitude
+ * @param radalt_snr [dB] radalt signal-to-noise ratio
+ * @param radalt_validity  radalt timeout flag
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_ldm_airdata_send(mavlink_channel_t chan, uint32_t time_ms, uint8_t validity, int16_t ads9_cas, int32_t ads9_alt_baro, int8_t ads9_oat, int16_t px4_cas, int16_t px4_cas_1, int16_t px4_cas_2, uint16_t radalt)
+static inline void mavlink_msg_ldm_airdata_send(mavlink_channel_t chan, uint32_t time_ms, uint8_t validity, int16_t ads9_cas, int32_t ads9_alt_baro, int8_t ads9_oat, int16_t px4_cas, int16_t px4_cas_1, int16_t px4_cas_2, uint16_t radalt, uint8_t radalt_snr, uint8_t radalt_validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LDM_AIRDATA_LEN];
@@ -291,6 +317,8 @@ static inline void mavlink_msg_ldm_airdata_send(mavlink_channel_t chan, uint32_t
     _mav_put_uint16_t(buf, 16, radalt);
     _mav_put_uint8_t(buf, 18, validity);
     _mav_put_int8_t(buf, 19, ads9_oat);
+    _mav_put_uint8_t(buf, 20, radalt_snr);
+    _mav_put_uint8_t(buf, 21, radalt_validity);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LDM_AIRDATA, buf, MAVLINK_MSG_ID_LDM_AIRDATA_MIN_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_CRC);
 #else
@@ -304,6 +332,8 @@ static inline void mavlink_msg_ldm_airdata_send(mavlink_channel_t chan, uint32_t
     packet.radalt = radalt;
     packet.validity = validity;
     packet.ads9_oat = ads9_oat;
+    packet.radalt_snr = radalt_snr;
+    packet.radalt_validity = radalt_validity;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LDM_AIRDATA, (const char *)&packet, MAVLINK_MSG_ID_LDM_AIRDATA_MIN_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_CRC);
 #endif
@@ -317,7 +347,7 @@ static inline void mavlink_msg_ldm_airdata_send(mavlink_channel_t chan, uint32_t
 static inline void mavlink_msg_ldm_airdata_send_struct(mavlink_channel_t chan, const mavlink_ldm_airdata_t* ldm_airdata)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_ldm_airdata_send(chan, ldm_airdata->time_ms, ldm_airdata->validity, ldm_airdata->ads9_cas, ldm_airdata->ads9_alt_baro, ldm_airdata->ads9_oat, ldm_airdata->px4_cas, ldm_airdata->px4_cas_1, ldm_airdata->px4_cas_2, ldm_airdata->radalt);
+    mavlink_msg_ldm_airdata_send(chan, ldm_airdata->time_ms, ldm_airdata->validity, ldm_airdata->ads9_cas, ldm_airdata->ads9_alt_baro, ldm_airdata->ads9_oat, ldm_airdata->px4_cas, ldm_airdata->px4_cas_1, ldm_airdata->px4_cas_2, ldm_airdata->radalt, ldm_airdata->radalt_snr, ldm_airdata->radalt_validity);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LDM_AIRDATA, (const char *)ldm_airdata, MAVLINK_MSG_ID_LDM_AIRDATA_MIN_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_CRC);
 #endif
@@ -331,7 +361,7 @@ static inline void mavlink_msg_ldm_airdata_send_struct(mavlink_channel_t chan, c
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_ldm_airdata_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time_ms, uint8_t validity, int16_t ads9_cas, int32_t ads9_alt_baro, int8_t ads9_oat, int16_t px4_cas, int16_t px4_cas_1, int16_t px4_cas_2, uint16_t radalt)
+static inline void mavlink_msg_ldm_airdata_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time_ms, uint8_t validity, int16_t ads9_cas, int32_t ads9_alt_baro, int8_t ads9_oat, int16_t px4_cas, int16_t px4_cas_1, int16_t px4_cas_2, uint16_t radalt, uint8_t radalt_snr, uint8_t radalt_validity)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -344,6 +374,8 @@ static inline void mavlink_msg_ldm_airdata_send_buf(mavlink_message_t *msgbuf, m
     _mav_put_uint16_t(buf, 16, radalt);
     _mav_put_uint8_t(buf, 18, validity);
     _mav_put_int8_t(buf, 19, ads9_oat);
+    _mav_put_uint8_t(buf, 20, radalt_snr);
+    _mav_put_uint8_t(buf, 21, radalt_validity);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LDM_AIRDATA, buf, MAVLINK_MSG_ID_LDM_AIRDATA_MIN_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_CRC);
 #else
@@ -357,6 +389,8 @@ static inline void mavlink_msg_ldm_airdata_send_buf(mavlink_message_t *msgbuf, m
     packet->radalt = radalt;
     packet->validity = validity;
     packet->ads9_oat = ads9_oat;
+    packet->radalt_snr = radalt_snr;
+    packet->radalt_validity = radalt_validity;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LDM_AIRDATA, (const char *)packet, MAVLINK_MSG_ID_LDM_AIRDATA_MIN_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_LEN, MAVLINK_MSG_ID_LDM_AIRDATA_CRC);
 #endif
@@ -451,11 +485,31 @@ static inline int16_t mavlink_msg_ldm_airdata_get_px4_cas_2(const mavlink_messag
 /**
  * @brief Get field radalt from ldm_airdata message
  *
- * @return [cm] radalt data
+ * @return [cm] radalt altitude
  */
 static inline uint16_t mavlink_msg_ldm_airdata_get_radalt(const mavlink_message_t* msg)
 {
     return _MAV_RETURN_uint16_t(msg,  16);
+}
+
+/**
+ * @brief Get field radalt_snr from ldm_airdata message
+ *
+ * @return [dB] radalt signal-to-noise ratio
+ */
+static inline uint8_t mavlink_msg_ldm_airdata_get_radalt_snr(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_uint8_t(msg,  20);
+}
+
+/**
+ * @brief Get field radalt_validity from ldm_airdata message
+ *
+ * @return  radalt timeout flag
+ */
+static inline uint8_t mavlink_msg_ldm_airdata_get_radalt_validity(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_uint8_t(msg,  21);
 }
 
 /**
@@ -476,6 +530,8 @@ static inline void mavlink_msg_ldm_airdata_decode(const mavlink_message_t* msg, 
     ldm_airdata->radalt = mavlink_msg_ldm_airdata_get_radalt(msg);
     ldm_airdata->validity = mavlink_msg_ldm_airdata_get_validity(msg);
     ldm_airdata->ads9_oat = mavlink_msg_ldm_airdata_get_ads9_oat(msg);
+    ldm_airdata->radalt_snr = mavlink_msg_ldm_airdata_get_radalt_snr(msg);
+    ldm_airdata->radalt_validity = mavlink_msg_ldm_airdata_get_radalt_validity(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_LDM_AIRDATA_LEN? msg->len : MAVLINK_MSG_ID_LDM_AIRDATA_LEN;
         memset(ldm_airdata, 0, MAVLINK_MSG_ID_LDM_AIRDATA_LEN);

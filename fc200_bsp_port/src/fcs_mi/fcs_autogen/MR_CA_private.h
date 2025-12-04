@@ -1,16 +1,12 @@
 /*
- * Academic License - for use in teaching, academic research, and meeting
- * course requirements at degree granting institutions only.  Not for
- * government, commercial, or other organizational use.
- *
  * File: MR_CA_private.h
  *
  * Code generated for Simulink model 'MR_CA'.
  *
- * Model version                  : 2.72
+ * Model version                  : 2.80
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * Git Hash                       : 109356e0
- * C/C++ source code generated on : Mon Sep 15 11:51:44 2025
+ * Git Hash                       : 4a0df9c8
+ * C/C++ source code generated on : Thu Nov 27 13:06:00 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -25,9 +21,10 @@
 
 /* Block states (default storage) for model 'MR_CA' */
 typedef struct {
-  real_T DiscreteTimeIntegrator_DSTATE;/* '<S12>/Discrete-Time Integrator' */
-  real_T PrevY;                        /* '<S2>/Rate Limiter' */
-  int8_T DiscreteTimeIntegrator_PrevResetState;/* '<S12>/Discrete-Time Integrator' */
+  real_T DiscreteTimeIntegrator_DSTATE;/* '<S13>/Discrete-Time Integrator' */
+  real_T PrevY;                        /* '<S2>/Rate Limiter1' */
+  real_T PrevY_gomqn2vwp1;             /* '<S2>/Rate Limiter' */
+  int8_T DiscreteTimeIntegrator_PrevResetState;/* '<S13>/Discrete-Time Integrator' */
 } MR_CA_TDW;
 
 /* Constant parameters (default storage) */
